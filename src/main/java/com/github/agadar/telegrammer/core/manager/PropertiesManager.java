@@ -42,7 +42,7 @@ public class PropertiesManager {
 
     /**
      * Saves the application's properties to the file.
-     * 
+     *
      * @return True if saving succeeded, false otherwise.
      */
     public boolean saveProperties() {
@@ -66,7 +66,7 @@ public class PropertiesManager {
 
     /**
      * Loads the application's properties from the file.
-     * 
+     *
      * @return True if loading succeeded, false otherwise.
      */
     public boolean loadProperties() {
@@ -76,6 +76,12 @@ public class PropertiesManager {
         try (InputStream input = new FileInputStream(FILENAME);) {
             props.load(input);
         } catch (IOException ex) {
+            clientKey = DEFAULT_STRING_VAL;
+            telegramId = DEFAULT_STRING_VAL;
+            secretKey = DEFAULT_STRING_VAL;
+            lastTelegramType = TelegramType.NORMAL;
+            fromRegion = DEFAULT_STRING_VAL;
+            dryRun = Boolean.valueOf(DEFAULT_BOOL_VAL);
             return false;
         }
 
