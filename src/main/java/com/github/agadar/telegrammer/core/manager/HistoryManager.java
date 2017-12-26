@@ -11,76 +11,40 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Stream;
 
-/**
- * Assists in saving and loading the history file for this application.
- *
- * @author Agadar (https://github.com/Agadar/)
- */
-public final class HistoryManager {
-
-    /**
-     * The singleton.
-     */
-    private static HistoryManager INSTANCE;
+public final class HistoryManager implements IHistoryManager {
 
     /**
      * Default file name.
      */
-    private static final Path HISTORY_FILE = Paths.get(".nationstates-telegrammer.history");
+    private final Path HISTORY_FILE = Paths.get(".nationstates-telegrammer.history");
 
     /**
      * Default split string.
      */
-    private static final String SPLITSTRING = ",";
+    private final String SPLITSTRING = ",";
 
     /**
      * The history data retrieved from and saved to the file.
      */
     private Map<Tuple<String, String>, SkippedRecipientReason> history;
 
-    /**
-     * Gets this class's singleton.
-     *
-     * @return This class's singleton.
-     */
-    public static HistoryManager get() {
-        if (INSTANCE == null) {
-            INSTANCE = new HistoryManager();
-        }
-        return INSTANCE;
+    private final IPropertiesManager propertiesManager;
+
+    public HistoryManager(IPropertiesManager propertiesManager) {
+        this.propertiesManager = propertiesManager;
     }
 
-    /**
-     * Private constructor, because singleton.
-     */
-    private HistoryManager() {
-    }
-
-    /**
-     * Gets the SkippedRecipientReason mapped to the given telegramId and
-     * recipient.
-     *
-     * @param telegramId
-     * @param recipient
-     * @return The SkippedRecipientReason mapped to the given telegramId and
-     * recipient, otherwise null.
-     */
+    @Override
     public SkippedRecipientReason getSkippedRecipientReason(String telegramId, String recipient) {
         return history.get(new Tuple(telegramId, recipient));
     }
 
-    /**
-     * Saves a new entry in the telegram history and persists it to the history
-     * file.
-     *
-     * @param telegramId Id of the sent telegram.
-     * @param recipient Recipient of the sent telegram.
-     * @param reason The reason for storing in history.
-     * @return True if successful, otherwise false.
-     */
+    @Override
     public boolean saveHistory(String telegramId, String recipient, SkippedRecipientReason reason) {
         // If the history is null, instantiate it.
         if (history == null) {
@@ -110,11 +74,7 @@ public final class HistoryManager {
         return true;
     }
 
-    /**
-     * Loads the application's history data from the file.
-     *
-     * @return True if loading succeeded, false otherwise.
-     */
+    @Override
     public boolean loadHistory() {
         history = new HashMap<>(); // Ensure history is new and empty.
 
@@ -135,5 +95,14 @@ public final class HistoryManager {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public void removeOldRecipients(Set<String> nations) {
+        for (final Iterator<String> it = nations.iterator(); it.hasNext();) {
+            if (getSkippedRecipientReason(propertiesManager.getTelegramId(), it.next()) != null) {
+                it.remove();   // Remove recipient
+            }
+        }
     }
 }

@@ -1,11 +1,13 @@
 package com.github.agadar.telegrammer.core.filter;
 
-import com.github.agadar.nationstates.NationStates;
+import com.github.agadar.nationstates.INationStates;
 import com.github.agadar.nationstates.domain.worldassembly.WorldAssembly;
 import com.github.agadar.nationstates.enumerator.Council;
 import com.github.agadar.nationstates.shard.WorldAssemblyShard;
 
 import com.github.agadar.telegrammer.core.filter.abstractfilter.FilterHappeningsFinite;
+import com.github.agadar.telegrammer.core.manager.IHistoryManager;
+import com.github.agadar.telegrammer.core.util.IFilterCache;
 
 import java.util.HashSet;
 
@@ -16,14 +18,14 @@ import java.util.HashSet;
  */
 public class FilterWAMembersNewFinite extends FilterHappeningsFinite {
 
-    public FilterWAMembersNewFinite(int amountToRetrieve) {
-        super(KeyWord.admitted, amountToRetrieve);
+    public FilterWAMembersNewFinite(INationStates nationStates, IHistoryManager historyManager, IFilterCache filterCache, int amountToRetrieve) {
+        super(nationStates, historyManager, filterCache, KeyWord.admitted, amountToRetrieve);
     }
 
     @Override
     public void refresh() {
         // Get fresh new list from server.
-        final WorldAssembly w = NationStates.worldAssembly(Council.SECURITY_COUNCIL)
+        final WorldAssembly w = nationStates.getWorldAssembly(Council.SECURITY_COUNCIL)
                 .shards(WorldAssemblyShard.RECENT_MEMBER_LOG).execute();
 
         // Derive new delegates from happenings, and properly set the local and global caches.

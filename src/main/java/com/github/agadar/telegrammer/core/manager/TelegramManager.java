@@ -1,6 +1,6 @@
 package com.github.agadar.telegrammer.core.manager;
 
-import com.github.agadar.nationstates.NationStates;
+import com.github.agadar.nationstates.INationStates;
 
 import com.github.agadar.telegrammer.core.event.TelegramManagerListener;
 import com.github.agadar.telegrammer.core.filter.abstractfilter.Filter;
@@ -9,21 +9,14 @@ import com.github.agadar.telegrammer.core.runnable.SendTelegramsRunnable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Manages the recipients list and sending telegrams to the former.
- *
- * @author Agadar (https://github.com/Agadar/)
- */
-public final class TelegramManager {
+public final class TelegramManager implements ITelegramManager {
 
-    private static TelegramManager INSTANCE;
-    private final static String USER_AGENT = "Agadar's Telegrammer using Client "
+    private final String userAgentFormat = "Agadar's Telegrammer using Client "
             + "Key '%s' (https://github.com/Agadar/NationStates-Telegrammer)";  // User agent string for formatting.
-    private final static int NO_ADDRESSEES_FOUND_TIMEOUT = 60000;               // Duration in milliseconds for timeout when no recipients were found while looping.
+    private final int noAddresseesFoundTimeout = 60000;               // Duration in milliseconds for timeout when no recipients were found while looping.
 
     private final List<Filter> filters = new ArrayList<>();                 // The filters to apply, in chronological order.
     private final Set<String> recipients = new HashSet<>();                 // Supposedly most up-to-date recipients list, based on Filters.
@@ -31,67 +24,44 @@ public final class TelegramManager {
 
     private Thread telegramThread;                                          // The thread on which the TelegramQuery is running.
 
-    public static TelegramManager get() {
-        if (INSTANCE == null) {
-            INSTANCE = new TelegramManager();
-        }
-        return INSTANCE;
+    private final INationStates nationStates;
+    private final IHistoryManager historyManager;
+    private final IPropertiesManager propertiesManager;
+
+    public TelegramManager(INationStates nationStates, IHistoryManager historyManager, IPropertiesManager propertiesManager) {
+        this.nationStates = nationStates;
+        this.historyManager = historyManager;
+        this.propertiesManager = propertiesManager;
     }
 
-    private TelegramManager() {
-    }
-
-    /**
-     * Returns true if none of the filters can retrieve any new nations by more
-     * calls to refresh().
-     *
-     * @return
-     */
+    @Override
     public boolean cantRetrieveMoreNations() {
         return filters.stream().noneMatch((filter) -> (!filter.cantRetrieveMoreNations()));
     }
 
-    /**
-     * Returns true if at least one of the filters is potentially infinite.
-     *
-     * @return
-     */
+    @Override
     public boolean potentiallyInfinite() {
         return filters.stream().anyMatch(filter -> filter.potentiallyInfinite());
     }
 
-    /**
-     * Adds new filter. Assumes it hasn't been refreshed yet.
-     *
-     * @param filter
-     */
+    @Override
     public void addFilter(Filter filter) {
         filter.refresh();
         filter.applyFilter(recipients);
         filters.add(filter);
     }
 
-    /**
-     * Gives the number of recipients.
-     *
-     * @return
-     */
+    @Override
     public int numberOfRecipients() {
         return recipients.size();
     }
 
-    /**
-     * Gets a copy of the Recipients.
-     *
-     * @return
-     */
+    @Override
     public Set<String> getRecipients() {
         return new HashSet<>(recipients);
     }
 
-    /**
-     * Resets and reapplies all filters to the address list.
-     */
+    @Override
     public void resetAndReapplyFilters() {
         recipients.clear();
         filters.forEach((filter) -> {
@@ -101,9 +71,7 @@ public final class TelegramManager {
         });
     }
 
-    /**
-     * Refreshes and reapplies all filters to the address list.
-     */
+    @Override
     public void refreshAndReapplyFilters() {
         recipients.clear();
         filters.forEach((filter) -> {
@@ -112,11 +80,7 @@ public final class TelegramManager {
         });
     }
 
-    /**
-     * Removes the filter with the given index.
-     *
-     * @param index
-     */
+    @Override
     public void removeFilterAt(int index) {
         filters.remove(index);
         recipients.clear();
@@ -126,24 +90,16 @@ public final class TelegramManager {
         });
     }
 
-    /**
-     * Starts sending the telegram to the recipients.
-     *
-     * @param nonblocking If true, then the telegrams will be sent in a new
-     * thread.
-     * @throws IllegalArgumentException If the variables are not properly set.
-     */
+    @Override
     public void startSending(boolean nonblocking) {
-        final PropertiesManager propsManager = PropertiesManager.get();
-
         // Make sure all inputs are valid.
-        if (propsManager.clientKey == null || propsManager.clientKey.isEmpty()) {
+        if (propertiesManager.getClientKey() == null || propertiesManager.getClientKey().isEmpty()) {
             throw new IllegalArgumentException("Please supply a Client Key!");
         }
-        if (propsManager.telegramId == null || propsManager.telegramId.isEmpty()) {
+        if (propertiesManager.getTelegramId() == null || propertiesManager.getTelegramId().isEmpty()) {
             throw new IllegalArgumentException("Please supply a Telegram Id!");
         }
-        if (propsManager.secretKey == null || propsManager.secretKey.isEmpty()) {
+        if (propertiesManager.getSecretKey() == null || propertiesManager.getSecretKey().isEmpty()) {
             throw new IllegalArgumentException("Please supply a Secret Key!");
         }
 
@@ -158,11 +114,11 @@ public final class TelegramManager {
         }
 
         // Update user agent.
-        NationStates.setUserAgent(String.format(USER_AGENT, propsManager.clientKey));
+        nationStates.setUserAgent(String.format(userAgentFormat, propertiesManager.getClientKey()));
 
         // Prepare the runnable.
         final SendTelegramsRunnable sendTelegramsRunnable
-                = new SendTelegramsRunnable(this, recipients, listeners, NO_ADDRESSEES_FOUND_TIMEOUT, propsManager);
+                = new SendTelegramsRunnable(this, nationStates, historyManager, propertiesManager, recipients, listeners, noAddresseesFoundTimeout);
 
         // Depending on the 'nonblocking' choice, either run the runnable in a new thread,
         // or just call its start() method on this thread.
@@ -174,34 +130,14 @@ public final class TelegramManager {
         }
     }
 
-    /**
-     * Stops sending the telegram to the recipients. Does nothing if
-     * startSending
-     */
+    @Override
     public void stopSending() {
         if (telegramThread != null) {
             telegramThread.interrupt();
         }
     }
 
-    /**
-     * Removes invalid recipients from the supplied set.
-     *
-     * @param nations
-     */
-    public void removeOldRecipients(Set<String> nations) {
-        for (final Iterator<String> it = nations.iterator(); it.hasNext();) {
-            if (HistoryManager.get().getSkippedRecipientReason(PropertiesManager.get().telegramId, it.next()) != null) {
-                it.remove();   // Remove recipient
-            }
-        }
-    }
-
-    /**
-     * Registers new telegram manager listeners.
-     *
-     * @param newlisteners the listeners to register
-     */
+    @Override
     public void addListeners(TelegramManagerListener... newlisteners) {
         synchronized (listeners) {
             listeners.addAll(Arrays.asList(newlisteners));

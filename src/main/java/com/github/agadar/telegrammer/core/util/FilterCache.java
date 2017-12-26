@@ -1,6 +1,6 @@
 package com.github.agadar.telegrammer.core.util;
 
-import com.github.agadar.nationstates.NationStates;
+import com.github.agadar.nationstates.INationStates;
 import com.github.agadar.nationstates.domain.DailyDumpNations;
 import com.github.agadar.nationstates.domain.nation.Nation;
 import com.github.agadar.nationstates.enumerator.DailyDumpMode;
@@ -17,7 +17,7 @@ import java.util.Set;
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public class FilterCache {
+public class FilterCache implements IFilterCache {
 
     private final Map<String, Set<String>> nationsToRegions;            // nations mapped to regions
     private final Map<Set<RegionTag>, Set<String>> regionsToTagsWith;      // regions mapped to tags they have
@@ -25,17 +25,21 @@ public class FilterCache {
     private final Map<String, Set<String>> embassiesToRegions;          // embassy regions mapped to regions
     private boolean hasImportedDumpFile = false;                        // indicates whether or not the dump file has been imported yet
 
-    public Set<String> delegates;   // world assembly delegates
-    public Set<String> waMembers;   // world assembly members
-    public Set<String> all;         // all nations
+    private final INationStates nationStates;
 
-    public FilterCache() {
+    private HashSet<String> delegates;   // world assembly delegates
+    private HashSet<String> waMembers;   // world assembly members
+    private HashSet<String> allNations;         // all nations
+
+    public FilterCache(INationStates nationStates) {
         nationsToRegions = new HashMap<>();
         regionsToTagsWith = new HashMap<>();
         regionsToTagsWithout = new HashMap<>();
         embassiesToRegions = new HashMap<>();
+        this.nationStates = nationStates;
     }
 
+    @Override
     public void importDumpFile() {
         // Only if the dump file hasn't already been imported, import the dump file.
         if (hasImportedDumpFile) {
@@ -45,7 +49,7 @@ public class FilterCache {
         DailyDumpNations ddn;
 
         try {
-            ddn = NationStates.nationdump(DailyDumpMode.READ_LOCAL).execute();
+            ddn = nationStates.getNationDump(DailyDumpMode.READ_LOCAL).execute();
         } catch (Exception ex) {
             // If the exception isn't just a FileNotFoundException, throw this.
             if (ex.getCause().getClass() != FileNotFoundException.class) {
@@ -53,7 +57,7 @@ public class FilterCache {
             }
 
             // Else, try download the dump file from the server.
-            ddn = NationStates.nationdump(DailyDumpMode.DOWNLOAD_THEN_READ_LOCAL).execute();
+            ddn = nationStates.getNationDump(DailyDumpMode.DOWNLOAD_THEN_READ_LOCAL).execute();
         }
 
         // ddn should now be filled. Use it to fill the caches.
@@ -82,12 +86,7 @@ public class FilterCache {
         hasImportedDumpFile = true;
     }
 
-    /**
-     * Maps a single embassy region to a region.
-     *
-     * @param region
-     * @param embassy
-     */
+    @Override
     public void mapEmbassyToRegion(String region, String embassy) {
         Set<String> embassies = embassiesToRegions.get(region);
 
@@ -99,32 +98,17 @@ public class FilterCache {
         embassies.add(embassy);
     }
 
-    /**
-     * Maps embassy regions to a region.
-     *
-     * @param region
-     * @param embassies
-     */
+    @Override
     public void mapEmbassiesToRegion(String region, Set<String> embassies) {
         embassiesToRegions.put(region, embassies);
     }
 
-    /**
-     * Gets a region's embassy regions.
-     *
-     * @param region
-     * @return
-     */
+    @Override
     public Set<String> getEmbassies(String region) {
         return embassiesToRegions.get(region);
     }
 
-    /**
-     * Maps a single nation to a region.
-     *
-     * @param region
-     * @param nation
-     */
+    @Override
     public void mapNationToRegion(String region, String nation) {
         Set<String> nations = nationsToRegions.get(region);
 
@@ -136,63 +120,63 @@ public class FilterCache {
         nations.add(nation);
     }
 
-    /**
-     * Maps nations to a region.
-     *
-     * @param region
-     * @param nations
-     */
+    @Override
     public void mapNationsToRegion(String region, Set<String> nations) {
         nationsToRegions.put(region, nations);
     }
 
-    /**
-     * Gets nations in a region.
-     *
-     * @param region
-     * @return
-     */
+    @Override
     public Set<String> getNationsInRegion(String region) {
         return nationsToRegions.get(region);
     }
 
-    /**
-     * Maps regions to tags those regions have.
-     *
-     * @param tags
-     * @param regions
-     */
+    @Override
     public void mapRegionsToTagsWith(Set<RegionTag> tags, Set<String> regions) {
         regionsToTagsWith.put(tags, regions);
     }
 
-    /**
-     * Gets regions that have the supplied tags.
-     *
-     * @param tags
-     * @return
-     */
+    @Override
     public Set<String> getRegionsToTagsWith(Set<RegionTag> tags) {
         return regionsToTagsWith.get(tags);
     }
 
-    /**
-     * Maps regions to tags those regions DO NOT have.
-     *
-     * @param tags
-     * @param regions
-     */
+    @Override
     public void mapRegionsToTagsWithout(Set<RegionTag> tags, Set<String> regions) {
         regionsToTagsWithout.put(tags, regions);
     }
 
-    /**
-     * Gets regions that DO NOT have the supplied tags.
-     *
-     * @param tags
-     * @return
-     */
+    @Override
     public Set<String> getRegionsToTagsWithout(Set<RegionTag> tags) {
         return regionsToTagsWithout.get(tags);
+    }
+
+    @Override
+    public HashSet<String> getAllNations() {
+        return this.allNations;
+    }
+
+    @Override
+    public HashSet<String> getDelegates() {
+        return this.delegates;
+    }
+
+    @Override
+    public HashSet<String> getWaMembers() {
+        return this.waMembers;
+    }
+
+    @Override
+    public void setAllNations(HashSet<String> allNations) {
+        this.allNations = allNations;
+    }
+
+    @Override
+    public void setDelegates(HashSet<String> delegates) {
+        this.delegates = delegates;
+    }
+
+    @Override
+    public void setWaMembers(HashSet<String> waMembers) {
+        this.waMembers = waMembers;
     }
 }

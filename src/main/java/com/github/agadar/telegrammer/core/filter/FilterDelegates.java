@@ -1,11 +1,13 @@
 package com.github.agadar.telegrammer.core.filter;
 
-import com.github.agadar.nationstates.NationStates;
+import com.github.agadar.nationstates.INationStates;
 import com.github.agadar.nationstates.domain.worldassembly.WorldAssembly;
 import com.github.agadar.nationstates.enumerator.Council;
 import com.github.agadar.nationstates.shard.WorldAssemblyShard;
 
 import com.github.agadar.telegrammer.core.filter.abstractfilter.FilterAddOrRemove;
+import com.github.agadar.telegrammer.core.manager.IHistoryManager;
+import com.github.agadar.telegrammer.core.util.IFilterCache;
 
 import java.util.HashSet;
 
@@ -16,8 +18,8 @@ import java.util.HashSet;
  */
 public class FilterDelegates extends FilterAddOrRemove {
 
-    public FilterDelegates(boolean add) {
-        super(add);
+    public FilterDelegates(INationStates nationStates, IHistoryManager historyManager, IFilterCache filterCache, boolean add) {
+        super(nationStates, historyManager, filterCache, add);
     }
 
     @Override
@@ -26,18 +28,19 @@ public class FilterDelegates extends FilterAddOrRemove {
         if (nations != null) {
             return;
         }
+        final HashSet<String> delegates = filterCache.getDelegates();
 
         // Query global cache, set local cache to it if what we search was found.
-        if (GLOBAL_CACHE.delegates != null) {
-            nations = GLOBAL_CACHE.delegates;
+        if (delegates != null) {
+            nations = delegates;
             return;
         }
 
         // If global cache does not contain what we need, do an API call to
         // retrieve the data, then store it in global cache and local cache.
-        final WorldAssembly wa = NationStates.worldAssembly(Council.SECURITY_COUNCIL).shards(WorldAssemblyShard.DELEGATES).execute();
-        GLOBAL_CACHE.delegates = new HashSet<>(wa.delegates);
-        nations = GLOBAL_CACHE.delegates;
+        final WorldAssembly wa = nationStates.getWorldAssembly(Council.SECURITY_COUNCIL).shards(WorldAssemblyShard.DELEGATES).execute();
+        filterCache.setDelegates(new HashSet<>(wa.delegates));
+        nations = filterCache.getDelegates();
         cantRetrieveMoreNations = true;
     }
 }

@@ -1,5 +1,9 @@
 package com.github.agadar.telegrammer.core.filter.abstractfilter;
 
+import com.github.agadar.nationstates.INationStates;
+import com.github.agadar.telegrammer.core.manager.IHistoryManager;
+import com.github.agadar.telegrammer.core.util.IFilterCache;
+
 import java.util.Set;
 
 /**
@@ -18,8 +22,8 @@ public abstract class FilterAddOrRemove extends Filter {
      */
     protected final boolean add;
 
-    public FilterAddOrRemove(boolean add) {
-        super();
+    public FilterAddOrRemove(INationStates nationStates, IHistoryManager historyManager, IFilterCache filterCache, boolean add) {
+        super(nationStates, historyManager, filterCache);
         this.add = add;
     }
 

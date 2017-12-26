@@ -1,6 +1,9 @@
 package com.github.agadar.telegrammer.core.filter.abstractfilter;
 
+import com.github.agadar.nationstates.INationStates;
 import com.github.agadar.nationstates.domain.common.Happening;
+import com.github.agadar.telegrammer.core.manager.IHistoryManager;
+import com.github.agadar.telegrammer.core.util.IFilterCache;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -37,7 +40,8 @@ public abstract class FilterHappenings extends Filter {
      */
     private final KeyWord myKeyWord;
 
-    public FilterHappenings(KeyWord keyWord) {
+    public FilterHappenings(INationStates nationStates,IHistoryManager historyManager,  IFilterCache filterCache, KeyWord keyWord) {
+        super(nationStates, historyManager, filterCache);
         this.myKeyWord = keyWord;
     }
 

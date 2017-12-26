@@ -1,11 +1,13 @@
 package com.github.agadar.telegrammer.core.filter;
 
-import com.github.agadar.nationstates.NationStates;
+import com.github.agadar.nationstates.INationStates;
 import com.github.agadar.nationstates.domain.world.World;
 import com.github.agadar.nationstates.enumerator.HappeningsFilter;
 import com.github.agadar.nationstates.shard.WorldShard;
 
 import com.github.agadar.telegrammer.core.filter.abstractfilter.FilterHappeningsFinite;
+import com.github.agadar.telegrammer.core.manager.IHistoryManager;
+import com.github.agadar.telegrammer.core.util.IFilterCache;
 
 import java.util.HashSet;
 
@@ -16,14 +18,14 @@ import java.util.HashSet;
  */
 public class FilterNationsRefoundedFinite extends FilterHappeningsFinite {
 
-    public FilterNationsRefoundedFinite(int amountToRetrieve) {
-        super(KeyWord.refounded, amountToRetrieve);
+    public FilterNationsRefoundedFinite(INationStates nationStates, IHistoryManager historyManager, IFilterCache filterCache, int amountToRetrieve) {
+        super(nationStates, historyManager, filterCache, KeyWord.refounded, amountToRetrieve);
     }
 
     @Override
     public void refresh() {
         // Get fresh new list from server.
-        final World w = NationStates.world(WorldShard.HAPPENINGS)
+        final World w = nationStates.getWorld(WorldShard.HAPPENINGS)
                 .happeningsFilter(HappeningsFilter.FOUNDING).execute();
 
         // Derive refounded nations from happenings, and properly set the local and global caches.

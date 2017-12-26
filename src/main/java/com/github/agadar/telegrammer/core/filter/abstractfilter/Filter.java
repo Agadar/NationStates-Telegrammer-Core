@@ -1,7 +1,8 @@
 package com.github.agadar.telegrammer.core.filter.abstractfilter;
 
-import com.github.agadar.telegrammer.core.manager.TelegramManager;
-import com.github.agadar.telegrammer.core.util.FilterCache;
+import com.github.agadar.nationstates.INationStates;
+import com.github.agadar.telegrammer.core.manager.IHistoryManager;
+import com.github.agadar.telegrammer.core.util.IFilterCache;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -14,9 +15,16 @@ import java.util.Set;
 public abstract class Filter {
 
     /**
+     * The wrapper used for consuming the official API.
+     */
+    protected final INationStates nationStates;
+
+    /**
      * The cache that is to be used by all child filters.
      */
-    protected final static FilterCache GLOBAL_CACHE = new FilterCache();
+    protected final IFilterCache filterCache;
+
+    protected final IHistoryManager historyManager;
 
     /**
      * Set containing the nations from the last time retrieveNations() was
@@ -30,6 +38,12 @@ public abstract class Filter {
      */
     protected boolean cantRetrieveMoreNations = false;
 
+    public Filter(INationStates nationStates, IHistoryManager historyManager, IFilterCache filterCache) {
+        this.nationStates = nationStates;
+        this.historyManager = historyManager;
+        this.filterCache = filterCache;
+    }
+
     /**
      * Applies this filter to the supplied set of nations, removing or adding
      * nations according to this filter's rules.
@@ -39,8 +53,8 @@ public abstract class Filter {
      * @param addresses
      */
     public void applyFilter(Set<String> addresses) {
-        Set<String> copy = new HashSet<>(nations);
-        TelegramManager.get().removeOldRecipients(copy);
+        final Set<String> copy = new HashSet<>(nations);
+        historyManager.removeOldRecipients(copy);
         addresses.addAll(copy);
     }
 

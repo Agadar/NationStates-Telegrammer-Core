@@ -1,9 +1,10 @@
 package com.github.agadar.telegrammer.core.filter.abstractfilter;
 
+import com.github.agadar.nationstates.INationStates;
 import com.github.agadar.nationstates.domain.world.World;
 import com.github.agadar.nationstates.enumerator.RegionTag;
-
-import static com.github.agadar.telegrammer.core.filter.abstractfilter.Filter.GLOBAL_CACHE;
+import com.github.agadar.telegrammer.core.manager.IHistoryManager;
+import com.github.agadar.telegrammer.core.util.IFilterCache;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,8 +22,8 @@ public abstract class FilterRegionByTags extends FilterAddOrRemove {
      */
     protected final Set<RegionTag> tags;
 
-    public FilterRegionByTags(Set<RegionTag> tags, boolean add) {
-        super(add);
+    public FilterRegionByTags(INationStates nationStates, IHistoryManager historyManager, IFilterCache filterCache, Set<RegionTag> tags, boolean add) {
+        super(nationStates, historyManager, filterCache, add);
         this.tags = tags;
     }
 
@@ -34,7 +35,7 @@ public abstract class FilterRegionByTags extends FilterAddOrRemove {
         }
 
         // Query global cache for regions mapped to tags.
-        Set<String> regions = GLOBAL_CACHE.getRegionsToTagsWith(tags);
+        Set<String> regions = filterCache.getRegionsToTagsWith(tags);
 
         // If they aren't in the global cache, retrieve from server and cache them.
         if (regions == null) {
@@ -49,7 +50,7 @@ public abstract class FilterRegionByTags extends FilterAddOrRemove {
                 regions = new HashSet<>();
             }
 
-            GLOBAL_CACHE.mapRegionsToTagsWith(tags, regions);
+            filterCache.mapRegionsToTagsWith(tags, regions);
         }
 
         // Query global cache. If a region is not found in the global cache,
@@ -57,11 +58,11 @@ public abstract class FilterRegionByTags extends FilterAddOrRemove {
         nations = new HashSet<>();
 
         for (String region : regions) {
-            Set<String> nationsInRegion = GLOBAL_CACHE.getNationsInRegion(region);   // Check if global cache contains the values.
+            Set<String> nationsInRegion = filterCache.getNationsInRegion(region);   // Check if global cache contains the values.
 
             if (nationsInRegion == null) {
-                GLOBAL_CACHE.importDumpFile();                               // If not, then import dump file.
-                nationsInRegion = GLOBAL_CACHE.getNationsInRegion(region);   // Check if it contains it now.
+                filterCache.importDumpFile();                               // If not, then import dump file.
+                nationsInRegion = filterCache.getNationsInRegion(region);   // Check if it contains it now.
 
                 if (nationsInRegion != null) {  // If it does, then add the nations to local cache.
                     nations.addAll(nationsInRegion);

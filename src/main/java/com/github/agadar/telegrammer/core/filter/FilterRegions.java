@@ -1,10 +1,12 @@
 package com.github.agadar.telegrammer.core.filter;
 
-import com.github.agadar.nationstates.NationStates;
+import com.github.agadar.nationstates.INationStates;
 import com.github.agadar.nationstates.domain.region.Region;
 import com.github.agadar.nationstates.shard.RegionShard;
 
 import com.github.agadar.telegrammer.core.filter.abstractfilter.FilterAddOrRemove;
+import com.github.agadar.telegrammer.core.manager.IHistoryManager;
+import com.github.agadar.telegrammer.core.util.IFilterCache;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -22,8 +24,8 @@ public class FilterRegions extends FilterAddOrRemove {
      */
     private final Set<String> Regions;
 
-    public FilterRegions(Set<String> regions, boolean add) {
-        super(add);
+    public FilterRegions(INationStates nationStates, IHistoryManager historyManager, IFilterCache filterCache, Set<String> regions, boolean add) {
+        super(nationStates, historyManager, filterCache, add);
         this.Regions = regions;
     }
 
@@ -40,21 +42,21 @@ public class FilterRegions extends FilterAddOrRemove {
 
         Regions.stream().forEach((region) -> {
             // Check if global cache contains the values.
-            Set<String> nationsInRegion = GLOBAL_CACHE.getNationsInRegion(region);
+            Set<String> nationsInRegion = filterCache.getNationsInRegion(region);
 
             // If not, retrieve them from the server and also update global cache.
             if (nationsInRegion == null) {
-                final Region r = NationStates.region(region)
+                final Region r = nationStates.getRegion(region)
                         .shards(RegionShard.NATION_NAMES).execute();
 
                 // If region does not exist, just add empty map to global cache.
                 if (r == null) {
-                    GLOBAL_CACHE.mapNationsToRegion(region, new HashSet<>());
+                    filterCache.mapNationsToRegion(region, new HashSet<>());
                 } // Else, do proper mapping.
                 else {
                     nationsInRegion = new HashSet<>(r.nationNames);
                     nations.addAll(nationsInRegion);
-                    GLOBAL_CACHE.mapNationsToRegion(region, nationsInRegion);
+                    filterCache.mapNationsToRegion(region, nationsInRegion);
                 }
             } else {
                 nations.addAll(nationsInRegion);

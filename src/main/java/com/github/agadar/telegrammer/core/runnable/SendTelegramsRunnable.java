@@ -1,6 +1,6 @@
 package com.github.agadar.telegrammer.core.runnable;
 
-import com.github.agadar.nationstates.NationStates;
+import com.github.agadar.nationstates.INationStates;
 import com.github.agadar.nationstates.domain.nation.Nation;
 import com.github.agadar.nationstates.event.TelegramSentEvent;
 import com.github.agadar.nationstates.event.TelegramSentListener;
@@ -14,8 +14,8 @@ import com.github.agadar.telegrammer.core.event.RecipientRemovedEvent;
 import com.github.agadar.telegrammer.core.event.RecipientsRefreshedEvent;
 import com.github.agadar.telegrammer.core.event.StoppedSendingEvent;
 import com.github.agadar.telegrammer.core.event.TelegramManagerListener;
-import com.github.agadar.telegrammer.core.manager.HistoryManager;
-import com.github.agadar.telegrammer.core.manager.PropertiesManager;
+import com.github.agadar.telegrammer.core.manager.IHistoryManager;
+import com.github.agadar.telegrammer.core.manager.IPropertiesManager;
 import com.github.agadar.telegrammer.core.manager.TelegramManager;
 import com.github.agadar.telegrammer.core.util.QueuedStats;
 
@@ -35,17 +35,22 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
     private final Set<TelegramManagerListener> listeners;
     private final int noRecipientsFoundTimeOut;
     private final QueuedStats queuedStats;
-    private final PropertiesManager propertiesManager;
 
-    public SendTelegramsRunnable(TelegramManager telegramManager, Set<String> recipients,
-            Set<TelegramManagerListener> listeners, int noRecipientsFoundTimeOut,
-            PropertiesManager propsManager) {
+    private final INationStates nationStates;
+    private final IHistoryManager historyManager;
+    private final IPropertiesManager propertiesManager;
+
+    public SendTelegramsRunnable(TelegramManager telegramManager, INationStates nationStates,
+            IHistoryManager historyManager, IPropertiesManager propertiesManager, Set<String> recipients,
+            Set<TelegramManagerListener> listeners, int noRecipientsFoundTimeOut) {
         this.telegramManager = telegramManager;
+        this.nationStates = nationStates;
+        this.historyManager = historyManager;
+        this.propertiesManager = propertiesManager;
         this.recipients = recipients;
         this.listeners = listeners;
         this.noRecipientsFoundTimeOut = noRecipientsFoundTimeOut;
         this.queuedStats = new QueuedStats();
-        propertiesManager = propsManager;
     }
 
     @Override
@@ -60,9 +65,9 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
                 if (recipients.size() > 0) {
                     final String[] RecipArray = recipients.toArray(new String[recipients.size()]);
 
-                    if (propertiesManager.lastTelegramType != null) {
+                    if (propertiesManager.getLastTelegramType() != null) {
                         // According to the telegram type, take proper action...
-                        switch (propertiesManager.lastTelegramType) {
+                        switch (propertiesManager.getLastTelegramType()) {
                             case RECRUITMENT: {
                                 boolean skipNext = !canReceiveRecruitmentTelegrams(RecipArray[0]);
                                 for (int i = 0; i < RecipArray.length && !Thread.currentThread().isInterrupted(); i++) {
@@ -160,7 +165,7 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
         // so there is no need to make sure the entry for the current Telegram Id
         // changed.       
         if (event.queued) {
-            HistoryManager.get().saveHistory(propertiesManager.telegramId, event.recipient, SkippedRecipientReason.PREVIOUS_RECIPIENT);
+            historyManager.saveHistory(propertiesManager.getTelegramId(), event.recipient, SkippedRecipientReason.PREVIOUS_RECIPIENT);
             queuedStats.registerSucces(event.recipient);
         } else {
             queuedStats.registerFailure(event.recipient, null);
@@ -182,16 +187,16 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
      */
     private void sendTelegram(String... recipients) {
         // Prepare query.
-        final TelegramQuery q = NationStates.telegram(propertiesManager.clientKey, propertiesManager.telegramId, propertiesManager.secretKey,
+        final TelegramQuery q = nationStates.sendTelegrams(propertiesManager.getClientKey(), propertiesManager.getTelegramId(), propertiesManager.getSecretKey(),
                 recipients).addListeners(this);
 
         // Tag as recruitment telegram if needed.
-        if (propertiesManager.lastTelegramType == TelegramType.RECRUITMENT) {
+        if (propertiesManager.getLastTelegramType() == TelegramType.RECRUITMENT) {
             q.isRecruitment();
         }
 
         // Tag as dry run if needed.
-        if (propertiesManager.dryRun) {
+        if (propertiesManager.getDoDryRun()) {
             q.isDryRun();
         }
 
@@ -209,8 +214,8 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
     private boolean canReceiveRecruitmentTelegrams(String recipient) {
         try {
             // Make server call.
-            Nation n = NationStates.nation(recipient).shards(NationShard.CAN_RECEIVE_RECRUITMENT_TELEGRAMS)
-                    .canReceiveTelegramFromRegion(propertiesManager.fromRegion).execute();
+            Nation n = nationStates.getNation(recipient).shards(NationShard.CAN_RECEIVE_RECRUITMENT_TELEGRAMS)
+                    .canReceiveTelegramFromRegion(propertiesManager.getFromRegion()).execute();
             final SkippedRecipientReason reason = (n == null) ? SkippedRecipientReason.NOT_FOUND
                     : !n.canReceiveRecruitmentTelegrams ? SkippedRecipientReason.BLOCKING_RECRUITMENT : null;
             return canReceiveXTelegrams(reason, recipient);
@@ -232,7 +237,7 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
     private boolean canReceiveCampaignTelegrams(String recipient) {
         try {
             // Make server call.
-            Nation n = NationStates.nation(recipient).shards(NationShard.CAN_RECEIVE_CAMPAIGN_TELEGRAMS).execute();
+            Nation n = nationStates.getNation(recipient).shards(NationShard.CAN_RECEIVE_CAMPAIGN_TELEGRAMS).execute();
             final SkippedRecipientReason reason = (n == null) ? SkippedRecipientReason.NOT_FOUND
                     : !n.canReceiveCampaignTelegrams ? SkippedRecipientReason.BLOCKING_CAMPAIGN : null;
             return canReceiveXTelegrams(reason, recipient);
@@ -255,7 +260,7 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
         if (reason != null) {
             queuedStats.registerFailure(recipient, reason);
             recipients.remove(recipient);
-            HistoryManager.get().saveHistory(propertiesManager.telegramId, recipient, reason);
+            historyManager.saveHistory(propertiesManager.getTelegramId(), recipient, reason);
             final RecipientRemovedEvent event = new RecipientRemovedEvent(this, recipient, reason);
 
             synchronized (listeners) {

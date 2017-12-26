@@ -1,11 +1,13 @@
 package com.github.agadar.telegrammer.core.filter;
 
-import com.github.agadar.nationstates.NationStates;
+import com.github.agadar.nationstates.INationStates;
 import com.github.agadar.nationstates.domain.worldassembly.WorldAssembly;
 import com.github.agadar.nationstates.enumerator.Council;
 import com.github.agadar.nationstates.shard.WorldAssemblyShard;
 
 import com.github.agadar.telegrammer.core.filter.abstractfilter.FilterAddOrRemove;
+import com.github.agadar.telegrammer.core.manager.IHistoryManager;
+import com.github.agadar.telegrammer.core.util.IFilterCache;
 
 import java.util.HashSet;
 
@@ -16,8 +18,8 @@ import java.util.HashSet;
  */
 public class FilterWAMembers extends FilterAddOrRemove {
 
-    public FilterWAMembers(boolean add) {
-        super(add);
+    public FilterWAMembers(INationStates nationStates, IHistoryManager historyManager, IFilterCache filterCache, boolean add) {
+        super(nationStates, historyManager, filterCache, add);
     }
 
     @Override
@@ -26,18 +28,19 @@ public class FilterWAMembers extends FilterAddOrRemove {
         if (nations != null) {
             return;
         }
+        final HashSet<String> waMembers = filterCache.getWaMembers();
 
         // Query global cache, set local cache to it if what we search was found.
-        if (GLOBAL_CACHE.waMembers != null) {
-            nations = GLOBAL_CACHE.waMembers;
+        if (waMembers != null) {
+            nations = waMembers;
             return;
         }
 
         // If global cache does not contain what we need, do an API call to
         // retrieve the data, then store it in global cache and local cache.
-        final WorldAssembly wa = NationStates.worldAssembly(Council.SECURITY_COUNCIL).shards(WorldAssemblyShard.MEMBERS).execute();
-        GLOBAL_CACHE.waMembers = new HashSet<>(wa.members);
-        nations = GLOBAL_CACHE.waMembers;
+        final WorldAssembly wa = nationStates.getWorldAssembly(Council.SECURITY_COUNCIL).shards(WorldAssemblyShard.MEMBERS).execute();
+        filterCache.setWaMembers(new HashSet<>(wa.members));
+        nations = filterCache.getWaMembers();
         cantRetrieveMoreNations = true;
     }
 }

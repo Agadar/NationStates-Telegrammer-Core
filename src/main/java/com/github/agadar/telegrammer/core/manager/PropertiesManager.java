@@ -9,42 +9,22 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
 
-/**
- * Assists in saving and loading the property file for this application.
- *
- * @author Agadar (https://github.com/Agadar/)
- */
-public class PropertiesManager {
+public class PropertiesManager implements IPropertiesManager {
 
     // Standard name for this app's properties file.
-    private static PropertiesManager INSTANCE;
-    private static final String FILENAME = ".nationstates-telegrammer.properties";
-    private static final String DEFAULT_STRING_VAL = "";
-    private static final String DEFAULT_BOOL_VAL = "false";
+    private final String FILENAME = ".nationstates-telegrammer.properties";
+    private final String DEFAULT_STRING_VAL = "";
+    private final String DEFAULT_BOOL_VAL = "false";
 
     // Variables loaded from and saved to the properties file.
-    public String clientKey;
-    public String telegramId;
-    public String secretKey;
-    public TelegramType lastTelegramType;
-    public String fromRegion;
-    public boolean dryRun;
+    private String clientKey;
+    private String telegramId;
+    private String secretKey;
+    private TelegramType lastTelegramType;
+    private String fromRegion;
+    private boolean dryRun;
 
-    public static PropertiesManager get() {
-        if (INSTANCE == null) {
-            INSTANCE = new PropertiesManager();
-        }
-        return INSTANCE;
-    }
-
-    private PropertiesManager() {
-    }
-
-    /**
-     * Saves the application's properties to the file.
-     *
-     * @return True if saving succeeded, false otherwise.
-     */
+    @Override
     public boolean saveProperties() {
         // Prepare properties object.
         final Properties props = new Properties();
@@ -64,11 +44,7 @@ public class PropertiesManager {
         return true;
     }
 
-    /**
-     * Loads the application's properties from the file.
-     *
-     * @return True if loading succeeded, false otherwise.
-     */
+    @Override
     public boolean loadProperties() {
         final Properties props = new Properties();
 
@@ -106,11 +82,41 @@ public class PropertiesManager {
      * @param defaultValue
      * @return
      */
-    private static <T extends Enum<T>> T valueOf(Class<T> type, String string, T defaultValue) {
+    private <T extends Enum<T>> T valueOf(Class<T> type, String string, T defaultValue) {
         try {
             return Enum.valueOf(type, string);
         } catch (IllegalArgumentException | NullPointerException ex) {
             return defaultValue;
         }
+    }
+
+    @Override
+    public String getClientKey() {
+        return clientKey;
+    }
+
+    @Override
+    public String getTelegramId() {
+        return telegramId;
+    }
+
+    @Override
+    public String getSecretKey() {
+        return secretKey;
+    }
+
+    @Override
+    public TelegramType getLastTelegramType() {
+        return lastTelegramType;
+    }
+
+    @Override
+    public String getFromRegion() {
+        return fromRegion;
+    }
+
+    @Override
+    public boolean getDoDryRun() {
+        return dryRun;
     }
 }

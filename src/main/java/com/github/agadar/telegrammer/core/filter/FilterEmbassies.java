@@ -1,12 +1,14 @@
 package com.github.agadar.telegrammer.core.filter;
 
-import com.github.agadar.nationstates.NationStates;
+import com.github.agadar.nationstates.INationStates;
 import com.github.agadar.nationstates.domain.region.Embassy;
 import com.github.agadar.nationstates.domain.region.Region;
 import com.github.agadar.nationstates.enumerator.EmbassyStatus;
 import com.github.agadar.nationstates.shard.RegionShard;
 
 import com.github.agadar.telegrammer.core.filter.abstractfilter.FilterAddOrRemove;
+import com.github.agadar.telegrammer.core.manager.IHistoryManager;
+import com.github.agadar.telegrammer.core.util.IFilterCache;
 
 import java.util.HashSet;
 import java.util.List;
@@ -23,8 +25,8 @@ public class FilterEmbassies extends FilterAddOrRemove {
 
     private final Set<String> Regions;  // The regions to retrieve embassies from.
 
-    public FilterEmbassies(Set<String> regions, boolean add) {
-        super(add);
+    public FilterEmbassies(INationStates nationStates, IHistoryManager historyManager, IFilterCache filterCache, Set<String> regions, boolean add) {
+        super(nationStates, historyManager, filterCache, add);
         this.Regions = regions;
     }
 
@@ -40,11 +42,11 @@ public class FilterEmbassies extends FilterAddOrRemove {
                 -> // Iterate over regions to fill embassies.
                 {
                     // Query global cache for embassies mapped to region.
-                    Set<String> currentEmbassies = GLOBAL_CACHE.getEmbassies(region);
+                    Set<String> currentEmbassies = filterCache.getEmbassies(region);
 
                     // If they aren't in the global cache, retrieve from server and cache them.
                     if (currentEmbassies == null) {
-                        final Region curRegion = NationStates.region(region).shards(RegionShard.EMBASSIES).execute();
+                        final Region curRegion = nationStates.getRegion(region).shards(RegionShard.EMBASSIES).execute();
 
                         // Check copied from FilterRegionByTags.
                         if (curRegion != null && curRegion.embassies != null) {
@@ -53,7 +55,7 @@ public class FilterEmbassies extends FilterAddOrRemove {
                             currentEmbassies = new HashSet<>();
                         }
 
-                        GLOBAL_CACHE.mapEmbassiesToRegion(region, currentEmbassies);
+                        filterCache.mapEmbassiesToRegion(region, currentEmbassies);
                         //GLOBAL_CACHE.mapEmbassiesToRegion(region, embassies);
                     }
                     return currentEmbassies;
@@ -68,11 +70,11 @@ public class FilterEmbassies extends FilterAddOrRemove {
         nations = new HashSet<>();
         embassies.stream().forEach((region)
                 -> {
-            Set<String> nationsInRegion = GLOBAL_CACHE.getNationsInRegion(region);   // Check if global cache contains the values.
+            Set<String> nationsInRegion = filterCache.getNationsInRegion(region);   // Check if global cache contains the values.
 
             if (nationsInRegion == null) {
-                GLOBAL_CACHE.importDumpFile();                               // If not, then import dump file.
-                nationsInRegion = GLOBAL_CACHE.getNationsInRegion(region);   // Check if it contains it now.
+                filterCache.importDumpFile();                               // If not, then import dump file.
+                nationsInRegion = filterCache.getNationsInRegion(region);   // Check if it contains it now.
 
                 if (nationsInRegion != null) // If it does, then add the nations to local cache.
                 {

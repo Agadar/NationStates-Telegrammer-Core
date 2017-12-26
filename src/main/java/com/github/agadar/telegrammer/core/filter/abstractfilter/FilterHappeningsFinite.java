@@ -1,6 +1,8 @@
 package com.github.agadar.telegrammer.core.filter.abstractfilter;
 
-import com.github.agadar.telegrammer.core.manager.TelegramManager;
+import com.github.agadar.nationstates.INationStates;
+import com.github.agadar.telegrammer.core.manager.IHistoryManager;
+import com.github.agadar.telegrammer.core.util.IFilterCache;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -24,16 +26,16 @@ public abstract class FilterHappeningsFinite extends FilterHappenings {
      */
     int amountToRetrieve;
 
-    public FilterHappeningsFinite(KeyWord keyWord, int amountToRetrieve) {
-        super(keyWord);
+    public FilterHappeningsFinite(INationStates nationStates, IHistoryManager historyManager, IFilterCache filterCache, KeyWord keyWord, int amountToRetrieve) {
+        super(nationStates, historyManager, filterCache, keyWord);
         this.amountToRetrieve = Math.max(0, amountToRetrieve);
         this.orgAmountToRetrieve = amountToRetrieve;
     }
 
     @Override
     public void applyFilter(Set<String> addresses) {
-        Set<String> copy = new HashSet<>(nations);
-        TelegramManager.get().removeOldRecipients(copy);
+        final HashSet<String> copy = new HashSet<>(nations);
+        historyManager.removeOldRecipients(copy);
         int diff = amountToRetrieve - copy.size();
         amountToRetrieve = Math.max(0, diff);
 
