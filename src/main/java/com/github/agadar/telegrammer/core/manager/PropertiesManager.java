@@ -119,4 +119,34 @@ public class PropertiesManager implements IPropertiesManager {
     public boolean getDoDryRun() {
         return dryRun;
     }
+
+    @Override
+    public void setClientKey(String clientKey) {
+        this.clientKey = clientKey;
+    }
+
+    @Override
+    public void setTelegramId(String telegramId) {
+        this.telegramId = telegramId;
+    }
+
+    @Override
+    public void setSecretKey(String secretKey) {
+        this.secretKey = secretKey;
+    }
+
+    @Override
+    public void setLastTelegramType(TelegramType lastTelegramType) {
+        this.lastTelegramType = lastTelegramType;
+    }
+
+    @Override
+    public void setFromRegion(String fromRegion) {
+        this.fromRegion = fromRegion;
+    }
+
+    @Override
+    public void setDoDryRun(boolean doDryRun) {
+        this.dryRun = doDryRun;
+    }
 }

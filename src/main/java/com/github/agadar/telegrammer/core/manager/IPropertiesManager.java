@@ -21,6 +21,18 @@ public interface IPropertiesManager {
 
     public boolean getDoDryRun();
 
+    public void setClientKey(String clientKey);
+
+    public void setTelegramId(String telegramId);
+
+    public void setSecretKey(String secretKey);
+
+    public void setLastTelegramType(TelegramType lastTelegramType);
+
+    public void setFromRegion(String fromRegion);
+
+    public void setDoDryRun(boolean doDryRun);
+
     /**
      * Saves the application's properties to the file.
      *
