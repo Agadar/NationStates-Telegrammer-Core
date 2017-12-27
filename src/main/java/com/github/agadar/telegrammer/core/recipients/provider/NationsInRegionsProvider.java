@@ -13,9 +13,9 @@ import java.util.HashSet;
  */
 public class NationsInRegionsProvider extends RecipientsProvider {
 
-    private final String[] regionNames;
+    private final HashSet<String> regionNames;
 
-    public NationsInRegionsProvider(INationStates nationStates, String... regionNames) {
+    public NationsInRegionsProvider(INationStates nationStates, HashSet<String> regionNames) {
         super(nationStates);
         this.regionNames = regionNames;
     }
@@ -24,9 +24,9 @@ public class NationsInRegionsProvider extends RecipientsProvider {
     public HashSet<String> getRecipients() {
         final HashSet<String> nationsInRegions = new HashSet<>();
 
-        for (String regionName : regionNames) {
+        regionNames.forEach((regionName) -> {
             nationsInRegions.addAll(getNationsInRegion(regionName));
-        }
+        });
         return nationsInRegions;
     }
 

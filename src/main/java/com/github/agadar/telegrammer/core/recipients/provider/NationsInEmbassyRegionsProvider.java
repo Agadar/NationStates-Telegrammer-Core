@@ -18,9 +18,9 @@ import java.util.Collection;
  */
 public class NationsInEmbassyRegionsProvider extends RecipientsProviderUsingDump {
 
-    private final String[] regionNames;
+    private final HashSet<String> regionNames;
 
-    public NationsInEmbassyRegionsProvider(INationStates nationStates, INationDumpAccess nationDumpAccess, String... regionNames) {
+    public NationsInEmbassyRegionsProvider(INationStates nationStates, INationDumpAccess nationDumpAccess, HashSet<String> regionNames) {
         super(nationStates, nationDumpAccess);
         this.regionNames = regionNames;
     }
@@ -31,12 +31,12 @@ public class NationsInEmbassyRegionsProvider extends RecipientsProviderUsingDump
         return nationDumpAccess.getNationsInRegions(embassyRegionsOfRegions);
     }
 
-    private HashSet<String> getEmbassyRegionsOfRegions(String... regionNames) {
+    private HashSet<String> getEmbassyRegionsOfRegions(Collection<String> regionNames) {
         final HashSet<String> embassyRegionsOfRegions = new HashSet<>();
 
-        for (String regionName : regionNames) {
+        regionNames.forEach((regionName) -> {
             embassyRegionsOfRegions.addAll(getEmbassyRegionsOfRegion(regionName));
-        }
+        });
         return embassyRegionsOfRegions;
     }
 

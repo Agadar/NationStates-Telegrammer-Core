@@ -16,16 +16,19 @@ import java.util.HashSet;
  */
 public class NationsInRegionsWithTagsProvider extends RecipientsProviderUsingDump {
 
-    private final RegionTag[] regionTags;
+    private final HashSet<RegionTag> regionTags;
 
-    public NationsInRegionsWithTagsProvider(INationStates nationStates, INationDumpAccess nationDumpAccess, RegionTag... regionTags) {
+    public NationsInRegionsWithTagsProvider(INationStates nationStates, INationDumpAccess nationDumpAccess, HashSet<RegionTag> regionTags) {
         super(nationStates, nationDumpAccess);
         this.regionTags = regionTags;
     }
 
     @Override
     public HashSet<String> getRecipients() {
-        final World world = nationStates.getWorld(WorldShard.REGIONS_BY_TAG).regionsWithTags(regionTags).execute();
+        final World world = nationStates
+                .getWorld(WorldShard.REGIONS_BY_TAG)
+                .regionsWithTags(regionTags.toArray(new RegionTag[regionTags.size()]))
+                .execute();
         return nationDumpAccess.getNationsInRegions(world.regionsByTag());
     }
 }
