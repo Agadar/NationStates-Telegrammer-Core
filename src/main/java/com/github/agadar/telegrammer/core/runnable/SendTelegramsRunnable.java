@@ -14,11 +14,12 @@ import com.github.agadar.telegrammer.core.event.RecipientRemovedEvent;
 import com.github.agadar.telegrammer.core.event.RecipientsRefreshedEvent;
 import com.github.agadar.telegrammer.core.event.StoppedSendingEvent;
 import com.github.agadar.telegrammer.core.event.TelegramManagerListener;
-import com.github.agadar.telegrammer.core.manager.IHistoryManager;
 import com.github.agadar.telegrammer.core.manager.IPropertiesManager;
-import com.github.agadar.telegrammer.core.manager.TelegramManager;
 import com.github.agadar.telegrammer.core.util.QueuedStats;
+import com.github.agadar.telegrammer.core.manager.ITelegramHistory;
+import com.github.agadar.telegrammer.core.recipientsfilter.IRecipientsListBuilder;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -28,26 +29,22 @@ import java.util.Set;
  */
 public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 
-    // References to TelegramManager and its private fields that are required
-    // for this runnable to do its work.
-    private final TelegramManager telegramManager;
-    private final Set<String> recipients;
+    private final IRecipientsListBuilder recipientsListBuilder;
     private final Set<TelegramManagerListener> listeners;
     private final int noRecipientsFoundTimeOut;
     private final QueuedStats queuedStats;
 
     private final INationStates nationStates;
-    private final IHistoryManager historyManager;
+    private final ITelegramHistory historyManager;
     private final IPropertiesManager propertiesManager;
 
-    public SendTelegramsRunnable(TelegramManager telegramManager, INationStates nationStates,
-            IHistoryManager historyManager, IPropertiesManager propertiesManager, Set<String> recipients,
+    public SendTelegramsRunnable(IRecipientsListBuilder recipientsListBuilder, INationStates nationStates,
+            ITelegramHistory historyManager, IPropertiesManager propertiesManager,
             Set<TelegramManagerListener> listeners, int noRecipientsFoundTimeOut) {
-        this.telegramManager = telegramManager;
+        this.recipientsListBuilder = recipientsListBuilder;
         this.nationStates = nationStates;
         this.historyManager = historyManager;
         this.propertiesManager = propertiesManager;
-        this.recipients = recipients;
         this.listeners = listeners;
         this.noRecipientsFoundTimeOut = noRecipientsFoundTimeOut;
         this.queuedStats = new QueuedStats();
@@ -61,6 +58,8 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
         try {
             // Loop until either the thread has been interrupted, or all filters are done.
             while (!Thread.currentThread().isInterrupted()) {
+                final HashSet<String> recipients = recipientsListBuilder.getRecipients();
+
                 // If there are recipients available...
                 if (recipients.size() > 0) {
                     final String[] RecipArray = recipients.toArray(new String[recipients.size()]);
@@ -122,13 +121,13 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
                     Thread.sleep(noRecipientsFoundTimeOut);
                 }
 
-                // If none of the filters can retrieve any new recipients, just end it all.
-                if (telegramManager.cantRetrieveMoreNations() || Thread.currentThread().isInterrupted()) {
+                // If not continuing indefinitely, just end it all.
+                if (!propertiesManager.getContinueIndefinitely() || Thread.currentThread().isInterrupted()) {
                     break;
                 }
 
                 // Refresh the filters before going back to the top.
-                telegramManager.refreshAndReapplyFilters();
+                recipientsListBuilder.refreshFilters();
                 final RecipientsRefreshedEvent refrevent = new RecipientsRefreshedEvent(this);
 
                 synchronized (listeners) {
@@ -138,13 +137,10 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
                         tsl.handleRecipientsRefreshed(refrevent);
                     });
                 }
-
             }
         } catch (InterruptedException ex) {
             /* Just fall through to finally. */
         } finally {
-            // Reset filters.
-            telegramManager.resetAndReapplyFilters();
 
             // Send stopped event.
             final StoppedSendingEvent stoppedEvent = new StoppedSendingEvent(this,
@@ -196,7 +192,7 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
         }
 
         // Tag as dry run if needed.
-        if (propertiesManager.getDoDryRun()) {
+        if (propertiesManager.getContinueIndefinitely()) {
             q.isDryRun();
         }
 
@@ -259,7 +255,6 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
     private boolean canReceiveXTelegrams(SkippedRecipientReason reason, String recipient) {
         if (reason != null) {
             queuedStats.registerFailure(recipient, reason);
-            recipients.remove(recipient);
             historyManager.saveHistory(propertiesManager.getTelegramId(), recipient, reason);
             final RecipientRemovedEvent event = new RecipientRemovedEvent(this, recipient, reason);
 

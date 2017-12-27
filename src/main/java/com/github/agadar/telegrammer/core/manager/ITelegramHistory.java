@@ -2,14 +2,14 @@ package com.github.agadar.telegrammer.core.manager;
 
 import com.github.agadar.telegrammer.core.enums.SkippedRecipientReason;
 
-import java.util.Set;
+import java.util.Collection;
 
 /**
  * Assists in saving and loading the history file for this application.
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public interface IHistoryManager {
+public interface ITelegramHistory {
 
     /**
      * Gets the SkippedRecipientReason mapped to the given telegramId and
@@ -45,5 +45,5 @@ public interface IHistoryManager {
      *
      * @param nations
      */
-    public void removeOldRecipients(Set<String> nations);
+    public void removeOldRecipients(Collection<String> nations);
 }

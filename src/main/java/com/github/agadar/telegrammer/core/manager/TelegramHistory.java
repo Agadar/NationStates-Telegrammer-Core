@@ -10,13 +10,13 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Stream;
 
-public final class HistoryManager implements IHistoryManager {
+public final class TelegramHistory implements ITelegramHistory {
 
     /**
      * Default file name.
@@ -35,7 +35,7 @@ public final class HistoryManager implements IHistoryManager {
 
     private final IPropertiesManager propertiesManager;
 
-    public HistoryManager(IPropertiesManager propertiesManager) {
+    public TelegramHistory(IPropertiesManager propertiesManager) {
         this.propertiesManager = propertiesManager;
     }
 
@@ -98,7 +98,7 @@ public final class HistoryManager implements IHistoryManager {
     }
 
     @Override
-    public void removeOldRecipients(Set<String> nations) {
+    public void removeOldRecipients(Collection<String> nations) {
         for (final Iterator<String> it = nations.iterator(); it.hasNext();) {
             if (getSkippedRecipientReason(propertiesManager.getTelegramId(), it.next()) != null) {
                 it.remove();   // Remove recipient

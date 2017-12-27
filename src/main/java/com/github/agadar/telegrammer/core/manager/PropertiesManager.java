@@ -22,7 +22,7 @@ public class PropertiesManager implements IPropertiesManager {
     private String secretKey;
     private TelegramType lastTelegramType;
     private String fromRegion;
-    private boolean dryRun;
+    private boolean continueIndefinitely;
 
     @Override
     public boolean saveProperties() {
@@ -33,7 +33,7 @@ public class PropertiesManager implements IPropertiesManager {
         props.setProperty("secretKey", secretKey == null ? DEFAULT_STRING_VAL : secretKey);
         props.setProperty("telegramType", lastTelegramType != null ? lastTelegramType.name() : TelegramType.NORMAL.name());
         props.setProperty("fromRegion", fromRegion == null ? DEFAULT_STRING_VAL : fromRegion);
-        props.setProperty("dryRun", Boolean.toString(dryRun));
+        props.setProperty("continueIndefinitely", Boolean.toString(continueIndefinitely));
 
         // Save to file.
         try (OutputStream output = new FileOutputStream(FILENAME)) {
@@ -57,7 +57,7 @@ public class PropertiesManager implements IPropertiesManager {
             secretKey = DEFAULT_STRING_VAL;
             lastTelegramType = TelegramType.NORMAL;
             fromRegion = DEFAULT_STRING_VAL;
-            dryRun = Boolean.valueOf(DEFAULT_BOOL_VAL);
+            continueIndefinitely = Boolean.valueOf(DEFAULT_BOOL_VAL);
             return false;
         }
 
@@ -67,7 +67,7 @@ public class PropertiesManager implements IPropertiesManager {
         secretKey = props.getProperty("secretKey", DEFAULT_STRING_VAL);
         lastTelegramType = valueOf(TelegramType.class, props.getProperty("telegramType"), TelegramType.NORMAL);
         fromRegion = props.getProperty("fromRegion", DEFAULT_STRING_VAL);
-        dryRun = Boolean.valueOf(props.getProperty("dryRun", DEFAULT_BOOL_VAL));
+        continueIndefinitely = Boolean.valueOf(props.getProperty("continueIndefinitely", DEFAULT_BOOL_VAL));
         return true;
     }
 
@@ -116,8 +116,8 @@ public class PropertiesManager implements IPropertiesManager {
     }
 
     @Override
-    public boolean getDoDryRun() {
-        return dryRun;
+    public boolean getContinueIndefinitely() {
+        return continueIndefinitely;
     }
 
     @Override
@@ -146,7 +146,7 @@ public class PropertiesManager implements IPropertiesManager {
     }
 
     @Override
-    public void setDoDryRun(boolean doDryRun) {
-        this.dryRun = doDryRun;
+    public void setContinueIndefinitely(boolean doDryRun) {
+        this.continueIndefinitely = doDryRun;
     }
 }

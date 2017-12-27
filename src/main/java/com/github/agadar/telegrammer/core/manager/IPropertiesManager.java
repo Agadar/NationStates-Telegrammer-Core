@@ -19,7 +19,7 @@ public interface IPropertiesManager {
 
     public String getFromRegion();
 
-    public boolean getDoDryRun();
+    public boolean getContinueIndefinitely();
 
     public void setClientKey(String clientKey);
 
@@ -31,7 +31,7 @@ public interface IPropertiesManager {
 
     public void setFromRegion(String fromRegion);
 
-    public void setDoDryRun(boolean doDryRun);
+    public void setContinueIndefinitely(boolean continueIndefinitely);
 
     /**
      * Saves the application's properties to the file.
