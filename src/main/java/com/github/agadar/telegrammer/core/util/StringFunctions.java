@@ -7,7 +7,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,7 +46,7 @@ public final class StringFunctions {
      * @param string
      * @return
      */
-    public static Set<String> stringToStringList(String string) {
+    public static HashSet<String> stringToStringList(String string) {
         final List<String> asList = Arrays.asList(string.trim().split("\\s*,\\s*"));
         return asList.size() == 1 && asList.get(0).isEmpty() ? new HashSet<>() : new HashSet<>(asList);
     }
@@ -59,8 +58,8 @@ public final class StringFunctions {
      * @param tagsStrSet The strings to parse
      * @return The resulting RegionTags
      */
-    public static Set<RegionTag> stringsToRegionTags(Collection<String> tagsStrSet) {
-        final Set<RegionTag> tags = new HashSet();
+    public static HashSet<RegionTag> stringsToRegionTags(Collection<String> tagsStrSet) {
+        final HashSet<RegionTag> tags = new HashSet();
         tagsStrSet.stream().forEach(tagStr -> {
             try {
                 tags.add(RegionTag.fromString(tagStr));
@@ -69,25 +68,6 @@ public final class StringFunctions {
             }
         });
         return tags;
-    }
-
-    /**
-     * Parses the supplied string to an unsigned int. If the supplied string is
-     * null or cannot be parsed, then 0 is returned.
-     *
-     * @param parseMe
-     * @return
-     */
-    public static int stringToUInt(String parseMe) {
-        if (parseMe == null) {
-            return 0;
-        }
-
-        try {
-            return Integer.parseUnsignedInt(parseMe);
-        } catch (NumberFormatException ex) {
-            return 0;
-        }
     }
 
     /**
