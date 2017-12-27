@@ -1,6 +1,6 @@
-package com.github.agadar.telegrammer.core.event;
+package com.github.agadar.telegrammer.core.telegramevent;
 
-import com.github.agadar.telegrammer.core.enums.SkippedRecipientReason;
+import com.github.agadar.telegrammer.core.util.SkippedRecipientReason;
 import java.util.EventObject;
 
 /**

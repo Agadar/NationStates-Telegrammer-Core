@@ -6,7 +6,7 @@ import com.github.agadar.nationstates.domain.region.Region;
 import com.github.agadar.nationstates.enumerator.EmbassyStatus;
 import com.github.agadar.nationstates.shard.RegionShard;
 
-import com.github.agadar.telegrammer.core.util.INationDumpAccess;
+import com.github.agadar.telegrammer.core.nationdumpaccess.INationDumpAccess;
 
 import java.util.HashSet;
 import java.util.Collection;

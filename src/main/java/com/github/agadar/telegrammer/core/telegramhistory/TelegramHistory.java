@@ -1,6 +1,7 @@
-package com.github.agadar.telegrammer.core.manager;
+package com.github.agadar.telegrammer.core.telegramhistory;
 
-import com.github.agadar.telegrammer.core.enums.SkippedRecipientReason;
+import com.github.agadar.telegrammer.core.propertiesmanager.IPropertiesManager;
+import com.github.agadar.telegrammer.core.util.SkippedRecipientReason;
 import com.github.agadar.telegrammer.core.util.Tuple;
 
 import java.io.IOException;

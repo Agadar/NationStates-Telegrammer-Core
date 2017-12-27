@@ -5,7 +5,7 @@ import com.github.agadar.nationstates.domain.world.World;
 import com.github.agadar.nationstates.enumerator.RegionTag;
 import com.github.agadar.nationstates.shard.WorldShard;
 
-import com.github.agadar.telegrammer.core.util.INationDumpAccess;
+import com.github.agadar.telegrammer.core.nationdumpaccess.INationDumpAccess;
 
 import java.util.HashSet;
 

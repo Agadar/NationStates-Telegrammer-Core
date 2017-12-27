@@ -1,4 +1,4 @@
-package com.github.agadar.telegrammer.core.enums;
+package com.github.agadar.telegrammer.core.util;
 
 /**
  * Enumerator for telegram types. As of writing, the known types are: Normal,

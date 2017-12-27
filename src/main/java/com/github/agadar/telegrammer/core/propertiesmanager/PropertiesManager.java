@@ -1,6 +1,6 @@
-package com.github.agadar.telegrammer.core.manager;
+package com.github.agadar.telegrammer.core.propertiesmanager;
 
-import com.github.agadar.telegrammer.core.enums.TelegramType;
+import com.github.agadar.telegrammer.core.util.TelegramType;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

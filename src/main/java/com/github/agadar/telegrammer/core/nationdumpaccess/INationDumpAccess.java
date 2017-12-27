@@ -1,4 +1,4 @@
-package com.github.agadar.telegrammer.core.util;
+package com.github.agadar.telegrammer.core.nationdumpaccess;
 
 import java.util.Collection;
 import java.util.HashSet;

@@ -1,6 +1,5 @@
 package com.github.agadar.telegrammer.core.util;
 
-import com.github.agadar.telegrammer.core.enums.SkippedRecipientReason;
 
 import java.util.HashSet;
 import java.util.Set;

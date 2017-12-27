@@ -1,4 +1,4 @@
-package com.github.agadar.telegrammer.core.runnable;
+package com.github.agadar.telegrammer.core.telegramsender;
 
 import com.github.agadar.nationstates.INationStates;
 import com.github.agadar.nationstates.domain.nation.Nation;
@@ -7,17 +7,17 @@ import com.github.agadar.nationstates.event.TelegramSentListener;
 import com.github.agadar.nationstates.query.TelegramQuery;
 import com.github.agadar.nationstates.shard.NationShard;
 
-import com.github.agadar.telegrammer.core.enums.SkippedRecipientReason;
-import com.github.agadar.telegrammer.core.enums.TelegramType;
-import com.github.agadar.telegrammer.core.event.NoRecipientsFoundEvent;
-import com.github.agadar.telegrammer.core.event.RecipientRemovedEvent;
-import com.github.agadar.telegrammer.core.event.RecipientsRefreshedEvent;
-import com.github.agadar.telegrammer.core.event.StoppedSendingEvent;
-import com.github.agadar.telegrammer.core.event.TelegramManagerListener;
-import com.github.agadar.telegrammer.core.manager.IPropertiesManager;
+import com.github.agadar.telegrammer.core.util.SkippedRecipientReason;
+import com.github.agadar.telegrammer.core.util.TelegramType;
+import com.github.agadar.telegrammer.core.telegramevent.NoRecipientsFoundEvent;
+import com.github.agadar.telegrammer.core.telegramevent.RecipientRemovedEvent;
+import com.github.agadar.telegrammer.core.telegramevent.RecipientsRefreshedEvent;
+import com.github.agadar.telegrammer.core.telegramevent.StoppedSendingEvent;
+import com.github.agadar.telegrammer.core.telegramevent.TelegramManagerListener;
+import com.github.agadar.telegrammer.core.propertiesmanager.IPropertiesManager;
 import com.github.agadar.telegrammer.core.util.QueuedStats;
-import com.github.agadar.telegrammer.core.manager.ITelegramHistory;
-import com.github.agadar.telegrammer.core.recipientsfilter.IRecipientsListBuilder;
+import com.github.agadar.telegrammer.core.telegramhistory.ITelegramHistory;
+import com.github.agadar.telegrammer.core.recipientslistbuilder.IRecipientsListBuilder;
 
 import java.util.HashSet;
 import java.util.Set;

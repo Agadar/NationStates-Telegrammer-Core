@@ -2,7 +2,7 @@ package com.github.agadar.telegrammer.core.recipientsprovider;
 
 import com.github.agadar.nationstates.INationStates;
 
-import com.github.agadar.telegrammer.core.util.INationDumpAccess;
+import com.github.agadar.telegrammer.core.nationdumpaccess.INationDumpAccess;
 
 /**
  * Defines usage of INationDumpAccess to child providers.

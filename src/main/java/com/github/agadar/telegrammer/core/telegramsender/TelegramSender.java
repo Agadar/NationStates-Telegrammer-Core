@@ -1,10 +1,11 @@
-package com.github.agadar.telegrammer.core.manager;
+package com.github.agadar.telegrammer.core.telegramsender;
 
+import com.github.agadar.telegrammer.core.telegramhistory.ITelegramHistory;
+import com.github.agadar.telegrammer.core.propertiesmanager.IPropertiesManager;
 import com.github.agadar.nationstates.INationStates;
 
-import com.github.agadar.telegrammer.core.event.TelegramManagerListener;
-import com.github.agadar.telegrammer.core.recipientsfilter.IRecipientsListBuilder;
-import com.github.agadar.telegrammer.core.runnable.SendTelegramsRunnable;
+import com.github.agadar.telegrammer.core.telegramevent.TelegramManagerListener;
+import com.github.agadar.telegrammer.core.recipientslistbuilder.IRecipientsListBuilder;
 
 import java.util.Arrays;
 import java.util.HashSet;

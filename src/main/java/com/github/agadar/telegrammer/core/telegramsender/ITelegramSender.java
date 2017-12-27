@@ -1,7 +1,7 @@
-package com.github.agadar.telegrammer.core.manager;
+package com.github.agadar.telegrammer.core.telegramsender;
 
-import com.github.agadar.telegrammer.core.event.TelegramManagerListener;
-import com.github.agadar.telegrammer.core.recipientsfilter.IRecipientsListBuilder;
+import com.github.agadar.telegrammer.core.telegramevent.TelegramManagerListener;
+import com.github.agadar.telegrammer.core.recipientslistbuilder.IRecipientsListBuilder;
 
 /**
  * Manages the sending of telegrams.

@@ -1,5 +1,6 @@
-package com.github.agadar.telegrammer.core.recipientsfilter;
+package com.github.agadar.telegrammer.core.recipientslistbuilder;
 
+import com.github.agadar.telegrammer.core.recipientsfilter.IRecipientsFilter;
 import java.util.HashSet;
 
 /**

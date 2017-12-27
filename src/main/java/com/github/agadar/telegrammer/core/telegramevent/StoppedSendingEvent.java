@@ -1,4 +1,4 @@
-package com.github.agadar.telegrammer.core.event;
+package com.github.agadar.telegrammer.core.telegramevent;
 
 import java.util.EventObject;
 

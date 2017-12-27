@@ -1,4 +1,4 @@
-package com.github.agadar.telegrammer.core.util;
+package com.github.agadar.telegrammer.core.nationdumpaccess;
 
 import com.github.agadar.nationstates.INationStates;
 import com.github.agadar.nationstates.domain.DailyDumpNations;

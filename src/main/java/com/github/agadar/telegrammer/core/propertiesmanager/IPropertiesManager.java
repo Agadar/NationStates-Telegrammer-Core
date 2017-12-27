@@ -1,6 +1,6 @@
-package com.github.agadar.telegrammer.core.manager;
+package com.github.agadar.telegrammer.core.propertiesmanager;
 
-import com.github.agadar.telegrammer.core.enums.TelegramType;
+import com.github.agadar.telegrammer.core.util.TelegramType;
 
 /**
  * Assists in saving and loading the property file for this application.
