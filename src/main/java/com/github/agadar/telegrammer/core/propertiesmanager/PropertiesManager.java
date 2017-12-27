@@ -1,6 +1,6 @@
 package com.github.agadar.telegrammer.core.propertiesmanager;
 
-import com.github.agadar.telegrammer.core.util.TelegramType;
+import com.github.agadar.telegrammer.core.telegram.TelegramType;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -22,7 +22,7 @@ public class PropertiesManager implements IPropertiesManager {
     private String secretKey;
     private TelegramType lastTelegramType;
     private String fromRegion;
-    private boolean continueIndefinitely;
+    private boolean runIndefinitely;
 
     @Override
     public boolean saveProperties() {
@@ -33,7 +33,7 @@ public class PropertiesManager implements IPropertiesManager {
         props.setProperty("secretKey", secretKey == null ? DEFAULT_STRING_VAL : secretKey);
         props.setProperty("telegramType", lastTelegramType != null ? lastTelegramType.name() : TelegramType.NORMAL.name());
         props.setProperty("fromRegion", fromRegion == null ? DEFAULT_STRING_VAL : fromRegion);
-        props.setProperty("continueIndefinitely", Boolean.toString(continueIndefinitely));
+        props.setProperty("runIndefinitely", Boolean.toString(runIndefinitely));
 
         // Save to file.
         try (OutputStream output = new FileOutputStream(FILENAME)) {
@@ -57,7 +57,7 @@ public class PropertiesManager implements IPropertiesManager {
             secretKey = DEFAULT_STRING_VAL;
             lastTelegramType = TelegramType.NORMAL;
             fromRegion = DEFAULT_STRING_VAL;
-            continueIndefinitely = Boolean.valueOf(DEFAULT_BOOL_VAL);
+            runIndefinitely = Boolean.valueOf(DEFAULT_BOOL_VAL);
             return false;
         }
 
@@ -67,7 +67,7 @@ public class PropertiesManager implements IPropertiesManager {
         secretKey = props.getProperty("secretKey", DEFAULT_STRING_VAL);
         lastTelegramType = valueOf(TelegramType.class, props.getProperty("telegramType"), TelegramType.NORMAL);
         fromRegion = props.getProperty("fromRegion", DEFAULT_STRING_VAL);
-        continueIndefinitely = Boolean.valueOf(props.getProperty("continueIndefinitely", DEFAULT_BOOL_VAL));
+        runIndefinitely = Boolean.valueOf(props.getProperty("runIndefinitely", DEFAULT_BOOL_VAL));
         return true;
     }
 
@@ -116,8 +116,8 @@ public class PropertiesManager implements IPropertiesManager {
     }
 
     @Override
-    public boolean getContinueIndefinitely() {
-        return continueIndefinitely;
+    public boolean getRunIndefinitely() {
+        return runIndefinitely;
     }
 
     @Override
@@ -146,7 +146,7 @@ public class PropertiesManager implements IPropertiesManager {
     }
 
     @Override
-    public void setContinueIndefinitely(boolean doDryRun) {
-        this.continueIndefinitely = doDryRun;
+    public void setRunIndefinitely(boolean doDryRun) {
+        this.runIndefinitely = doDryRun;
     }
 }

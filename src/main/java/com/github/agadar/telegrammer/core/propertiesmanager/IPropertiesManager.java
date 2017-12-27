@@ -1,6 +1,6 @@
 package com.github.agadar.telegrammer.core.propertiesmanager;
 
-import com.github.agadar.telegrammer.core.util.TelegramType;
+import com.github.agadar.telegrammer.core.telegram.TelegramType;
 
 /**
  * Assists in saving and loading the property file for this application.
@@ -19,7 +19,7 @@ public interface IPropertiesManager {
 
     public String getFromRegion();
 
-    public boolean getContinueIndefinitely();
+    public boolean getRunIndefinitely();
 
     public void setClientKey(String clientKey);
 
@@ -31,7 +31,7 @@ public interface IPropertiesManager {
 
     public void setFromRegion(String fromRegion);
 
-    public void setContinueIndefinitely(boolean continueIndefinitely);
+    public void setRunIndefinitely(boolean runIndefinitely);
 
     /**
      * Saves the application's properties to the file.
