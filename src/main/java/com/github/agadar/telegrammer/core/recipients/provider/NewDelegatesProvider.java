@@ -4,6 +4,7 @@ import com.github.agadar.nationstates.INationStates;
 import com.github.agadar.nationstates.domain.worldassembly.WorldAssembly;
 import com.github.agadar.nationstates.enumerator.Council;
 import com.github.agadar.nationstates.shard.WorldAssemblyShard;
+import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
 
 import com.github.agadar.telegrammer.core.util.StringFunctions;
 
@@ -31,6 +32,11 @@ public class NewDelegatesProvider extends RecipientsProvider {
         }
         return StringFunctions.extractNationsFromHappenings(
                 worldAssembly.recentHappenings, StringFunctions.KeyWord.became);
+    }
+
+    @Override
+    public String toString() {
+        return RecipientsProviderType.NEW_DELEGATES.toString();
     }
 
 }

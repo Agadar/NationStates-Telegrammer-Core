@@ -6,6 +6,7 @@ import com.github.agadar.nationstates.enumerator.RegionTag;
 import com.github.agadar.nationstates.shard.WorldShard;
 
 import com.github.agadar.telegrammer.core.nationdumpaccess.INationDumpAccess;
+import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
 
 import java.util.HashSet;
 
@@ -33,5 +34,10 @@ public class NationsInRegionsWithTagsProvider extends RecipientsProviderUsingDum
             return new HashSet<>();
         }
         return nationDumpAccess.getNationsInRegions(world.regionsByTag());
+    }
+
+    @Override
+    public String toString() {
+        return RecipientsProviderType.NATIONS_IN_REGIONS_WITH_TAGS.toString() + " " + regionTags.toString();
     }
 }

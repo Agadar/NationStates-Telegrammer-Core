@@ -3,6 +3,7 @@ package com.github.agadar.telegrammer.core.recipients.provider;
 import com.github.agadar.nationstates.INationStates;
 import com.github.agadar.nationstates.domain.world.World;
 import com.github.agadar.nationstates.shard.WorldShard;
+import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
 
 import java.util.HashSet;
 
@@ -24,5 +25,10 @@ public class AllNationsProvider extends RecipientsProvider {
             return new HashSet<>();
         }
         return new HashSet<>(world.nations);
+    }
+
+    @Override
+    public String toString() {
+        return RecipientsProviderType.ALL_NATIONS.toString();
     }
 }

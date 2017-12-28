@@ -4,6 +4,7 @@ import com.github.agadar.nationstates.INationStates;
 import com.github.agadar.nationstates.domain.worldassembly.WorldAssembly;
 import com.github.agadar.nationstates.enumerator.Council;
 import com.github.agadar.nationstates.shard.WorldAssemblyShard;
+import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
 
 import java.util.HashSet;
 
@@ -28,4 +29,8 @@ public class WorldAssemblyMembersProvider extends RecipientsProvider {
         return new HashSet<>(worldAssembly.members);
     }
 
+    @Override
+    public String toString() {
+        return RecipientsProviderType.WORLD_ASSEMBLY_MEMBERS.toString();
+    }
 }

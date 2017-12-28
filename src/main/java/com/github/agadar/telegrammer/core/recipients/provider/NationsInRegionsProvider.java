@@ -3,6 +3,7 @@ package com.github.agadar.telegrammer.core.recipients.provider;
 import com.github.agadar.nationstates.INationStates;
 import com.github.agadar.nationstates.domain.region.Region;
 import com.github.agadar.nationstates.shard.RegionShard;
+import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
 
 import java.util.HashSet;
 
@@ -28,6 +29,11 @@ public class NationsInRegionsProvider extends RecipientsProvider {
             nationsInRegions.addAll(getNationsInRegion(regionName));
         });
         return nationsInRegions;
+    }
+
+    @Override
+    public String toString() {
+        return RecipientsProviderType.NATIONS_IN_REGIONS.toString() + " " + regionNames.toString();
     }
 
     private HashSet<String> getNationsInRegion(String regionName) {

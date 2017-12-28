@@ -37,4 +37,22 @@ public class RecipientsFilter implements IRecipientsFilter {
         filterNationNames = recipientsProvider.getRecipients();
     }
 
+    @Override
+    public String toString() {
+        String stringified = "";
+
+        switch (filterType) {
+            case ADD_TO_RECIPIENTS:
+                stringified += "(+)";
+                break;
+            case REMOVE_FROM_RECIPIENTS:
+                stringified += "(-)";
+                break;
+            case REMOVE_RECIPIENTS_NOT_IN:
+                stringified += "(!)";
+                break;
+        }
+        return stringified + " " + recipientsProvider.toString();
+    }
+
 }

@@ -7,6 +7,7 @@ import com.github.agadar.nationstates.enumerator.EmbassyStatus;
 import com.github.agadar.nationstates.shard.RegionShard;
 
 import com.github.agadar.telegrammer.core.nationdumpaccess.INationDumpAccess;
+import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
 
 import java.util.HashSet;
 import java.util.Collection;
@@ -29,6 +30,11 @@ public class NationsInEmbassyRegionsProvider extends RecipientsProviderUsingDump
     public HashSet<String> getRecipients() {
         final HashSet<String> embassyRegionsOfRegions = getEmbassyRegionsOfRegions(regionNames);
         return nationDumpAccess.getNationsInRegions(embassyRegionsOfRegions);
+    }
+
+    @Override
+    public String toString() {
+        return RecipientsProviderType.NATIONS_IN_EMBASSY_REGIONS.toString() + " " + regionNames.toString();
     }
 
     private HashSet<String> getEmbassyRegionsOfRegions(Collection<String> regionNames) {
