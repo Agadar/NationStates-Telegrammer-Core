@@ -22,6 +22,9 @@ public class WorldAssemblyMembersProvider extends RecipientsProvider {
     public HashSet<String> getRecipients() {
         final WorldAssembly worldAssembly = nationStates.getWorldAssembly(Council.SECURITY_COUNCIL)
                 .shards(WorldAssemblyShard.MEMBERS).execute();
+        if (worldAssembly == null || worldAssembly.members == null) {
+            return new HashSet<>();
+        }
         return new HashSet<>(worldAssembly.members);
     }
 

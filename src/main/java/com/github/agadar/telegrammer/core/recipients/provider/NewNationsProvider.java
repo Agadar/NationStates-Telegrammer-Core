@@ -20,6 +20,9 @@ public class NewNationsProvider extends RecipientsProvider {
     @Override
     public HashSet<String> getRecipients() {
         final World world = nationStates.getWorld(WorldShard.NEWEST_NATIONS).execute();
+        if (world == null || world.newestNations == null) {
+            return new HashSet<>();
+        }
         return new HashSet<>(world.newestNations);
     }
 

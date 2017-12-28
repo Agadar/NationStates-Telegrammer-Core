@@ -47,6 +47,9 @@ public final class StringFunctions {
      * @return
      */
     public static HashSet<String> stringToStringList(String string) {
+        if (string == null || string.isEmpty()) {
+            return new HashSet<>();
+        }
         final List<String> asList = Arrays.asList(string.trim().split("\\s*,\\s*"));
         return asList.size() == 1 && asList.get(0).isEmpty() ? new HashSet<>() : new HashSet<>(asList);
     }

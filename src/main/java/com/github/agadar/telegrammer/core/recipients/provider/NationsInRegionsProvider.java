@@ -32,6 +32,9 @@ public class NationsInRegionsProvider extends RecipientsProvider {
 
     private HashSet<String> getNationsInRegion(String regionName) {
         final Region region = nationStates.getRegion(regionName).shards(RegionShard.NATION_NAMES).execute();
+        if (region == null || region.nationNames == null) {
+            return new HashSet<>();
+        }
         return new HashSet<>(region.nationNames);
     }
 

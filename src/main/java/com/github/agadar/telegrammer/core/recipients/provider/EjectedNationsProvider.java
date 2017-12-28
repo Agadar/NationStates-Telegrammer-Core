@@ -24,6 +24,9 @@ public class EjectedNationsProvider extends RecipientsProvider {
     public HashSet<String> getRecipients() {
         final World world = nationStates.getWorld(WorldShard.HAPPENINGS)
                 .happeningsFilter(HappeningsFilter.EJECT).execute();
+        if (world == null || world.happenings == null) {
+            return new HashSet<>();
+        }
         return StringFunctions.extractNationsFromHappenings(world.happenings, StringFunctions.KeyWord.ejected);
     }
 

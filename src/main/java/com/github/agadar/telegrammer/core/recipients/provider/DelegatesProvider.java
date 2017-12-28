@@ -24,6 +24,9 @@ public class DelegatesProvider extends RecipientsProvider {
                 .getWorldAssembly(Council.SECURITY_COUNCIL)
                 .shards(WorldAssemblyShard.DELEGATES)
                 .execute();
+        if (worldAssembly == null || worldAssembly.delegates == null) {
+            return new HashSet<>();
+        }
         return new HashSet<>(worldAssembly.delegates);
     }
 

@@ -24,6 +24,9 @@ public class NewWorldAssemblyMembersProvider extends RecipientsProvider {
     public HashSet<String> getRecipients() {
         final WorldAssembly worldAssembly = nationStates.getWorldAssembly(Council.SECURITY_COUNCIL)
                 .shards(WorldAssemblyShard.RECENT_MEMBER_LOG).execute();
+        if (worldAssembly == null || worldAssembly.recentMemberLog == null) {
+            return new HashSet<>();
+        }
         return StringFunctions.extractNationsFromHappenings(
                 worldAssembly.recentMemberLog, StringFunctions.KeyWord.admitted);
     }

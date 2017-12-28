@@ -26,6 +26,9 @@ public class NewDelegatesProvider extends RecipientsProvider {
                 .getWorldAssembly(Council.SECURITY_COUNCIL)
                 .shards(WorldAssemblyShard.RECENT_HAPPENINGS)
                 .execute();
+        if (worldAssembly == null || worldAssembly.recentHappenings == null) {
+            return new HashSet<>();
+        }
         return StringFunctions.extractNationsFromHappenings(
                 worldAssembly.recentHappenings, StringFunctions.KeyWord.became);
     }

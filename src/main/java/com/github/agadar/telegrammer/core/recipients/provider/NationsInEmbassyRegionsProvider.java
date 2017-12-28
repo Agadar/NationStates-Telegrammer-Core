@@ -42,6 +42,9 @@ public class NationsInEmbassyRegionsProvider extends RecipientsProviderUsingDump
 
     private HashSet<String> getEmbassyRegionsOfRegion(String regionName) {
         final Region region = nationStates.getRegion(regionName).shards(RegionShard.EMBASSIES).execute();
+        if (region == null || region.embassies == null) {
+            return new HashSet<>();
+        }
         return extractEstablishedEmbassyRegionNames(region.embassies);
     }
 

@@ -29,6 +29,9 @@ public class NationsInRegionsWithTagsProvider extends RecipientsProviderUsingDum
                 .getWorld(WorldShard.REGIONS_BY_TAG)
                 .regionsWithTags(regionTags.toArray(new RegionTag[regionTags.size()]))
                 .execute();
+        if (world == null || world.regionsByTag() == null) {
+            return new HashSet<>();
+        }
         return nationDumpAccess.getNationsInRegions(world.regionsByTag());
     }
 }
