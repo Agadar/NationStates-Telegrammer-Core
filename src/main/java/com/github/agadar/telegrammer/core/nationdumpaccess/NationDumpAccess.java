@@ -5,6 +5,8 @@ import com.github.agadar.nationstates.domain.DailyDumpNations;
 import com.github.agadar.nationstates.domain.nation.Nation;
 import com.github.agadar.nationstates.enumerator.DailyDumpMode;
 
+import com.github.agadar.telegrammer.core.util.StringFunctions;
+
 import java.io.FileNotFoundException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -23,19 +25,20 @@ public class NationDumpAccess implements INationDumpAccess {
      * Keeps track of whether or not the dump file has been imported yet
      */
     private boolean hasImportedDumpFile = false;
-
+    
     private final INationStates nationStates;
-
+    
     public NationDumpAccess(INationStates nationStates) {
         nationsToRegions = new HashMap<>();
         this.nationStates = nationStates;
     }
-
+    
     @Override
     public HashSet<String> getNationsInRegions(Collection<String> regionNames) {
         this.importDumpFile();
         final HashSet<String> nationsInRegions = new HashSet<>();
         regionNames.stream()
+                .map((regionName) -> StringFunctions.normalizeName(regionName))
                 .map((regionName) -> nationsToRegions.get(regionName))
                 .filter((nationsInRegion) -> (nationsInRegion != null))
                 .forEach((nationsInRegion) -> {
@@ -43,13 +46,13 @@ public class NationDumpAccess implements INationDumpAccess {
                 });
         return nationsInRegions;
     }
-
+    
     private void importDumpFile() {
         if (hasImportedDumpFile) {
             return;
         }
         DailyDumpNations dump;
-
+        
         try {
             dump = nationStates.getNationDump(DailyDumpMode.READ_LOCAL).execute();
         } catch (Exception ex) {
@@ -62,16 +65,19 @@ public class NationDumpAccess implements INationDumpAccess {
             // If dump file not found, try download it from the server.
             dump = nationStates.getNationDump(DailyDumpMode.DOWNLOAD_THEN_READ_LOCAL).execute();
         }
-
+        
         for (Nation nation : dump.nations) {
             mapNationToRegion(nation.regionName, nation.name);
         }
         hasImportedDumpFile = true;
     }
-
+    
     private void mapNationToRegion(String region, String nation) {
+        region = StringFunctions.normalizeName(region);
+        nation = StringFunctions.normalizeName(nation);
+        
         HashSet<String> nations = nationsToRegions.get(region);
-
+        
         if (nations == null) {
             nations = new HashSet<>();
             nationsToRegions.put(region, nations);

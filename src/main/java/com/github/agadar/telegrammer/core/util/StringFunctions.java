@@ -92,4 +92,19 @@ public final class StringFunctions {
         });
         return nationNames;
     }
+
+    /**
+     * Normalizes a (region/nation) name, meaning it's lowercased and spaces are
+     * replaced by underscores. Required for dump files because apparently those
+     * are not normalized in this way, unlike everything else returned by the
+     * API.
+     *
+     * @param name
+     * @return
+     */
+    public static String normalizeName(String name) {
+        String replace = name.replace(' ', '_');
+        replace = replace.toLowerCase();
+        return replace;
+    }
 }
