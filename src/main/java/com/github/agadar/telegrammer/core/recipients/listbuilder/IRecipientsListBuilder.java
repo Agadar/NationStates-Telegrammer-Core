@@ -1,7 +1,9 @@
 package com.github.agadar.telegrammer.core.recipients.listbuilder;
 
 import com.github.agadar.telegrammer.core.recipients.filter.IRecipientsFilter;
-import java.util.HashSet;
+import java.util.List;
+
+import java.util.Set;
 
 /**
  * Assists in building a list of recipients, using filters and telegram history.
@@ -14,7 +16,12 @@ public interface IRecipientsListBuilder {
      * @return The result of applying all filters, representing a recipients
      * set.
      */
-    public HashSet<String> getRecipients();
+    public Set<String> getRecipients();
+
+    /**
+     * @return The filters of this builder.
+     */
+    public List<IRecipientsFilter> getFilters();
 
     /**
      * Appends a new filter to the end of this chain.

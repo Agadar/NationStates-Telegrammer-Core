@@ -6,6 +6,7 @@ import com.github.agadar.nationstates.shard.WorldShard;
 import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
 
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Fetches ALL nation names from the API.
@@ -19,7 +20,7 @@ public class AllNationsProvider extends RecipientsProvider {
     }
 
     @Override
-    public HashSet<String> getRecipients() {
+    public Set<String> getRecipients() {
         final World world = nationStates.getWorld(WorldShard.NATIONS).execute();
         if (world == null || world.nations == null) {
             return new HashSet<>();

@@ -6,6 +6,7 @@ import com.github.agadar.nationstates.shard.RegionShard;
 import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
 
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Fetches all nations that reside in the specified regions from the API.
@@ -14,15 +15,15 @@ import java.util.HashSet;
  */
 public class NationsInRegionsProvider extends RecipientsProvider {
 
-    private final HashSet<String> regionNames;
+    public final Set<String> regionNames;
 
-    public NationsInRegionsProvider(INationStates nationStates, HashSet<String> regionNames) {
+    public NationsInRegionsProvider(INationStates nationStates, Set<String> regionNames) {
         super(nationStates);
         this.regionNames = regionNames;
     }
 
     @Override
-    public HashSet<String> getRecipients() {
+    public Set<String> getRecipients() {
         final HashSet<String> nationsInRegions = new HashSet<>();
 
         regionNames.forEach((regionName) -> {
@@ -36,7 +37,7 @@ public class NationsInRegionsProvider extends RecipientsProvider {
         return RecipientsProviderType.NATIONS_IN_REGIONS.toString() + " " + regionNames.toString();
     }
 
-    private HashSet<String> getNationsInRegion(String regionName) {
+    private Set<String> getNationsInRegion(String regionName) {
         final Region region = nationStates.getRegion(regionName).shards(RegionShard.NATION_NAMES).execute();
         if (region == null || region.nationNames == null) {
             return new HashSet<>();

@@ -2,15 +2,15 @@ package com.github.agadar.telegrammer.core.recipients.filter;
 
 import com.github.agadar.telegrammer.core.recipients.provider.IRecipientsProvider;
 
-import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 public class RecipientsFilter implements IRecipientsFilter {
 
-    private final IRecipientsProvider recipientsProvider;
-    private final RecipientsFilterType filterType;
+    public final IRecipientsProvider recipientsProvider;
+    public final RecipientsFilterType filterType;
 
-    private HashSet<String> filterNationNames = new HashSet<>();
+    private Set<String> filterNationNames = new HashSet<>();
 
     public RecipientsFilter(IRecipientsProvider recipientsProvider, RecipientsFilterType filterType) {
         this.recipientsProvider = recipientsProvider;
@@ -18,7 +18,7 @@ public class RecipientsFilter implements IRecipientsFilter {
     }
 
     @Override
-    public void applyFilterToRecipients(Collection<String> recipients) {
+    public void applyFilterToRecipients(Set<String> recipients) {
         switch (filterType) {
             case ADD_TO_RECIPIENTS:
                 recipients.addAll(filterNationNames);

@@ -1,7 +1,8 @@
 package com.github.agadar.telegrammer.core.recipients.provider;
 
 import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
-import java.util.HashSet;
+
+import java.util.Set;
 
 /**
  * Simply supplies whatever nation names were provided.
@@ -10,14 +11,14 @@ import java.util.HashSet;
  */
 public class NationsProvider implements IRecipientsProvider {
 
-    private final HashSet<String> nations;
+    public final Set<String> nations;
 
-    public NationsProvider(HashSet<String> nations) {
+    public NationsProvider(Set<String> nations) {
         this.nations = nations;
     }
 
     @Override
-    public HashSet<String> getRecipients() {
+    public Set<String> getRecipients() {
         return nations;
     }
 

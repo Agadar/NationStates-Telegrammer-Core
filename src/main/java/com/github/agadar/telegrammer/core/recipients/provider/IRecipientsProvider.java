@@ -1,6 +1,6 @@
 package com.github.agadar.telegrammer.core.recipients.provider;
 
-import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Responsible for fetching recipients (nation names) from the official API.
@@ -14,5 +14,5 @@ public interface IRecipientsProvider {
      *
      * @return The recipients
      */
-    public HashSet<String> getRecipients();
+    public Set<String> getRecipients();
 }

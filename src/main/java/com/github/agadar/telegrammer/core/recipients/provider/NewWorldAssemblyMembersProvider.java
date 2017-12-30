@@ -9,6 +9,7 @@ import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
 import com.github.agadar.telegrammer.core.util.StringFunctions;
 
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Fetches recently new World Assembly member nations from the API.
@@ -22,7 +23,7 @@ public class NewWorldAssemblyMembersProvider extends RecipientsProvider {
     }
 
     @Override
-    public HashSet<String> getRecipients() {
+    public Set<String> getRecipients() {
         final WorldAssembly worldAssembly = nationStates.getWorldAssembly(Council.SECURITY_COUNCIL)
                 .shards(WorldAssemblyShard.RECENT_MEMBER_LOG).execute();
         if (worldAssembly == null || worldAssembly.recentMemberLog == null) {

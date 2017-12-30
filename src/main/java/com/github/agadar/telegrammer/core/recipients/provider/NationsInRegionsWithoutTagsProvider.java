@@ -9,6 +9,7 @@ import com.github.agadar.telegrammer.core.nationdumpaccess.INationDumpAccess;
 import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
 
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Fetches nations from regions WITHOUT specified tags from the API.
@@ -17,15 +18,15 @@ import java.util.HashSet;
  */
 public class NationsInRegionsWithoutTagsProvider extends RecipientsProviderUsingDump {
 
-    private final HashSet<RegionTag> regionTags;
+    public final Set<RegionTag> regionTags;
 
-    public NationsInRegionsWithoutTagsProvider(INationStates nationStates, INationDumpAccess nationDumpAccess, HashSet<RegionTag> regionTags) {
+    public NationsInRegionsWithoutTagsProvider(INationStates nationStates, INationDumpAccess nationDumpAccess, Set<RegionTag> regionTags) {
         super(nationStates, nationDumpAccess);
         this.regionTags = regionTags;
     }
 
     @Override
-    public HashSet<String> getRecipients() {
+    public Set<String> getRecipients() {
         final World world = nationStates
                 .getWorld(WorldShard.REGIONS_BY_TAG)
                 .regionsWithoutTags(regionTags.toArray(new RegionTag[regionTags.size()]))

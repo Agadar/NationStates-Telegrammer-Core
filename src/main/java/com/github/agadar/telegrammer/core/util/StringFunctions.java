@@ -3,6 +3,7 @@ package com.github.agadar.telegrammer.core.util;
 import com.github.agadar.nationstates.domain.common.Happening;
 import com.github.agadar.nationstates.enumerator.RegionTag;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -41,17 +42,30 @@ public final class StringFunctions {
     }
 
     /**
-     * Converts a comma-separated string to a list of strings.
+     * Converts a comma-separated string to a hashset of strings.
      *
      * @param string
      * @return
      */
-    public static HashSet<String> stringToStringList(String string) {
+    public static HashSet<String> stringToHashSet(String string) {
         if (string == null || string.isEmpty()) {
             return new HashSet<>();
         }
         final List<String> asList = Arrays.asList(string.trim().split("\\s*,\\s*"));
         return asList.size() == 1 && asList.get(0).isEmpty() ? new HashSet<>() : new HashSet<>(asList);
+    }
+
+    /**
+     * Converts a comma-separated string to an arraylist of strings.
+     *
+     * @param string
+     * @return
+     */
+    public static ArrayList<String> stringToArrayList(String string) {
+        if (string == null || string.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return new ArrayList<>(Arrays.asList(string.trim().split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1)));
     }
 
     /**

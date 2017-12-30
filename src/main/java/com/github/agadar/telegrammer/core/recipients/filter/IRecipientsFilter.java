@@ -1,6 +1,6 @@
 package com.github.agadar.telegrammer.core.recipients.filter;
 
-import java.util.Collection;
+import java.util.Set;
 
 /**
  * A filter that can add or remove recipients from a recipient collection.
@@ -14,7 +14,7 @@ public interface IRecipientsFilter {
      *
      * @param recipients
      */
-    public void applyFilterToRecipients(Collection<String> recipients);
+    public void applyFilterToRecipients(Set<String> recipients);
 
     /**
      * Refreshes this filter, which may involve a call to an external server or

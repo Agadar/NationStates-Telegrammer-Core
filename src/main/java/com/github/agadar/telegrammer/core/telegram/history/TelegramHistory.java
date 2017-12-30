@@ -1,6 +1,6 @@
 package com.github.agadar.telegrammer.core.telegram.history;
 
-import com.github.agadar.telegrammer.core.propertiesmanager.IPropertiesManager;
+import com.github.agadar.telegrammer.core.properties.ApplicationProperties;
 import com.github.agadar.telegrammer.core.telegram.SkippedRecipientReason;
 import com.github.agadar.telegrammer.core.util.Tuple;
 
@@ -34,10 +34,10 @@ public final class TelegramHistory implements ITelegramHistory {
      */
     private Map<Tuple<String, String>, SkippedRecipientReason> history;
 
-    private final IPropertiesManager propertiesManager;
+    private final ApplicationProperties properties;
 
-    public TelegramHistory(IPropertiesManager propertiesManager) {
-        this.propertiesManager = propertiesManager;
+    public TelegramHistory(ApplicationProperties properties) {
+        this.properties = properties;
     }
 
     @Override
@@ -101,7 +101,7 @@ public final class TelegramHistory implements ITelegramHistory {
     @Override
     public void removeOldRecipients(Collection<String> nations) {
         for (final Iterator<String> it = nations.iterator(); it.hasNext();) {
-            if (getSkippedRecipientReason(propertiesManager.getTelegramId(), it.next()) != null) {
+            if (getSkippedRecipientReason(properties.telegramId, it.next()) != null) {
                 it.remove();   // Remove recipient
             }
         }

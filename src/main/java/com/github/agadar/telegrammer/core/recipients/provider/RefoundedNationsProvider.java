@@ -9,6 +9,7 @@ import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
 import com.github.agadar.telegrammer.core.util.StringFunctions;
 
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Fetches recently refounded nations from the API.
@@ -22,7 +23,7 @@ public class RefoundedNationsProvider extends RecipientsProvider {
     }
 
     @Override
-    public HashSet<String> getRecipients() {
+    public Set<String> getRecipients() {
         final World world = nationStates.getWorld(WorldShard.HAPPENINGS)
                 .happeningsFilter(HappeningsFilter.FOUNDING).execute();
         if (world == null || world.happenings == null) {

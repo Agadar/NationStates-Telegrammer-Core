@@ -7,11 +7,15 @@ import java.util.HashSet;
 
 /**
  * Helper class that makes translating between IRecipientProviders and
- * corresponding enums easier.
+ * corresponding enums/strings easier.
  *
  * @author Agadar (https://github.com/Agadar/)
  */
 public interface IRecipientsProviderTranslator {
 
     public IRecipientsProvider toProvider(RecipientsProviderType providerType, HashSet<String> input);
+
+    public IRecipientsProvider toProvider(String input);
+
+    public String fromProvider(IRecipientsProvider provider);
 }
