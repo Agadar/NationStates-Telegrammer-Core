@@ -20,7 +20,8 @@ public interface IPropertiesManager {
     /**
      * Loads the application's properties from the file.
      *
+     * @param properties
      * @return
      */
-    public ApplicationProperties loadProperties();
+    public ApplicationProperties loadProperties(ApplicationProperties properties);
 }

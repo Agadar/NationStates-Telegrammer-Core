@@ -18,6 +18,9 @@ public class ApplicationProperties {
     public boolean runIndefinitely;
     public IRecipientsListBuilder recipientsListBuilder;
 
+    public ApplicationProperties() {
+    }
+
     public ApplicationProperties(String clientKey, String telegramId, String secretKey, TelegramType lastTelegramType, String fromRegion, boolean runIndefinitely, IRecipientsListBuilder recipientsListBuilder) {
         this.clientKey = clientKey;
         this.telegramId = telegramId;
