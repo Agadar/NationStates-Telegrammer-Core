@@ -1,12 +1,15 @@
 package com.github.agadar.telegrammer.core.util;
 
+import com.github.agadar.nationstates.domain.common.Happening;
 import com.github.agadar.nationstates.enumerator.RegionTag;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Exposes some String-related utility functions.
@@ -16,20 +19,53 @@ import java.util.Set;
 public final class StringFunctions {
 
     /**
+     * The keyword used for finding the correct happenings in a list of
+     * happenings.
+     */
+    public static enum KeyWord {
+        became, // new delegates
+        refounded, // refounded nations
+        ejected, // ejected nations
+        admitted // new WA members
+        ;
+    }
+
+    /**
+     * Pattern used for extracting nation names from happenings descriptions.
+     */
+    private final static Pattern PATTERN = Pattern.compile("\\@\\@(.*?)\\@\\@");
+
+    /**
      * Private constructor.
      */
     private StringFunctions() {
     }
 
     /**
-     * Converts a comma-separated string to a list of strings.
+     * Converts a comma-separated string to a hashset of strings.
      *
      * @param string
      * @return
      */
-    public static Set<String> stringToStringList(String string) {
+    public static HashSet<String> stringToHashSet(String string) {
+        if (string == null || string.isEmpty()) {
+            return new HashSet<>();
+        }
         final List<String> asList = Arrays.asList(string.trim().split("\\s*,\\s*"));
         return asList.size() == 1 && asList.get(0).isEmpty() ? new HashSet<>() : new HashSet<>(asList);
+    }
+
+    /**
+     * Converts a comma-separated string to an arraylist of strings.
+     *
+     * @param string
+     * @return
+     */
+    public static ArrayList<String> stringToArrayList(String string) {
+        if (string == null || string.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return new ArrayList<>(Arrays.asList(string.trim().split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1)));
     }
 
     /**
@@ -39,8 +75,8 @@ public final class StringFunctions {
      * @param tagsStrSet The strings to parse
      * @return The resulting RegionTags
      */
-    public static Set<RegionTag> stringsToRegionTags(Collection<String> tagsStrSet) {
-        final Set<RegionTag> tags = new HashSet();
+    public static HashSet<RegionTag> stringsToRegionTags(Collection<String> tagsStrSet) {
+        final HashSet<RegionTag> tags = new HashSet();
         tagsStrSet.stream().forEach(tagStr -> {
             try {
                 tags.add(RegionTag.fromString(tagStr));
@@ -52,21 +88,40 @@ public final class StringFunctions {
     }
 
     /**
-     * Parses the supplied string to an unsigned int. If the supplied string is
-     * null or cannot be parsed, then 0 is returned.
+     * From a list of happenings, extracts the nation name from each happening
+     * that contains in its description the supplied keyword.
      *
-     * @param parseMe
+     * @param happenings
+     * @param keyword
+     * @return Nation names
+     */
+    public static HashSet<String> extractNationsFromHappenings(Collection<Happening> happenings, KeyWord keyword) {
+        final HashSet<String> nationNames = new HashSet<>();
+
+        happenings.forEach(happening -> {
+            if (happening.description.contains(keyword.toString())) {
+                final Matcher matcher = PATTERN.matcher(happening.description);
+
+                if (matcher.find()) {
+                    nationNames.add(matcher.group(1));
+                }
+            }
+        });
+        return nationNames;
+    }
+
+    /**
+     * Normalizes a (region/nation) name, meaning it's lowercased and spaces are
+     * replaced by underscores. Required for dump files because apparently those
+     * are not normalized in this way, unlike everything else returned by the
+     * API.
+     *
+     * @param name
      * @return
      */
-    public static int stringToUInt(String parseMe) {
-        if (parseMe == null) {
-            return 0;
-        }
-
-        try {
-            return Integer.parseUnsignedInt(parseMe);
-        } catch (NumberFormatException ex) {
-            return 0;
-        }
+    public static String normalizeName(String name) {
+        String replace = name.replace(' ', '_');
+        replace = replace.toLowerCase();
+        return replace;
     }
 }
