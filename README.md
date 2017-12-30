@@ -1,0 +1,2 @@
+# NationStates-Telegrammer-Core
+This is a Java library that contains core and shared functionalities for consuming the [NationStates](https://www.nationstates.net) telegram API. It builds upon the [Java Wrapper for the NationStates API](https://github.com/Agadar/NationStates-API-Java-Wrapper) and is primarily used by [NationStates Telegrammer](https://github.com/Agadar/NationStates-Telegrammer-Client).
