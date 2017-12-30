@@ -112,7 +112,7 @@ public class RecipientsListBuilderTranslatorTest {
         System.out.println("toBuilder should create an IRecipientsListBuilder with 2+ filters on valid string");
 
         // Act
-        final IRecipientsListBuilder builder = builderTranslator.toBuilder("[\"ADD_TO_RECIPIENTS.NATIONS[agadar, vancouvia]\",\"REMOVE_FROM_RECIPIENTS.NATIONS[agadar, vancouvia]\"]");
+        final IRecipientsListBuilder builder = builderTranslator.toBuilder("[\"ADD_TO_RECIPIENTS.NATIONS[agadar, vancouvia]\", \"REMOVE_FROM_RECIPIENTS.NATIONS[agadar, vancouvia]\"]");
 
         // Assert
         assertNotNull(builder);

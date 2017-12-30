@@ -27,7 +27,7 @@ public class RecipientsListBuilderTranslator implements IRecipientsListBuilderTr
             final ArrayList<String> split = StringFunctions.stringToArrayList(input);
 
             split.forEach((part) -> {
-                part = part.replace("\"", "");
+                part = part.trim().replace("\"", "");
                 filters.add(filterTranslator.toFilter(part));
             });
         }
