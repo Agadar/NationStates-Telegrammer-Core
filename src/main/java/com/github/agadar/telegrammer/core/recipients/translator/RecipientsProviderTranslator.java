@@ -23,6 +23,7 @@ import com.github.agadar.telegrammer.core.recipients.provider.WorldAssemblyMembe
 import com.github.agadar.telegrammer.core.util.StringFunctions;
 
 import java.util.HashSet;
+import java.util.Set;
 
 public class RecipientsProviderTranslator implements IRecipientsProviderTranslator {
 
@@ -35,10 +36,11 @@ public class RecipientsProviderTranslator implements IRecipientsProviderTranslat
     }
 
     @Override
-    public IRecipientsProvider toProvider(RecipientsProviderType providerType, HashSet<String> input) {
+    public IRecipientsProvider toProvider(RecipientsProviderType providerType, Set<String> input) {
         if (providerType == null) {
             return new NullRecipientsProvider();
         }
+        input = normalizeNames(input);
         switch (providerType) {
 
             case ALL_NATIONS:
@@ -51,12 +53,12 @@ public class RecipientsProviderTranslator implements IRecipientsProviderTranslat
                 return new NationsInEmbassyRegionsProvider(nationStates, nationDumpAccess, input);
 
             case NATIONS_IN_REGIONS_WITH_TAGS: {
-                final HashSet<RegionTag> regionTags = regionTagStringsToEnums(input);
+                final Set<RegionTag> regionTags = regionTagStringsToEnums(input);
                 return new NationsInRegionsWithTagsProvider(nationStates, nationDumpAccess, regionTags);
             }
 
             case NATIONS_IN_REGIONS_WITHOUT_TAGS: {
-                final HashSet<RegionTag> regionTags = regionTagStringsToEnums(input);
+                final Set<RegionTag> regionTags = regionTagStringsToEnums(input);
                 return new NationsInRegionsWithoutTagsProvider(nationStates, nationDumpAccess, regionTags);
             }
 
@@ -159,7 +161,18 @@ public class RecipientsProviderTranslator implements IRecipientsProviderTranslat
         return "";
     }
 
-    private HashSet<RegionTag> regionTagStringsToEnums(HashSet<String> regionTags) {
+    private Set<String> normalizeNames(Set<String> names) {
+        final HashSet<String> normalized = new HashSet<>();
+
+        if (names != null) {
+            names.forEach(name -> {
+                normalized.add(StringFunctions.normalizeName(name));
+            });
+        }
+        return normalized;
+    }
+
+    private Set<RegionTag> regionTagStringsToEnums(Set<String> regionTags) {
         final HashSet<RegionTag> enums = new HashSet<>();
 
         regionTags.forEach((regionTag) -> {

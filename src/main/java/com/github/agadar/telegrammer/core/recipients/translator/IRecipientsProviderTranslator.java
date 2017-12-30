@@ -3,7 +3,7 @@ package com.github.agadar.telegrammer.core.recipients.translator;
 import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
 import com.github.agadar.telegrammer.core.recipients.provider.IRecipientsProvider;
 
-import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Helper class that makes translating between IRecipientProviders and
@@ -13,7 +13,7 @@ import java.util.HashSet;
  */
 public interface IRecipientsProviderTranslator {
 
-    public IRecipientsProvider toProvider(RecipientsProviderType providerType, HashSet<String> input);
+    public IRecipientsProvider toProvider(RecipientsProviderType providerType, Set<String> input);
 
     public IRecipientsProvider toProvider(String input);
 

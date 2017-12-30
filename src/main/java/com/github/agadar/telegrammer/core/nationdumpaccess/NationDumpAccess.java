@@ -24,15 +24,15 @@ public class NationDumpAccess implements INationDumpAccess {
     /**
      * Keeps track of whether or not the dump file has been imported yet
      */
-    private boolean hasImportedDumpFile = false;
-    
+    private long hasImportedDumpFile = 0;
+
     private final INationStates nationStates;
-    
+
     public NationDumpAccess(INationStates nationStates) {
         nationsToRegions = new HashMap<>();
         this.nationStates = nationStates;
     }
-    
+
     @Override
     public HashSet<String> getNationsInRegions(Collection<String> regionNames) {
         this.importDumpFile();
@@ -46,13 +46,13 @@ public class NationDumpAccess implements INationDumpAccess {
                 });
         return nationsInRegions;
     }
-    
+
     private void importDumpFile() {
-        if (hasImportedDumpFile) {
+        if (System.currentTimeMillis() - hasImportedDumpFile < 24 * 60 * 60 * 1000) {System.out.println("Called!");
             return;
         }
         DailyDumpNations dump;
-        
+
         try {
             dump = nationStates.getNationDump(DailyDumpMode.READ_LOCAL).execute();
         } catch (Exception ex) {
@@ -65,19 +65,19 @@ public class NationDumpAccess implements INationDumpAccess {
             // If dump file not found, try download it from the server.
             dump = nationStates.getNationDump(DailyDumpMode.DOWNLOAD_THEN_READ_LOCAL).execute();
         }
-        
+
         for (Nation nation : dump.nations) {
             mapNationToRegion(nation.regionName, nation.name);
         }
-        hasImportedDumpFile = true;
+        hasImportedDumpFile = System.currentTimeMillis();
     }
-    
+
     private void mapNationToRegion(String region, String nation) {
         region = StringFunctions.normalizeName(region);
         nation = StringFunctions.normalizeName(nation);
-        
+
         HashSet<String> nations = nationsToRegions.get(region);
-        
+
         if (nations == null) {
             nations = new HashSet<>();
             nationsToRegions.put(region, nations);
