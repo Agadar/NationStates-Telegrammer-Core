@@ -48,7 +48,7 @@ public class NationDumpAccess implements INationDumpAccess {
     }
 
     private void importDumpFile() {
-        if (System.currentTimeMillis() - hasImportedDumpFile < 24 * 60 * 60 * 1000) {System.out.println("Called!");
+        if (System.currentTimeMillis() - hasImportedDumpFile < 24 * 60 * 60 * 1000) {
             return;
         }
         DailyDumpNations dump;
