@@ -1,6 +1,6 @@
 package com.github.agadar.telegrammer.core.util;
 
-import com.github.agadar.nationstates.domain.common.Happening;
+import com.github.agadar.nationstates.domain.common.happening.Happening;
 import com.github.agadar.nationstates.enumerator.RegionTag;
 
 import java.util.ArrayList;
@@ -19,15 +19,14 @@ import java.util.regex.Pattern;
 public final class StringFunctions {
 
     /**
-     * The keyword used for finding the correct happenings in a list of
-     * happenings.
+     * The keyword used for finding the correct happenings in a list of happenings.
      */
     public static enum KeyWord {
-        became, // new delegates
-        refounded, // refounded nations
-        ejected, // ejected nations
-        admitted // new WA members
-        ;
+	became, // new delegates
+	refounded, // refounded nations
+	ejected, // ejected nations
+	admitted // new WA members
+	;
     }
 
     /**
@@ -48,11 +47,11 @@ public final class StringFunctions {
      * @return
      */
     public static HashSet<String> stringToHashSet(String string) {
-        if (string == null || string.isEmpty()) {
-            return new HashSet<>();
-        }
-        final List<String> asList = Arrays.asList(string.trim().split("\\s*,\\s*"));
-        return asList.size() == 1 && asList.get(0).isEmpty() ? new HashSet<>() : new HashSet<>(asList);
+	if (string == null || string.isEmpty()) {
+	    return new HashSet<>();
+	}
+	final List<String> asList = Arrays.asList(string.trim().split("\\s*,\\s*"));
+	return asList.size() == 1 && asList.get(0).isEmpty() ? new HashSet<>() : new HashSet<>(asList);
     }
 
     /**
@@ -62,66 +61,66 @@ public final class StringFunctions {
      * @return
      */
     public static ArrayList<String> stringToArrayList(String string) {
-        if (string == null || string.isEmpty()) {
-            return new ArrayList<>();
-        }
-        return new ArrayList<>(Arrays.asList(string.trim().split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1)));
+	if (string == null || string.isEmpty()) {
+	    return new ArrayList<>();
+	}
+	return new ArrayList<>(Arrays.asList(string.trim().split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1)));
     }
 
     /**
-     * Parses the supplied string values to a set of RegionTags. Strings that
-     * cannot be parsed are ignored.
+     * Parses the supplied string values to a set of RegionTags. Strings that cannot
+     * be parsed are ignored.
      *
-     * @param tagsStrSet The strings to parse
+     * @param tagsStrSet
+     *            The strings to parse
      * @return The resulting RegionTags
      */
     public static HashSet<RegionTag> stringsToRegionTags(Collection<String> tagsStrSet) {
-        final HashSet<RegionTag> tags = new HashSet();
-        tagsStrSet.stream().forEach(tagStr -> {
-            try {
-                tags.add(RegionTag.fromString(tagStr));
-            } catch (IllegalArgumentException ex) {
-                // Ignore because we don't care.
-            }
-        });
-        return tags;
+	final HashSet<RegionTag> tags = new HashSet();
+	tagsStrSet.stream().forEach(tagStr -> {
+	    try {
+		tags.add(RegionTag.fromString(tagStr));
+	    } catch (IllegalArgumentException ex) {
+		// Ignore because we don't care.
+	    }
+	});
+	return tags;
     }
 
     /**
-     * From a list of happenings, extracts the nation name from each happening
-     * that contains in its description the supplied keyword.
+     * From a list of happenings, extracts the nation name from each happening that
+     * contains in its description the supplied keyword.
      *
      * @param happenings
      * @param keyword
      * @return Nation names
      */
     public static HashSet<String> extractNationsFromHappenings(Collection<Happening> happenings, KeyWord keyword) {
-        final HashSet<String> nationNames = new HashSet<>();
+	final HashSet<String> nationNames = new HashSet<>();
 
-        happenings.forEach(happening -> {
-            if (happening.description.contains(keyword.toString())) {
-                final Matcher matcher = PATTERN.matcher(happening.description);
+	happenings.forEach(happening -> {
+	    if (happening.description.contains(keyword.toString())) {
+		final Matcher matcher = PATTERN.matcher(happening.description);
 
-                if (matcher.find()) {
-                    nationNames.add(matcher.group(1));
-                }
-            }
-        });
-        return nationNames;
+		if (matcher.find()) {
+		    nationNames.add(matcher.group(1));
+		}
+	    }
+	});
+	return nationNames;
     }
 
     /**
      * Normalizes a (region/nation) name, meaning it's lowercased and spaces are
-     * replaced by underscores. Required for dump files because apparently those
-     * are not normalized in this way, unlike everything else returned by the
-     * API.
+     * replaced by underscores. Required for dump files because apparently those are
+     * not normalized in this way, unlike everything else returned by the API.
      *
      * @param name
      * @return
      */
     public static String normalizeName(String name) {
-        String replace = name.replace(' ', '_');
-        replace = replace.toLowerCase();
-        return replace;
+	String replace = name.replace(' ', '_');
+	replace = replace.toLowerCase();
+	return replace;
     }
 }

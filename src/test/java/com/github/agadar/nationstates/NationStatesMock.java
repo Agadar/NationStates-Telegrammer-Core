@@ -1,5 +1,9 @@
 package com.github.agadar.nationstates;
 
+import java.util.function.Predicate;
+
+import com.github.agadar.nationstates.domain.nation.Nation;
+import com.github.agadar.nationstates.domain.region.Region;
 import com.github.agadar.nationstates.enumerator.Council;
 import com.github.agadar.nationstates.enumerator.DailyDumpMode;
 import com.github.agadar.nationstates.query.NationDumpQuery;
@@ -70,13 +74,13 @@ public class NationStatesMock implements INationStates {
     }
 
     @Override
-    public RegionDumpQuery getRegionDump(DailyDumpMode mode) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public RegionDumpQuery getRegionDump(DailyDumpMode mode, Predicate<Region> filter) {
+	throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public NationDumpQuery getNationDump(DailyDumpMode mode) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public NationDumpQuery getNationDump(DailyDumpMode mode, Predicate<Nation> filter) {
+	throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

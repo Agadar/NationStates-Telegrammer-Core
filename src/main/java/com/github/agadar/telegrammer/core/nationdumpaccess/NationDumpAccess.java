@@ -1,7 +1,6 @@
 package com.github.agadar.telegrammer.core.nationdumpaccess;
 
 import com.github.agadar.nationstates.INationStates;
-import com.github.agadar.nationstates.domain.DailyDumpNations;
 import com.github.agadar.nationstates.domain.nation.Nation;
 import com.github.agadar.nationstates.enumerator.DailyDumpMode;
 
@@ -12,6 +11,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 // TODO: keep track of timestamp to refresh every day or so.
 public class NationDumpAccess implements INationDumpAccess {
@@ -29,59 +29,57 @@ public class NationDumpAccess implements INationDumpAccess {
     private final INationStates nationStates;
 
     public NationDumpAccess(INationStates nationStates) {
-        nationsToRegions = new HashMap<>();
-        this.nationStates = nationStates;
+	nationsToRegions = new HashMap<>();
+	this.nationStates = nationStates;
     }
 
     @Override
     public HashSet<String> getNationsInRegions(Collection<String> regionNames) {
-        this.importDumpFile();
-        final HashSet<String> nationsInRegions = new HashSet<>();
-        regionNames.stream()
-                .map((regionName) -> StringFunctions.normalizeName(regionName))
-                .map((regionName) -> nationsToRegions.get(regionName))
-                .filter((nationsInRegion) -> (nationsInRegion != null))
-                .forEach((nationsInRegion) -> {
-                    nationsInRegions.addAll(nationsInRegion);
-                });
-        return nationsInRegions;
+	this.importDumpFile();
+	final HashSet<String> nationsInRegions = new HashSet<>();
+	regionNames.stream().map((regionName) -> StringFunctions.normalizeName(regionName))
+		.map((regionName) -> nationsToRegions.get(regionName))
+		.filter((nationsInRegion) -> (nationsInRegion != null)).forEach((nationsInRegion) -> {
+		    nationsInRegions.addAll(nationsInRegion);
+		});
+	return nationsInRegions;
     }
 
     private void importDumpFile() {
-        if (System.currentTimeMillis() - hasImportedDumpFile < 24 * 60 * 60 * 1000) {
-            return;
-        }
-        DailyDumpNations dump;
+	if (System.currentTimeMillis() - hasImportedDumpFile < 24 * 60 * 60 * 1000) {
+	    return;
+	}
+	Set<Nation> dump;
 
-        try {
-            dump = nationStates.getNationDump(DailyDumpMode.READ_LOCAL).execute();
-        } catch (Exception ex) {
+	try {
+	    dump = nationStates.getNationDump(DailyDumpMode.READ_LOCAL, nation -> true).execute();
+	} catch (Exception ex) {
 
-            // If the exception isn't just a FileNotFoundException, throw this.
-            if (ex.getCause().getClass() != FileNotFoundException.class) {
-                throw ex;
-            }
+	    // If the exception isn't just a FileNotFoundException, throw this.
+	    if (ex.getCause().getClass() != FileNotFoundException.class) {
+		throw ex;
+	    }
 
-            // If dump file not found, try download it from the server.
-            dump = nationStates.getNationDump(DailyDumpMode.DOWNLOAD_THEN_READ_LOCAL).execute();
-        }
+	    // If dump file not found, try download it from the server.
+	    dump = nationStates.getNationDump(DailyDumpMode.DOWNLOAD_THEN_READ_LOCAL, nation -> true).execute();
+	}
 
-        for (Nation nation : dump.nations) {
-            mapNationToRegion(nation.regionName, nation.name);
-        }
-        hasImportedDumpFile = System.currentTimeMillis();
+	for (Nation nation : dump) {
+	    mapNationToRegion(nation.regionName, nation.name);
+	}
+	hasImportedDumpFile = System.currentTimeMillis();
     }
 
     private void mapNationToRegion(String region, String nation) {
-        region = StringFunctions.normalizeName(region);
-        nation = StringFunctions.normalizeName(nation);
+	region = StringFunctions.normalizeName(region);
+	nation = StringFunctions.normalizeName(nation);
 
-        HashSet<String> nations = nationsToRegions.get(region);
+	HashSet<String> nations = nationsToRegions.get(region);
 
-        if (nations == null) {
-            nations = new HashSet<>();
-            nationsToRegions.put(region, nations);
-        }
-        nations.add(nation);
+	if (nations == null) {
+	    nations = new HashSet<>();
+	    nationsToRegions.put(region, nations);
+	}
+	nations.add(nation);
     }
 }
