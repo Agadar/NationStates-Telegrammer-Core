@@ -11,7 +11,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public final class TelegramSender implements ITelegramSender {
+public class TelegramSender implements ITelegramSender {
 
     private final String userAgentFormat = "Agadar's Telegrammer using Client "
             + "Key '%s' (https://github.com/Agadar/NationStates-Telegrammer)";  // User agent string for formatting.

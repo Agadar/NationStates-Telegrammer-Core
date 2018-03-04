@@ -8,8 +8,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.regex.Matcher;
+import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Exposes some String-related utility functions.
@@ -24,7 +25,6 @@ public final class StringFunctions {
     public static enum KeyWord {
 	became, // new delegates
 	refounded, // refounded nations
-	ejected, // ejected nations
 	admitted // new WA members
 	;
     }
@@ -75,16 +75,9 @@ public final class StringFunctions {
      *            The strings to parse
      * @return The resulting RegionTags
      */
-    public static HashSet<RegionTag> stringsToRegionTags(Collection<String> tagsStrSet) {
-	final HashSet<RegionTag> tags = new HashSet();
-	tagsStrSet.stream().forEach(tagStr -> {
-	    try {
-		tags.add(RegionTag.fromString(tagStr));
-	    } catch (IllegalArgumentException ex) {
-		// Ignore because we don't care.
-	    }
-	});
-	return tags;
+    public static Set<RegionTag> stringsToRegionTags(Collection<String> tagsStrSet) {
+	return tagsStrSet.stream().map((tagStr) -> RegionTag.fromString(tagStr)).filter(tag -> tag != RegionTag.NULL)
+		.collect(Collectors.toSet());
     }
 
     /**
@@ -95,19 +88,10 @@ public final class StringFunctions {
      * @param keyword
      * @return Nation names
      */
-    public static HashSet<String> extractNationsFromHappenings(Collection<Happening> happenings, KeyWord keyword) {
-	final HashSet<String> nationNames = new HashSet<>();
-
-	happenings.forEach(happening -> {
-	    if (happening.description.contains(keyword.toString())) {
-		final Matcher matcher = PATTERN.matcher(happening.description);
-
-		if (matcher.find()) {
-		    nationNames.add(matcher.group(1));
-		}
-	    }
-	});
-	return nationNames;
+    public static Set<String> extractNationsFromHappenings(Collection<Happening> happenings, KeyWord keyword) {
+	return happenings.stream().filter(happening -> happening.description.contains(keyword.toString()))
+		.map(happening -> PATTERN.matcher(happening.description)).filter(matcher -> matcher.find())
+		.map(matcher -> matcher.group(1)).collect(Collectors.toSet());
     }
 
     /**
@@ -119,8 +103,6 @@ public final class StringFunctions {
      * @return
      */
     public static String normalizeName(String name) {
-	String replace = name.replace(' ', '_');
-	replace = replace.toLowerCase();
-	return replace;
+	return name.replace(' ', '_').toLowerCase();
     }
 }

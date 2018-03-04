@@ -29,7 +29,7 @@ public class DelegatesProvider extends RecipientsProvider {
         if (worldAssembly == null || worldAssembly.delegates == null) {
             return new HashSet<>();
         }
-        return new HashSet<>(worldAssembly.delegates);
+        return worldAssembly.delegates;
     }
 
     @Override

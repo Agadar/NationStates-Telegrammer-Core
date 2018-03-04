@@ -13,7 +13,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-// TODO: keep track of timestamp to refresh every day or so.
 public class NationDumpAccess implements INationDumpAccess {
 
     /**

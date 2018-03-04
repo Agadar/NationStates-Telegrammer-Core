@@ -17,7 +17,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Stream;
 
-public final class TelegramHistory implements ITelegramHistory {
+public class TelegramHistory implements ITelegramHistory {
 
     /**
      * Default file name.
