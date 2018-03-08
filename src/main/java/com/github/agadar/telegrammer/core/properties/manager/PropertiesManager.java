@@ -13,73 +13,99 @@ import java.util.Properties;
 
 public class PropertiesManager implements IPropertiesManager {
 
+    protected final String defaultStringValue = "";
+    protected final String defaultBooleanValue = "false";
+
     private final String propertiesFileName = ".nationstates-telegrammer.properties";
-    private final String defaultStringValue = "";
-    private final String defaultBooleanValue = "false";
     private final IRecipientsListBuilderTranslator builderTranslator;
 
     public PropertiesManager(IRecipientsListBuilderTranslator builderTranslator) {
-        this.builderTranslator = builderTranslator;
+	this.builderTranslator = builderTranslator;
     }
 
     @Override
     public boolean saveProperties(ApplicationProperties properties) {
-        if (properties == null) {
-            return false;
-        }
+	if (properties == null) {
+	    return false;
+	}
 
-        // Prepare properties object.
-        final Properties propertiesMap = new Properties();
-        propertiesMap.setProperty("clientKey", properties.clientKey == null ? defaultStringValue : properties.clientKey);
-        propertiesMap.setProperty("telegramId", properties.telegramId == null ? defaultStringValue : properties.telegramId);
-        propertiesMap.setProperty("secretKey", properties.secretKey == null ? defaultStringValue : properties.secretKey);
-        propertiesMap.setProperty("telegramType", properties.lastTelegramType != null ? properties.lastTelegramType.name() : TelegramType.NORMAL.name());
-        propertiesMap.setProperty("fromRegion", properties.fromRegion == null ? defaultStringValue : properties.fromRegion);
-        propertiesMap.setProperty("runIndefinitely", Boolean.toString(properties.runIndefinitely));
-        propertiesMap.setProperty("filters", builderTranslator.fromBuilder(properties.recipientsListBuilder));
+	final Properties propertiesMap = new Properties();
+	this.setPropertiesFromApplicationProperties(propertiesMap, properties);
 
-        // Save to file.
-        try (OutputStream output = new FileOutputStream(propertiesFileName)) {
-            propertiesMap.store(output, null);
-        } catch (IOException io) {
-            return false;
-        }
-        return true;
+	try (OutputStream output = new FileOutputStream(propertiesFileName)) {
+	    propertiesMap.store(output, null);
+	} catch (IOException io) {
+	    return false;
+	}
+	return true;
     }
 
     @Override
     public ApplicationProperties loadProperties(ApplicationProperties properties) {
-        if (properties == null) {
-            properties = new ApplicationProperties();
-        }
-        final Properties propertiesMap = new Properties();
+	if (properties == null) {
+	    properties = this.createApplicationProperties();
+	}
 
-        try (InputStream input = new FileInputStream(propertiesFileName);) {
-            propertiesMap.load(input);
-        } catch (IOException ex) {
-            properties.clientKey = defaultStringValue;
-            properties.fromRegion = defaultStringValue;
-            properties.lastTelegramType = TelegramType.NORMAL;
-            properties.recipientsListBuilder = builderTranslator.toBuilder(null);
-            properties.runIndefinitely = false;
-            properties.secretKey = defaultStringValue;
-            properties.telegramId = defaultStringValue;
-            return properties;
-        }
-        properties.clientKey = propertiesMap.getProperty("clientKey", defaultStringValue);
-        properties.fromRegion = propertiesMap.getProperty("fromRegion", defaultStringValue);
-        properties.lastTelegramType = valueOf(TelegramType.class, propertiesMap.getProperty("telegramType"), TelegramType.NORMAL);
-        properties.recipientsListBuilder = builderTranslator.toBuilder(propertiesMap.getProperty("filters"));
-        properties.runIndefinitely = Boolean.valueOf(propertiesMap.getProperty("runIndefinitely", defaultBooleanValue));
-        properties.secretKey = propertiesMap.getProperty("secretKey", defaultStringValue);
-        properties.telegramId = propertiesMap.getProperty("telegramId", defaultStringValue);
-        return properties;
+	final Properties propertiesMap = new Properties();
+
+	try (InputStream input = new FileInputStream(propertiesFileName);) {
+	    propertiesMap.load(input);
+	} catch (IOException ex) {
+	    // Ignore: we're just going to use default values instead.
+	}
+
+	this.setApplicationPropertiesFromProperties(properties, propertiesMap);
+	return properties;
     }
 
     /**
-     * Calls Enum.valueOf(...) only instead of throwing an
-     * IllegalArgumentException if the specified enum type has no constant with
-     * the specified name, it returns the specified default value.
+     * Instantiates a new ApplicationProperties instance.
+     * 
+     * @return
+     */
+    protected ApplicationProperties createApplicationProperties() {
+	return new ApplicationProperties();
+    }
+
+    /**
+     * Fills the values of an ApplicationProperties with the contents of a
+     * Properties, using default values for missing entries.
+     * 
+     * @param target
+     * @param source
+     */
+    protected void setApplicationPropertiesFromProperties(ApplicationProperties target, Properties source) {
+	target.clientKey = source.getProperty("clientKey", defaultStringValue);
+	target.fromRegion = source.getProperty("fromRegion", defaultStringValue);
+	target.lastTelegramType = valueOf(TelegramType.class, source.getProperty("telegramType"), TelegramType.NORMAL);
+	target.recipientsListBuilder = builderTranslator.toBuilder(source.getProperty("filters"));
+	target.runIndefinitely = Boolean.valueOf(source.getProperty("runIndefinitely", defaultBooleanValue));
+	target.secretKey = source.getProperty("secretKey", defaultStringValue);
+	target.telegramId = source.getProperty("telegramId", defaultStringValue);
+    }
+
+    /**
+     * Fills the values of a Properties with the contents of a
+     * ApplicationProperties, using default values for missing entries.
+     * 
+     * @param target
+     * @param source
+     */
+    protected void setPropertiesFromApplicationProperties(Properties target, ApplicationProperties source) {
+	target.setProperty("clientKey", source.clientKey == null ? defaultStringValue : source.clientKey);
+	target.setProperty("telegramId", source.telegramId == null ? defaultStringValue : source.telegramId);
+	target.setProperty("secretKey", source.secretKey == null ? defaultStringValue : source.secretKey);
+	target.setProperty("telegramType",
+		source.lastTelegramType != null ? source.lastTelegramType.name() : TelegramType.NORMAL.name());
+	target.setProperty("fromRegion", source.fromRegion == null ? defaultStringValue : source.fromRegion);
+	target.setProperty("runIndefinitely", Boolean.toString(source.runIndefinitely));
+	target.setProperty("filters", builderTranslator.fromBuilder(source.recipientsListBuilder));
+    }
+
+    /**
+     * Calls Enum.valueOf(...) only instead of throwing an IllegalArgumentException
+     * if the specified enum type has no constant with the specified name, it
+     * returns the specified default value.
      *
      * @param <T>
      * @param type
@@ -88,10 +114,10 @@ public class PropertiesManager implements IPropertiesManager {
      * @return
      */
     private <T extends Enum<T>> T valueOf(Class<T> type, String string, T defaultValue) {
-        try {
-            return Enum.valueOf(type, string);
-        } catch (IllegalArgumentException | NullPointerException ex) {
-            return defaultValue;
-        }
+	try {
+	    return Enum.valueOf(type, string);
+	} catch (IllegalArgumentException | NullPointerException ex) {
+	    return defaultValue;
+	}
     }
 }
