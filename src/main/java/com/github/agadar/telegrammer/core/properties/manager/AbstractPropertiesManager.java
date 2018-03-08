@@ -11,20 +11,30 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Properties;
 
-public class PropertiesManager implements IPropertiesManager {
+/**
+ * Partial implementation of IPropertiesManager, containing the bare minimum
+ * functionalities for properly handling ApplicationProperties.
+ * 
+ * @author Agadar (https://github.com/Agadar/)
+ *
+ * @param <T>
+ */
+public abstract class AbstractPropertiesManager<T extends ApplicationProperties> implements IPropertiesManager<T> {
 
     protected final String defaultStringValue = "";
     protected final String defaultBooleanValue = "false";
 
-    private final String propertiesFileName = ".nationstates-telegrammer.properties";
+    private String propertiesFileName;
+    
     private final IRecipientsListBuilderTranslator builderTranslator;
 
-    public PropertiesManager(IRecipientsListBuilderTranslator builderTranslator) {
+    public AbstractPropertiesManager(IRecipientsListBuilderTranslator builderTranslator, String propertiesFileName) {
 	this.builderTranslator = builderTranslator;
+	this.propertiesFileName = propertiesFileName;
     }
 
     @Override
-    public boolean saveProperties(ApplicationProperties properties) {
+    public boolean saveProperties(T properties) {
 	if (properties == null) {
 	    return false;
 	}
@@ -32,7 +42,7 @@ public class PropertiesManager implements IPropertiesManager {
 	final Properties propertiesMap = new Properties();
 	this.setPropertiesFromApplicationProperties(propertiesMap, properties);
 
-	try (OutputStream output = new FileOutputStream(propertiesFileName)) {
+	try (OutputStream output = new FileOutputStream(this.propertiesFileName)) {
 	    propertiesMap.store(output, null);
 	} catch (IOException io) {
 	    return false;
@@ -41,14 +51,14 @@ public class PropertiesManager implements IPropertiesManager {
     }
 
     @Override
-    public ApplicationProperties loadProperties(ApplicationProperties properties) {
+    public T loadProperties(T properties) {
 	if (properties == null) {
 	    properties = this.createApplicationProperties();
 	}
 
 	final Properties propertiesMap = new Properties();
 
-	try (InputStream input = new FileInputStream(propertiesFileName);) {
+	try (InputStream input = new FileInputStream(this.propertiesFileName);) {
 	    propertiesMap.load(input);
 	} catch (IOException ex) {
 	    // Ignore: we're just going to use default values instead.
@@ -63,9 +73,7 @@ public class PropertiesManager implements IPropertiesManager {
      * 
      * @return
      */
-    protected ApplicationProperties createApplicationProperties() {
-	return new ApplicationProperties();
-    }
+    protected abstract T createApplicationProperties();
 
     /**
      * Fills the values of an ApplicationProperties with the contents of a
@@ -74,7 +82,7 @@ public class PropertiesManager implements IPropertiesManager {
      * @param target
      * @param source
      */
-    protected void setApplicationPropertiesFromProperties(ApplicationProperties target, Properties source) {
+    protected void setApplicationPropertiesFromProperties(T target, Properties source) {
 	target.clientKey = source.getProperty("clientKey", defaultStringValue);
 	target.fromRegion = source.getProperty("fromRegion", defaultStringValue);
 	target.lastTelegramType = valueOf(TelegramType.class, source.getProperty("telegramType"), TelegramType.NORMAL);
@@ -91,7 +99,7 @@ public class PropertiesManager implements IPropertiesManager {
      * @param target
      * @param source
      */
-    protected void setPropertiesFromApplicationProperties(Properties target, ApplicationProperties source) {
+    protected void setPropertiesFromApplicationProperties(Properties target, T source) {
 	target.setProperty("clientKey", source.clientKey == null ? defaultStringValue : source.clientKey);
 	target.setProperty("telegramId", source.telegramId == null ? defaultStringValue : source.telegramId);
 	target.setProperty("secretKey", source.secretKey == null ? defaultStringValue : source.secretKey);
@@ -113,7 +121,7 @@ public class PropertiesManager implements IPropertiesManager {
      * @param defaultValue
      * @return
      */
-    private <T extends Enum<T>> T valueOf(Class<T> type, String string, T defaultValue) {
+    private <V extends Enum<V>> V valueOf(Class<V> type, String string, V defaultValue) {
 	try {
 	    return Enum.valueOf(type, string);
 	} catch (IllegalArgumentException | NullPointerException ex) {
