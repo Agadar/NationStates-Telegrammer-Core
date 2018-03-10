@@ -52,6 +52,7 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
     public void run() {
 	boolean causedByError = false;
 	String errorMsg = null;
+	Thread sendTelegramThread = null;
 
 	try {
 	    // Loop until either the thread has been interrupted, or we're done sending.
@@ -65,19 +66,22 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 		    if (properties.lastTelegramType == TelegramType.NORMAL || properties.lastTelegramType == null) {
 			sendTelegram(recipientsArray);
 		    } else {
-			final Predicate<String> canReceiveTelegramPredicate = this
+			final Predicate<String> canReceivePredicate = this
 			        .getCanReceiveTelegramPredicate(properties.lastTelegramType);
-			boolean skipNext = !canReceiveTelegramPredicate.test(recipientsArray[0]);
+			int index = 0;
 
-			for (int i = 0; i < recipientsArray.length && !Thread.currentThread().isInterrupted(); i++) {
-			    final boolean skipThis = skipNext;
+			while ((index = this.getIndexOfNextRecipientThatCanReceive(canReceivePredicate, recipientsArray,
+			        index)) != -1) {
 
-			    if (!skipThis) {
-				sendTelegram(recipientsArray[i]);
+			    if (sendTelegramThread != null) {
+				sendTelegramThread.join();
 			    }
-			    if (i < recipientsArray.length - 1) {
-				skipNext = !canReceiveTelegramPredicate.test(recipientsArray[i + 1]);
-			    }
+
+			    final String recipient = recipientsArray[index++];
+			    sendTelegramThread = new Thread(() -> {
+				sendTelegram(recipient);
+			    });
+			    sendTelegramThread.start();
 			}
 		    }
 		    // Else if the recipients list is empty...
@@ -113,6 +117,11 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 	} catch (InterruptedException ex) {
 	    /* Just fall through to finally. */
 	} finally {
+
+	    // Stop the telegram sending thread if applicable.
+	    if (sendTelegramThread != null) {
+		sendTelegramThread.interrupt();
+	    }
 
 	    // Send stopped event.
 	    final StoppedSendingEvent stoppedEvent = new StoppedSendingEvent(this, causedByError, errorMsg,
@@ -175,7 +184,7 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
     private boolean canReceiveRecruitmentTelegrams(String recipient) {
 	try {
 	    // Make server call.
-	    Nation n = nationStates.getNation(recipient).shards(NationShard.CAN_RECEIVE_RECRUITMENT_TELEGRAMS)
+	    final Nation n = nationStates.getNation(recipient).shards(NationShard.CAN_RECEIVE_RECRUITMENT_TELEGRAMS)
 	            .canReceiveTelegramFromRegion(properties.fromRegion).execute();
 	    final SkippedRecipientReason reason = (n == null) ? SkippedRecipientReason.NOT_FOUND
 	            : !n.canReceiveRecruitmentTelegrams ? SkippedRecipientReason.BLOCKING_RECRUITMENT : null;
@@ -198,7 +207,8 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
     private boolean canReceiveCampaignTelegrams(String recipient) {
 	try {
 	    // Make server call.
-	    Nation n = nationStates.getNation(recipient).shards(NationShard.CAN_RECEIVE_CAMPAIGN_TELEGRAMS).execute();
+	    final Nation n = nationStates.getNation(recipient).shards(NationShard.CAN_RECEIVE_CAMPAIGN_TELEGRAMS)
+	            .execute();
 	    final SkippedRecipientReason reason = (n == null) ? SkippedRecipientReason.NOT_FOUND
 	            : !n.canReceiveCampaignTelegrams ? SkippedRecipientReason.BLOCKING_CAMPAIGN : null;
 	    return canReceiveXTelegrams(reason, recipient);
@@ -250,5 +260,32 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 	default:
 	    return recipient -> true;
 	}
+    }
+
+    /**
+     * Gets the index of the next recipient in recipientsArray that can receive a
+     * telegram.
+     * 
+     * @param canReceiveTelegramPredicate
+     * @param recipientsArray
+     * @param startingIndex
+     * @return -1 If none was found or the thread was interrupted, otherwise an
+     *         index < recipientsArray length.
+     */
+    private int getIndexOfNextRecipientThatCanReceive(Predicate<String> canReceiveTelegramPredicate,
+            String[] recipientsArray, int startingIndex) {
+
+	if (startingIndex >= recipientsArray.length || Thread.currentThread().isInterrupted()) {
+	    return -1;
+	}
+
+	while (!canReceiveTelegramPredicate.test(recipientsArray[startingIndex])) {
+	    startingIndex++;
+
+	    if (startingIndex >= recipientsArray.length || Thread.currentThread().isInterrupted()) {
+		return -1;
+	    }
+	}
+	return startingIndex;
     }
 }
