@@ -1,6 +1,5 @@
 package com.github.agadar.telegrammer.core.telegram.sender;
 
-import java.util.Arrays;
 import java.util.Set;
 import java.util.function.Predicate;
 
