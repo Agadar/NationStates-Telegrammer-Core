@@ -17,4 +17,5 @@ public class ApplicationProperties {
     public String fromRegion;
     public boolean runIndefinitely;
     public IRecipientsListBuilder recipientsListBuilder;
+    public boolean updateRecipientsAfterEveryTelegram;
 }

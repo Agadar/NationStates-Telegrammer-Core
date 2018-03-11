@@ -25,7 +25,7 @@ public abstract class AbstractPropertiesManager<T extends ApplicationProperties>
     protected final String defaultBooleanValue = "false";
 
     private String propertiesFileName;
-    
+
     private final IRecipientsListBuilderTranslator builderTranslator;
 
     public AbstractPropertiesManager(IRecipientsListBuilderTranslator builderTranslator, String propertiesFileName) {
@@ -90,6 +90,8 @@ public abstract class AbstractPropertiesManager<T extends ApplicationProperties>
 	target.runIndefinitely = Boolean.valueOf(source.getProperty("runIndefinitely", defaultBooleanValue));
 	target.secretKey = source.getProperty("secretKey", defaultStringValue);
 	target.telegramId = source.getProperty("telegramId", defaultStringValue);
+	target.updateRecipientsAfterEveryTelegram = Boolean
+	        .valueOf(source.getProperty("updateRecipientsAfterEveryTelegram", defaultBooleanValue));
     }
 
     /**
@@ -104,10 +106,12 @@ public abstract class AbstractPropertiesManager<T extends ApplicationProperties>
 	target.setProperty("telegramId", source.telegramId == null ? defaultStringValue : source.telegramId);
 	target.setProperty("secretKey", source.secretKey == null ? defaultStringValue : source.secretKey);
 	target.setProperty("telegramType",
-		source.lastTelegramType != null ? source.lastTelegramType.name() : TelegramType.NORMAL.name());
+	        source.lastTelegramType != null ? source.lastTelegramType.name() : TelegramType.NORMAL.name());
 	target.setProperty("fromRegion", source.fromRegion == null ? defaultStringValue : source.fromRegion);
 	target.setProperty("runIndefinitely", Boolean.toString(source.runIndefinitely));
 	target.setProperty("filters", builderTranslator.fromBuilder(source.recipientsListBuilder));
+	target.setProperty("updateRecipientsAfterEveryTelegram",
+	        Boolean.toString(source.updateRecipientsAfterEveryTelegram));
     }
 
     /**

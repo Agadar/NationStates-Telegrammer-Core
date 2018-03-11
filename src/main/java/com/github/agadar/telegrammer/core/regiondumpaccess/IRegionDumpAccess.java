@@ -1,7 +1,7 @@
-package com.github.agadar.telegrammer.core.nationdumpaccess;
+package com.github.agadar.telegrammer.core.regiondumpaccess;
 
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Cache used for reducing the number of calls made to the API when finding
@@ -11,7 +11,7 @@ import java.util.HashSet;
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public interface INationDumpAccess {
+public interface IRegionDumpAccess {
 
     /**
      * Gets all nations in the specified regions.
@@ -19,6 +19,6 @@ public interface INationDumpAccess {
      * @param regionNames
      * @return
      */
-    public HashSet<String> getNationsInRegions(Collection<String> regionNames);
+    public Set<String> getNationsInRegions(Collection<String> regionNames);
 
 }

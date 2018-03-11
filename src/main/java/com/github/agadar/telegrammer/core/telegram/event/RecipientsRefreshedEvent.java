@@ -11,6 +11,6 @@ import java.util.EventObject;
 public class RecipientsRefreshedEvent extends EventObject {
 
     public RecipientsRefreshedEvent(Object source) {
-        super(source);
+	super(source);
     }
 }

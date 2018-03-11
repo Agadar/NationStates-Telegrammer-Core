@@ -1,5 +1,9 @@
 package com.github.agadar.telegrammer.core.telegram.sender;
 
+import java.util.Arrays;
+import java.util.Set;
+import java.util.function.Predicate;
+
 import com.github.agadar.nationstates.INationStates;
 import com.github.agadar.nationstates.domain.nation.Nation;
 import com.github.agadar.nationstates.event.TelegramSentEvent;
@@ -7,7 +11,8 @@ import com.github.agadar.nationstates.event.TelegramSentListener;
 import com.github.agadar.nationstates.query.TelegramQuery;
 import com.github.agadar.nationstates.shard.NationShard;
 import com.github.agadar.telegrammer.core.properties.ApplicationProperties;
-
+import com.github.agadar.telegrammer.core.recipients.listbuilder.IRecipientsListBuilder;
+import com.github.agadar.telegrammer.core.telegram.QueuedStats;
 import com.github.agadar.telegrammer.core.telegram.SkippedRecipientReason;
 import com.github.agadar.telegrammer.core.telegram.TelegramType;
 import com.github.agadar.telegrammer.core.telegram.event.NoRecipientsFoundEvent;
@@ -15,12 +20,7 @@ import com.github.agadar.telegrammer.core.telegram.event.RecipientRemovedEvent;
 import com.github.agadar.telegrammer.core.telegram.event.RecipientsRefreshedEvent;
 import com.github.agadar.telegrammer.core.telegram.event.StoppedSendingEvent;
 import com.github.agadar.telegrammer.core.telegram.event.TelegramManagerListener;
-import com.github.agadar.telegrammer.core.telegram.QueuedStats;
 import com.github.agadar.telegrammer.core.telegram.history.ITelegramHistory;
-import com.github.agadar.telegrammer.core.recipients.listbuilder.IRecipientsListBuilder;
-
-import java.util.Set;
-import java.util.function.Predicate;
 
 /**
  * Runnable used by TelegramManager which sends the telegrams to the recipients.
@@ -50,38 +50,64 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 
     @Override
     public void run() {
-	boolean causedByError = false;
-	String errorMsg = null;
 	Thread sendTelegramThread = null;
+	final Set<String> recipientsSet = recipientsListBuilder.getRecipients();
+	String[] recipients = recipientsSet.toArray(new String[recipientsSet.size()]);
 
 	try {
 	    // Loop until either the thread has been interrupted, or we're done sending.
 	    do {
-		final Set<String> recipients = recipientsListBuilder.getRecipients();
-
 		// If there are recipients available, send telegrams.
-		if (recipients.size() > 0) {
-		    final String[] recipientsArray = recipients.toArray(new String[recipients.size()]);
+		if (recipients.length > 0) {
 
 		    if (properties.lastTelegramType == TelegramType.NORMAL || properties.lastTelegramType == null) {
-			sendTelegram(recipientsArray);
+			if (!properties.updateRecipientsAfterEveryTelegram) {
+			    System.out.println("normal: " + Arrays.toString(recipients)); // <------------------
+			    sendTelegram(recipients);
+			} else {
+			    while (!Thread.currentThread().isInterrupted()) {
+
+				recipients = this.updateRecipients(null);
+				System.out.println("normal+refresh: " + Arrays.toString(recipients)); // <------------------
+				if (recipients.length < 1) {
+				    break;
+				}
+
+				sendTelegram(recipients[0]);
+			    }
+			}
 		    } else {
 			final Predicate<String> canReceivePredicate = this
 			        .getCanReceiveTelegramPredicate(properties.lastTelegramType);
-			int index = 0;
 
-			while ((index = this.getIndexOfNextRecipientThatCanReceive(canReceivePredicate, recipientsArray,
-			        index)) != -1) {
+			if (properties.updateRecipientsAfterEveryTelegram) {
+			    while (!Thread.currentThread().isInterrupted()) {
+				recipients = this.updateRecipients(null);
+				System.out.println("special+refresh: " + Arrays.toString(recipients)); // <------------------
+				int index = this.getIndexOfNextRecipientThatCanReceive(canReceivePredicate, recipients,
+				        0);
 
-			    if (sendTelegramThread != null) {
-				sendTelegramThread.join();
+				if (index == -1) {
+				    break;
+				}
+				sendTelegram(recipients[index]);
 			    }
+			} else {
+			    System.out.println("special: " + Arrays.toString(recipients)); // <------------------
+			    int index = 0;
+			    while ((index = this.getIndexOfNextRecipientThatCanReceive(canReceivePredicate, recipients,
+			            index)) != -1) {
 
-			    final String recipient = recipientsArray[index++];
-			    sendTelegramThread = new Thread(() -> {
-				sendTelegram(recipient);
-			    });
-			    sendTelegramThread.start();
+				if (sendTelegramThread != null) {
+				    sendTelegramThread.join();
+				}
+
+				final String recipient = recipients[index++];
+				sendTelegramThread = new Thread(() -> {
+				    sendTelegram(recipient);
+				});
+				sendTelegramThread.start();
+			    }
 			}
 		    }
 		    // Else if the recipients list is empty...
@@ -98,19 +124,8 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 
 		    // If running indefinitely, then sleep and afterwards refresh the list.
 		    if (properties.runIndefinitely) {
-
 			Thread.sleep(noRecipientsFoundTimeOut);
-
-			// Refresh the filters before going back to the top.
-			recipientsListBuilder.refreshFilters();
-			final RecipientsRefreshedEvent refrevent = new RecipientsRefreshedEvent(this);
-
-			synchronized (listeners) {
-			    // Publish recipients refreshed event.
-			    listeners.stream().forEach((tsl) -> {
-				tsl.handleRecipientsRefreshed(refrevent);
-			    });
-			}
+			recipients = this.updateRecipients(null);
 		    }
 		}
 	    } while (!Thread.currentThread().isInterrupted() && properties.runIndefinitely);
@@ -124,7 +139,7 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 	    }
 
 	    // Send stopped event.
-	    final StoppedSendingEvent stoppedEvent = new StoppedSendingEvent(this, causedByError, errorMsg,
+	    final StoppedSendingEvent stoppedEvent = new StoppedSendingEvent(this, false, null,
 	            queuedStats.getQueuedSucces(), queuedStats.getRecipientDidntExist(),
 	            queuedStats.getRecipientIsBlocking(), queuedStats.getDisconnectOrOtherReason());
 	    listeners.stream().forEach((tsl) -> {
@@ -139,13 +154,12 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 	// called before this and the Telegram Id didn't change in the meantime,
 	// so there is no need to make sure the entry for the current Telegram Id
 	// changed.
-	if (event.queued) {
-	    historyManager.saveHistory(properties.telegramId, event.recipient,
-	            SkippedRecipientReason.PREVIOUS_RECIPIENT);
-	    queuedStats.registerSucces(event.recipient);
-	} else {
-	    queuedStats.registerFailure(event.recipient, null);
-	}
+	// if (event.queued) {
+	historyManager.saveHistory(properties.telegramId, event.recipient, SkippedRecipientReason.PREVIOUS_RECIPIENT);
+	queuedStats.registerSucces(event.recipient);
+	// } else {
+	// queuedStats.registerFailure(event.recipient, null);
+	// }
 
 	synchronized (listeners) {
 	    // Pass telegram sent event through.
@@ -153,6 +167,30 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 		tsl.handleTelegramSent(event);
 	    });
 	}
+    }
+
+    /**
+     * Updates the recipients via the API, returning the new array of recipients.
+     * 
+     * @param currentlyQueuedRecipient
+     *            The recipient that is currently being queued, which will be
+     *            removed from the returned recipients list.
+     * 
+     * @return
+     */
+    private String[] updateRecipients(String currentlyQueuedRecipient) {
+	recipientsListBuilder.refreshFilters();
+	final RecipientsRefreshedEvent refrevent = new RecipientsRefreshedEvent(this);
+
+	synchronized (listeners) {
+	    // Publish recipients refreshed event.
+	    listeners.stream().forEach((tsl) -> {
+		tsl.handleRecipientsRefreshed(refrevent);
+	    });
+	}
+	final Set<String> recipients = recipientsListBuilder.getRecipients();
+	recipients.remove(currentlyQueuedRecipient);
+	return recipients.toArray(new String[recipients.size()]);
     }
 
     /**
