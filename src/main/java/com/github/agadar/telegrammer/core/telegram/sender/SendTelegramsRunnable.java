@@ -74,7 +74,8 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 
 			if (properties.updateRecipientsAfterEveryTelegram) {
 			    while (recipients.length > 0 && !Thread.currentThread().isInterrupted()) {
-				int index = this.getIndexOfNextRecipientThatCanReceive(canReceivePredicate, recipients, 0);
+				int index = this.getIndexOfNextRecipientThatCanReceive(canReceivePredicate, recipients,
+				        0);
 
 				if (index == -1) {
 				    break;
@@ -232,7 +233,7 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 	try {
 	    // Make server call.
 	    final Nation n = nationStates.getNation(recipient).shards(NationShard.CAN_RECEIVE_CAMPAIGN_TELEGRAMS)
-	            .execute();
+	            .canReceiveTelegramFromRegion(properties.fromRegion).execute();
 	    final SkippedRecipientReason reason = (n == null) ? SkippedRecipientReason.NOT_FOUND
 	            : !n.canReceiveCampaignTelegrams ? SkippedRecipientReason.BLOCKING_CAMPAIGN : null;
 	    return canReceiveXTelegrams(reason, recipient);
