@@ -1,12 +1,12 @@
 package com.github.agadar.telegrammer.core.recipients.translator;
 
 import com.github.agadar.nationstates.NationStatesMock;
-import com.github.agadar.telegrammer.core.nationdumpaccess.NationDumpAccessMock;
 import com.github.agadar.telegrammer.core.recipients.filter.NullRecipientsFilter;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilter;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterType;
 import com.github.agadar.telegrammer.core.recipients.listbuilder.IRecipientsListBuilder;
 import com.github.agadar.telegrammer.core.recipients.provider.NationsProvider;
+import com.github.agadar.telegrammer.core.regiondumpaccess.RegionDumpAccessMock;
 import com.github.agadar.telegrammer.core.telegram.history.TelegramHistoryMock;
 
 import org.junit.After;
@@ -26,12 +26,12 @@ public class RecipientsListBuilderTranslatorTest {
     private RecipientsFilterTranslator filterTranslator;
     private RecipientsProviderTranslator recipientsTranslator;
     private NationStatesMock nationStatesMock;
-    private NationDumpAccessMock accessMock;
+    private RegionDumpAccessMock accessMock;
 
     @Before
     public void setUp() {
         nationStatesMock = new NationStatesMock();
-        accessMock = new NationDumpAccessMock();
+        accessMock = new RegionDumpAccessMock();
         recipientsTranslator = new RecipientsProviderTranslator(nationStatesMock, accessMock);
         filterTranslator = new RecipientsFilterTranslator(recipientsTranslator);
         telegramHistory = new TelegramHistoryMock();

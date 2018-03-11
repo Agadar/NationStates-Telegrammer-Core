@@ -25,7 +25,7 @@ public class AllNationsProvider extends RecipientsProvider {
         if (world == null || world.nations == null) {
             return new HashSet<>();
         }
-        return new HashSet<>(world.nations);
+        return world.nations;
     }
 
     @Override

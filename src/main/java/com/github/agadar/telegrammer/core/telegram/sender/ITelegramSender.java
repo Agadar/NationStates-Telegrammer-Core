@@ -19,15 +19,15 @@ public interface ITelegramSender {
     public void startSending(IRecipientsListBuilder recipientsListBuilder);
 
     /**
-     * Stops sending the telegram to the recipients. Does nothing if
-     * startSending
+     * Stops sending the telegram to the recipients.
      */
     public void stopSending();
 
     /**
      * Registers new telegram manager listeners.
      *
-     * @param newlisteners the listeners to register
+     * @param newlisteners
+     *            the listeners to register
      */
     public void addListeners(TelegramManagerListener... newlisteners);
 }

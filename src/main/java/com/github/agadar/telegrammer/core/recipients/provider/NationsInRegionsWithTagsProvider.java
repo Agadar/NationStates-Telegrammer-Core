@@ -4,9 +4,8 @@ import com.github.agadar.nationstates.INationStates;
 import com.github.agadar.nationstates.domain.world.World;
 import com.github.agadar.nationstates.enumerator.RegionTag;
 import com.github.agadar.nationstates.shard.WorldShard;
-
-import com.github.agadar.telegrammer.core.nationdumpaccess.INationDumpAccess;
 import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
+import com.github.agadar.telegrammer.core.regiondumpaccess.IRegionDumpAccess;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -20,8 +19,8 @@ public class NationsInRegionsWithTagsProvider extends RecipientsProviderUsingDum
 
     public final Set<RegionTag> regionTags;
 
-    public NationsInRegionsWithTagsProvider(INationStates nationStates, INationDumpAccess nationDumpAccess, Set<RegionTag> regionTags) {
-        super(nationStates, nationDumpAccess);
+    public NationsInRegionsWithTagsProvider(INationStates nationStates, IRegionDumpAccess regionDumpAccess, Set<RegionTag> regionTags) {
+        super(nationStates, regionDumpAccess);
         this.regionTags = regionTags;
     }
 
@@ -34,7 +33,7 @@ public class NationsInRegionsWithTagsProvider extends RecipientsProviderUsingDum
         if (world == null || world.regionsByTag() == null) {
             return new HashSet<>();
         }
-        return nationDumpAccess.getNationsInRegions(world.regionsByTag());
+        return regionDumpAccess.getNationsInRegions(world.regionsByTag());
     }
 
     @Override

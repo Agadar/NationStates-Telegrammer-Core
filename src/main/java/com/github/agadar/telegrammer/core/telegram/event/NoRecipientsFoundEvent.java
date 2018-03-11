@@ -13,14 +13,15 @@ public class NoRecipientsFoundEvent extends EventObject {
     /**
      * Duration of the time-out in milliseconds.
      */
-    public final int TimeOut;
+    public final int timeOut;
 
     /**
      * @param source
-     * @param timeout Duration of the time-out in milliseconds.
+     * @param timeout
+     *            Duration of the time-out in milliseconds.
      */
     public NoRecipientsFoundEvent(Object source, int timeout) {
-        super(source);
-        this.TimeOut = timeout;
+	super(source);
+	this.timeOut = timeout;
     }
 }

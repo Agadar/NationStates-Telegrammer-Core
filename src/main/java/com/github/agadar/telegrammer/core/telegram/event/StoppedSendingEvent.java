@@ -12,40 +12,38 @@ public class StoppedSendingEvent extends EventObject {
     /**
      * True if the manager stopped as result of an error.
      */
-    public final boolean CausedByError;
+    public final boolean causedByError;
     /**
      * Contains an error message if stopped as result of an error.
      */
-    public final String ErrorMsg;
+    public final String errorMsg;
     /**
      * Number of telegrams queued successfully.
      */
-    public final int QueuedSucces;
+    public final int queuedSucces;
     /**
-     * Number of telegrams that failed to queue because the recipient didn't
-     * exist.
+     * Number of telegrams that failed to queue because the recipient didn't exist.
      */
-    public final int RecipientDidntExist;
+    public final int recipientDidntExist;
     /**
-     * Number of telegrams that failed to queue because the recipient is
-     * blocking telegrams of that type.
+     * Number of telegrams that failed to queue because the recipient is blocking
+     * telegrams of that type.
      */
-    public final int RecipientIsBlocking;
+    public final int recipientIsBlocking;
     /**
-     * Number of telegrams that failed to queue because of some other reason,
-     * such as disconnect.
+     * Number of telegrams that failed to queue because of some other reason, such
+     * as disconnect.
      */
-    public final int DisconnectOrOtherReason;
+    public final int disconnectOrOtherReason;
 
-    public StoppedSendingEvent(Object source, boolean causedByError, String errorMsg,
-            int queuedSucces, int recipientDidntExist, int recipientIsBlocking,
-            int disconnectOrOtherReason) {
-        super(source);
-        this.CausedByError = causedByError;
-        this.ErrorMsg = errorMsg;
-        this.QueuedSucces = queuedSucces;
-        this.RecipientDidntExist = recipientDidntExist;
-        this.RecipientIsBlocking = recipientIsBlocking;
-        this.DisconnectOrOtherReason = disconnectOrOtherReason;
+    public StoppedSendingEvent(Object source, boolean causedByError, String errorMsg, int queuedSucces,
+            int recipientDidntExist, int recipientIsBlocking, int disconnectOrOtherReason) {
+	super(source);
+	this.causedByError = causedByError;
+	this.errorMsg = errorMsg;
+	this.queuedSucces = queuedSucces;
+	this.recipientDidntExist = recipientDidntExist;
+	this.recipientIsBlocking = recipientIsBlocking;
+	this.disconnectOrOtherReason = disconnectOrOtherReason;
     }
 }

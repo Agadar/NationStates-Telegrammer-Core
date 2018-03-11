@@ -2,8 +2,6 @@ package com.github.agadar.telegrammer.core.recipients.translator;
 
 import com.github.agadar.nationstates.INationStates;
 import com.github.agadar.nationstates.enumerator.RegionTag;
-
-import com.github.agadar.telegrammer.core.nationdumpaccess.INationDumpAccess;
 import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
 import com.github.agadar.telegrammer.core.recipients.provider.AllNationsProvider;
 import com.github.agadar.telegrammer.core.recipients.provider.DelegatesProvider;
@@ -20,6 +18,7 @@ import com.github.agadar.telegrammer.core.recipients.provider.NewWorldAssemblyMe
 import com.github.agadar.telegrammer.core.recipients.provider.NullRecipientsProvider;
 import com.github.agadar.telegrammer.core.recipients.provider.RefoundedNationsProvider;
 import com.github.agadar.telegrammer.core.recipients.provider.WorldAssemblyMembersProvider;
+import com.github.agadar.telegrammer.core.regiondumpaccess.IRegionDumpAccess;
 import com.github.agadar.telegrammer.core.util.StringFunctions;
 
 import java.util.HashSet;
@@ -28,11 +27,11 @@ import java.util.Set;
 public class RecipientsProviderTranslator implements IRecipientsProviderTranslator {
 
     private final INationStates nationStates;
-    private final INationDumpAccess nationDumpAccess;
+    private final IRegionDumpAccess regionDumpAccess;
 
-    public RecipientsProviderTranslator(INationStates nationStates, INationDumpAccess nationDumpAccess) {
+    public RecipientsProviderTranslator(INationStates nationStates, IRegionDumpAccess regionDumpAccess) {
         this.nationStates = nationStates;
-        this.nationDumpAccess = nationDumpAccess;
+        this.regionDumpAccess = regionDumpAccess;
     }
 
     @Override
@@ -50,16 +49,16 @@ public class RecipientsProviderTranslator implements IRecipientsProviderTranslat
                 return new EjectedNationsProvider(nationStates);
 
             case NATIONS_IN_EMBASSY_REGIONS:
-                return new NationsInEmbassyRegionsProvider(nationStates, nationDumpAccess, input);
+                return new NationsInEmbassyRegionsProvider(nationStates, regionDumpAccess, input);
 
             case NATIONS_IN_REGIONS_WITH_TAGS: {
                 final Set<RegionTag> regionTags = regionTagStringsToEnums(input);
-                return new NationsInRegionsWithTagsProvider(nationStates, nationDumpAccess, regionTags);
+                return new NationsInRegionsWithTagsProvider(nationStates, regionDumpAccess, regionTags);
             }
 
             case NATIONS_IN_REGIONS_WITHOUT_TAGS: {
                 final Set<RegionTag> regionTags = regionTagStringsToEnums(input);
-                return new NationsInRegionsWithoutTagsProvider(nationStates, nationDumpAccess, regionTags);
+                return new NationsInRegionsWithoutTagsProvider(nationStates, regionDumpAccess, regionTags);
             }
 
             case NATIONS_IN_REGIONS:
