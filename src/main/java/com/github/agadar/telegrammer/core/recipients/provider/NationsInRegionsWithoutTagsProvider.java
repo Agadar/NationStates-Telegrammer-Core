@@ -19,8 +19,8 @@ public class NationsInRegionsWithoutTagsProvider extends RecipientsProviderUsing
 
     public final Set<RegionTag> regionTags;
 
-    public NationsInRegionsWithoutTagsProvider(INationStates nationStates, IRegionDumpAccess nationDumpAccess, Set<RegionTag> regionTags) {
-        super(nationStates, nationDumpAccess);
+    public NationsInRegionsWithoutTagsProvider(INationStates nationStates, IRegionDumpAccess regionDumpAccess, Set<RegionTag> regionTags) {
+        super(nationStates, regionDumpAccess);
         this.regionTags = regionTags;
     }
 
@@ -33,7 +33,7 @@ public class NationsInRegionsWithoutTagsProvider extends RecipientsProviderUsing
         if (world == null || world.regionsByTag() == null) {
             return new HashSet<>();
         }
-        return nationDumpAccess.getNationsInRegions(world.regionsByTag());
+        return regionDumpAccess.getNationsInRegions(world.regionsByTag());
     }
 
     @Override

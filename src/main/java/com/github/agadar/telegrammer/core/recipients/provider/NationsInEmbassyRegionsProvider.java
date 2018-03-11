@@ -21,16 +21,16 @@ public class NationsInEmbassyRegionsProvider extends RecipientsProviderUsingDump
 
     public final Set<String> regionNames;
 
-    public NationsInEmbassyRegionsProvider(INationStates nationStates, IRegionDumpAccess nationDumpAccess,
+    public NationsInEmbassyRegionsProvider(INationStates nationStates, IRegionDumpAccess regionDumpAccess,
 	    Set<String> regionNames) {
-	super(nationStates, nationDumpAccess);
+	super(nationStates, regionDumpAccess);
 	this.regionNames = regionNames;
     }
 
     @Override
     public Set<String> getRecipients() {
 	final Set<String> embassyRegionsOfRegions = getEmbassyRegionsOfRegions(regionNames);
-	return nationDumpAccess.getNationsInRegions(embassyRegionsOfRegions);
+	return regionDumpAccess.getNationsInRegions(embassyRegionsOfRegions);
     }
 
     @Override

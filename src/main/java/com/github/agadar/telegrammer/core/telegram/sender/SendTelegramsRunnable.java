@@ -148,12 +148,13 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 	// called before this and the Telegram Id didn't change in the meantime,
 	// so there is no need to make sure the entry for the current Telegram Id
 	// changed.
-	// if (event.queued) {
-	historyManager.saveHistory(properties.telegramId, event.recipient, SkippedRecipientReason.PREVIOUS_RECIPIENT);
-	queuedStats.registerSucces(event.recipient);
-	// } else {
-	// queuedStats.registerFailure(event.recipient, null);
-	// }
+	if (event.queued) {
+	    historyManager.saveHistory(properties.telegramId, event.recipient,
+	            SkippedRecipientReason.PREVIOUS_RECIPIENT);
+	    queuedStats.registerSucces(event.recipient);
+	} else {
+	    queuedStats.registerFailure(event.recipient, null);
+	}
 
 	synchronized (listeners) {
 	    // Pass telegram sent event through.
