@@ -65,6 +65,11 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 			} else {
 			    while (recipients.length > 0 && !Thread.currentThread().isInterrupted()) {
 				sendTelegram(recipients[0]);
+				
+				if (Thread.currentThread().isInterrupted()) {
+				    break;
+				}
+				
 				recipients = this.updateRecipients();
 			    }
 			}
@@ -82,6 +87,11 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 				}
 
 				sendTelegram(recipients[index]);
+				
+				if (Thread.currentThread().isInterrupted()) {
+				    break;
+				}
+				
 				recipients = this.updateRecipients();
 			    }
 			} else {
