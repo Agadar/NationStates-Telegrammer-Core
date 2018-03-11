@@ -62,13 +62,10 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 
 		    if (properties.lastTelegramType == TelegramType.NORMAL || properties.lastTelegramType == null) {
 			if (!properties.updateRecipientsAfterEveryTelegram) {
-			    System.out.println("normal: " + Arrays.toString(recipients)); // <------------------
 			    sendTelegram(recipients);
 			} else {
 			    while (!Thread.currentThread().isInterrupted()) {
-
 				recipients = this.updateRecipients(null);
-				System.out.println("normal+refresh: " + Arrays.toString(recipients)); // <------------------
 				if (recipients.length < 1) {
 				    break;
 				}
@@ -83,7 +80,6 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 			if (properties.updateRecipientsAfterEveryTelegram) {
 			    while (!Thread.currentThread().isInterrupted()) {
 				recipients = this.updateRecipients(null);
-				System.out.println("special+refresh: " + Arrays.toString(recipients)); // <------------------
 				int index = this.getIndexOfNextRecipientThatCanReceive(canReceivePredicate, recipients,
 				        0);
 
@@ -93,7 +89,6 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 				sendTelegram(recipients[index]);
 			    }
 			} else {
-			    System.out.println("special: " + Arrays.toString(recipients)); // <------------------
 			    int index = 0;
 			    while ((index = this.getIndexOfNextRecipientThatCanReceive(canReceivePredicate, recipients,
 			            index)) != -1) {
