@@ -63,13 +63,9 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 			if (!properties.updateRecipientsAfterEveryTelegram) {
 			    sendTelegram(recipients);
 			} else {
-			    while (!Thread.currentThread().isInterrupted()) {
-				recipients = this.updateRecipients(null);
-				if (recipients.length < 1) {
-				    break;
-				}
-
+			    while (recipients.length > 0 && !Thread.currentThread().isInterrupted()) {
 				sendTelegram(recipients[0]);
+				recipients = this.updateRecipients();
 			    }
 			}
 		    } else {
@@ -77,15 +73,15 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 			        .getCanReceiveTelegramPredicate(properties.lastTelegramType);
 
 			if (properties.updateRecipientsAfterEveryTelegram) {
-			    while (!Thread.currentThread().isInterrupted()) {
-				recipients = this.updateRecipients(null);
-				int index = this.getIndexOfNextRecipientThatCanReceive(canReceivePredicate, recipients,
-				        0);
+			    while (recipients.length > 0 && !Thread.currentThread().isInterrupted()) {
+				int index = this.getIndexOfNextRecipientThatCanReceive(canReceivePredicate, recipients, 0);
 
 				if (index == -1) {
 				    break;
 				}
+
 				sendTelegram(recipients[index]);
+				recipients = this.updateRecipients();
 			    }
 			} else {
 			    int index = 0;
@@ -119,7 +115,7 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 		    // If running indefinitely, then sleep and afterwards refresh the list.
 		    if (properties.runIndefinitely) {
 			Thread.sleep(noRecipientsFoundTimeOut);
-			recipients = this.updateRecipients(null);
+			recipients = this.updateRecipients();
 		    }
 		}
 	    } while (!Thread.currentThread().isInterrupted() && properties.runIndefinitely);
@@ -167,13 +163,9 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
     /**
      * Updates the recipients via the API, returning the new array of recipients.
      * 
-     * @param currentlyQueuedRecipient
-     *            The recipient that is currently being queued, which will be
-     *            removed from the returned recipients list.
-     * 
      * @return
      */
-    private String[] updateRecipients(String currentlyQueuedRecipient) {
+    private String[] updateRecipients() {
 	recipientsListBuilder.refreshFilters();
 	final RecipientsRefreshedEvent refrevent = new RecipientsRefreshedEvent(this);
 
@@ -184,7 +176,6 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 	    });
 	}
 	final Set<String> recipients = recipientsListBuilder.getRecipients();
-	recipients.remove(currentlyQueuedRecipient);
 	return recipients.toArray(new String[recipients.size()]);
     }
 
