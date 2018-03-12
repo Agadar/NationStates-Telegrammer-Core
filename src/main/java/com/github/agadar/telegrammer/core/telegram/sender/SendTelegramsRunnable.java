@@ -49,13 +49,12 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 
     @Override
     public void run() {
-	Thread sendTelegramThread = null;
-	final Set<String> recipientsSet = recipientsListBuilder.getRecipients();
-	String[] recipients = recipientsSet.toArray(new String[recipientsSet.size()]);
-
 	try {
-	    // Loop until either the thread has been interrupted, or we're done sending.
 	    do {
+		// Just get the recipients, as we expect the API to already have been called
+		// before running.
+		String[] recipients = this.getRecipients();
+
 		// If there are recipients available, send telegrams.
 		if (recipients.length > 0) {
 
@@ -65,12 +64,12 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 			} else {
 			    while (recipients.length > 0 && !Thread.currentThread().isInterrupted()) {
 				sendTelegram(recipients[0]);
-				
+
 				if (Thread.currentThread().isInterrupted()) {
 				    break;
 				}
-				
-				recipients = this.updateRecipients();
+				this.updateRecipientsFromApi();
+				recipients = this.getRecipients();
 			    }
 			}
 		    } else {
@@ -82,42 +81,33 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 				int index = this.getIndexOfNextRecipientThatCanReceive(canReceivePredicate, recipients,
 				        0);
 
-				if (index == -1) {
+				if (Thread.currentThread().isInterrupted() || index == -1) {
 				    break;
 				}
-
 				sendTelegram(recipients[index]);
-				
+
 				if (Thread.currentThread().isInterrupted()) {
 				    break;
 				}
-				
-				recipients = this.updateRecipients();
+				this.updateRecipientsFromApi();
+				recipients = this.getRecipients();
 			    }
 			} else {
 			    int index = 0;
 			    while ((index = this.getIndexOfNextRecipientThatCanReceive(canReceivePredicate, recipients,
 			            index)) != -1) {
 
-				if (sendTelegramThread != null) {
-				    sendTelegramThread.join();
+				if (Thread.currentThread().isInterrupted()) {
+				    break;
 				}
-
-				final String recipient = recipients[index++];
-				sendTelegramThread = new Thread(() -> {
-				    sendTelegram(recipient);
-				});
-				sendTelegramThread.start();
+				sendTelegram(recipients[index++]);
 			    }
 			}
 		    }
 		    // Else if the recipients list is empty...
 		} else {
-
-		    // Fire no recipients found event.
 		    final NoRecipientsFoundEvent event = new NoRecipientsFoundEvent(this, noRecipientsFoundTimeOut);
 		    synchronized (listeners) {
-			// Publish no recipients found event.
 			listeners.stream().forEach((tsl) -> {
 			    tsl.handleNoRecipientsFound(event);
 			});
@@ -126,20 +116,13 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 		    // If running indefinitely, then sleep and afterwards refresh the list.
 		    if (properties.runIndefinitely) {
 			Thread.sleep(noRecipientsFoundTimeOut);
-			recipients = this.updateRecipients();
+			this.updateRecipientsFromApi();
 		    }
 		}
 	    } while (!Thread.currentThread().isInterrupted() && properties.runIndefinitely);
 	} catch (InterruptedException ex) {
 	    /* Just fall through to finally. */
 	} finally {
-
-	    // Stop the telegram sending thread if applicable.
-	    if (sendTelegramThread != null) {
-		sendTelegramThread.interrupt();
-	    }
-
-	    // Send stopped event.
 	    final StoppedSendingEvent stoppedEvent = new StoppedSendingEvent(this, false, null,
 	            queuedStats.getQueuedSucces(), queuedStats.getRecipientDidntExist(),
 	            queuedStats.getRecipientIsBlocking(), queuedStats.getDisconnectOrOtherReason());
@@ -164,7 +147,6 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 	}
 
 	synchronized (listeners) {
-	    // Pass telegram sent event through.
 	    listeners.stream().forEach((tsl) -> {
 		tsl.handleTelegramSent(event);
 	    });
@@ -172,22 +154,27 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
     }
 
     /**
-     * Updates the recipients via the API, returning the new array of recipients.
+     * Gets the recipients, applying the filters and the history but not calling the
+     * API.
      * 
      * @return
      */
-    private String[] updateRecipients() {
+    private String[] getRecipients() {
+	final Set<String> recipientsSet = recipientsListBuilder.getRecipients();
+	return recipientsSet.toArray(new String[recipientsSet.size()]);
+    }
+
+    /**
+     * Updates the recipients from the API.
+     */
+    private void updateRecipientsFromApi() {
 	recipientsListBuilder.refreshFilters();
 	final RecipientsRefreshedEvent refrevent = new RecipientsRefreshedEvent(this);
-
 	synchronized (listeners) {
-	    // Publish recipients refreshed event.
 	    listeners.stream().forEach((tsl) -> {
 		tsl.handleRecipientsRefreshed(refrevent);
 	    });
 	}
-	final Set<String> recipients = recipientsListBuilder.getRecipients();
-	return recipients.toArray(new String[recipients.size()]);
     }
 
     /**
@@ -196,16 +183,14 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
      * @param recipients
      */
     private void sendTelegram(String... recipients) {
-	// Prepare query.
 	final TelegramQuery q = nationStates
 	        .sendTelegrams(properties.clientKey, properties.telegramId, properties.secretKey, recipients)
 	        .addListeners(this);
 
-	// Tag as recruitment telegram if needed.
 	if (properties.lastTelegramType == TelegramType.RECRUITMENT) {
 	    q.isRecruitment();
 	}
-	q.execute(null); // send the telegrams
+	q.execute(null);
     }
 
     /**
@@ -218,7 +203,6 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
      */
     private boolean canReceiveRecruitmentTelegrams(String recipient) {
 	try {
-	    // Make server call.
 	    final Nation n = nationStates.getNation(recipient).shards(NationShard.CAN_RECEIVE_RECRUITMENT_TELEGRAMS)
 	            .canReceiveTelegramFromRegion(properties.fromRegion).execute();
 	    final SkippedRecipientReason reason = (n == null) ? SkippedRecipientReason.NOT_FOUND
@@ -241,7 +225,6 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
      */
     private boolean canReceiveCampaignTelegrams(String recipient) {
 	try {
-	    // Make server call.
 	    final Nation n = nationStates.getNation(recipient).shards(NationShard.CAN_RECEIVE_CAMPAIGN_TELEGRAMS)
 	            .canReceiveTelegramFromRegion(properties.fromRegion).execute();
 	    final SkippedRecipientReason reason = (n == null) ? SkippedRecipientReason.NOT_FOUND
@@ -269,7 +252,6 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 	    final RecipientRemovedEvent event = new RecipientRemovedEvent(this, recipient, reason);
 
 	    synchronized (listeners) {
-		// Pass telegram sent event through.
 		listeners.stream().forEach((tsl) -> {
 		    tsl.handleRecipientRemoved(event);
 		});
