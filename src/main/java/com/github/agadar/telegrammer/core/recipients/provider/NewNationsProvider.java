@@ -1,12 +1,11 @@
 package com.github.agadar.telegrammer.core.recipients.provider;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import com.github.agadar.nationstates.INationStates;
-import com.github.agadar.nationstates.domain.world.World;
 import com.github.agadar.nationstates.shard.WorldShard;
 import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Fetches recently new nations from the API.
@@ -21,11 +20,7 @@ public class NewNationsProvider extends RecipientsProvider {
 
     @Override
     public Set<String> getRecipients() {
-        final World world = nationStates.getWorld(WorldShard.NEWEST_NATIONS).execute();
-        if (world == null || world.newestNations == null) {
-            return new HashSet<>();
-        }
-        return world.newestNations;
+        return new LinkedHashSet<>(nationStates.getWorld(WorldShard.NEWEST_NATIONS).execute().getNewestNations());
     }
 
     @Override

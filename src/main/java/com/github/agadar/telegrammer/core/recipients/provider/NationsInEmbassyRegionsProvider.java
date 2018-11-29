@@ -1,12 +1,10 @@
 package com.github.agadar.telegrammer.core.recipients.provider;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.github.agadar.nationstates.INationStates;
-import com.github.agadar.nationstates.domain.region.Region;
 import com.github.agadar.nationstates.enumerator.EmbassyStatus;
 import com.github.agadar.nationstates.shard.RegionShard;
 import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
@@ -22,38 +20,34 @@ public class NationsInEmbassyRegionsProvider extends RecipientsProviderUsingDump
     public final Set<String> regionNames;
 
     public NationsInEmbassyRegionsProvider(INationStates nationStates, IRegionDumpAccess regionDumpAccess,
-	    Set<String> regionNames) {
-	super(nationStates, regionDumpAccess);
-	this.regionNames = regionNames;
+            Set<String> regionNames) {
+        super(nationStates, regionDumpAccess);
+        this.regionNames = regionNames;
     }
 
     @Override
     public Set<String> getRecipients() {
-	final Set<String> embassyRegionsOfRegions = getEmbassyRegionsOfRegions(regionNames);
-	return regionDumpAccess.getNationsInRegions(embassyRegionsOfRegions);
+        var embassyRegionsOfRegions = getEmbassyRegionsOfRegions(regionNames);
+        return regionDumpAccess.getNationsInRegions(embassyRegionsOfRegions);
     }
 
     @Override
     public String toString() {
-	return RecipientsProviderType.NATIONS_IN_EMBASSY_REGIONS.toString() + " " + regionNames.toString();
+        return RecipientsProviderType.NATIONS_IN_EMBASSY_REGIONS.toString() + " " + regionNames.toString();
     }
 
     private Set<String> getEmbassyRegionsOfRegions(Collection<String> regionNames) {
-	final HashSet<String> embassyRegionsOfRegions = new HashSet<>();
-
-	regionNames.forEach((regionName) -> {
-	    embassyRegionsOfRegions.addAll(getEmbassyRegionsOfRegion(regionName));
-	});
-	return embassyRegionsOfRegions;
+        return regionNames.stream()
+                .map((regionName) -> getEmbassyRegionsOfRegion(regionName))
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet());
     }
 
     private Set<String> getEmbassyRegionsOfRegion(String regionName) {
-	final Region region = nationStates.getRegion(regionName).shards(RegionShard.EMBASSIES).execute();
-	if (region == null || region.embassies == null) {
-	    return new HashSet<>();
-	}
-	return region.embassies.stream().filter(embassy -> embassy.status == EmbassyStatus.ESTABLISHED)
-		.map(embassy -> embassy.regionName).collect(Collectors.toSet());
+        return nationStates.getRegion(regionName).shards(RegionShard.EMBASSIES).execute()
+                .getEmbassies().stream()
+                .filter(embassy -> embassy.getStatus() == EmbassyStatus.ESTABLISHED)
+                .map(embassy -> embassy.getRegionName())
+                .collect(Collectors.toSet());
     }
-
 }

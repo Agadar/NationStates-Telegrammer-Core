@@ -1,13 +1,11 @@
 package com.github.agadar.telegrammer.core.recipients.provider;
 
+import java.util.Set;
+
 import com.github.agadar.nationstates.INationStates;
-import com.github.agadar.nationstates.domain.worldassembly.WorldAssembly;
 import com.github.agadar.nationstates.enumerator.Council;
 import com.github.agadar.nationstates.shard.WorldAssemblyShard;
 import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Fetches names of all World Assembly delegates from the API.
@@ -22,14 +20,10 @@ public class DelegatesProvider extends RecipientsProvider {
 
     @Override
     public Set<String> getRecipients() {
-        final WorldAssembly worldAssembly = nationStates
-                .getWorldAssembly(Council.SECURITY_COUNCIL)
+        return nationStates.getWorldAssembly(Council.SECURITY_COUNCIL)
                 .shards(WorldAssemblyShard.DELEGATES)
-                .execute();
-        if (worldAssembly == null || worldAssembly.delegates == null) {
-            return new HashSet<>();
-        }
-        return worldAssembly.delegates;
+                .execute()
+                .getDelegates();
     }
 
     @Override

@@ -2,7 +2,6 @@ package com.github.agadar.telegrammer.core.regiondumpaccess;
 
 import java.io.FileNotFoundException;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -27,16 +26,18 @@ public class RegionDumpAccess implements IRegionDumpAccess {
     private final INationStates nationStates;
 
     public RegionDumpAccess(INationStates nationStates) {
-	this.nationStates = nationStates;
+        this.nationStates = nationStates;
     }
 
     @Override
     public Set<String> getNationsInRegions(Collection<String> regionNames) {
-	this.importDumpFile();
-	return regionNames.stream().map((regionName) -> StringFunctions.normalizeName(regionName))
-	        .map((regionName) -> regionsWithNations.get(regionName))
-	        .filter((nationsInRegion) -> (nationsInRegion != null)).flatMap(nations -> nations.stream())
-	        .collect(Collectors.toSet());
+        this.importDumpFile();
+        return regionNames.stream()
+                .map((regionName) -> StringFunctions.normalizeName(regionName))
+                .map((regionName) -> regionsWithNations.get(regionName))
+                .filter((nationsInRegion) -> (nationsInRegion != null))
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet());
     }
 
     /**
@@ -44,29 +45,27 @@ public class RegionDumpAccess implements IRegionDumpAccess {
      * hours.
      */
     private void importDumpFile() {
-	if (regionsWithNations != null && System.currentTimeMillis() - hasImportedDumpFile < 24 * 60 * 60 * 1000) {
-	    return;
-	}
-	Set<Region> dump;
+        if (regionsWithNations != null && System.currentTimeMillis() - hasImportedDumpFile < 24 * 60 * 60 * 1000) {
+            return;
+        }
+        Set<Region> dump;
 
-	try {
-	    dump = nationStates.getRegionDump(DailyDumpMode.READ_LOCAL, region -> true).execute();
-	} catch (Exception ex) {
+        try {
+            dump = nationStates.getRegionDump(DailyDumpMode.READ_LOCAL, region -> true).execute();
+        } catch (Exception ex) {
 
-	    // If the exception isn't just a FileNotFoundException, throw this.
-	    if (ex.getCause().getClass() != FileNotFoundException.class) {
-		throw ex;
-	    }
+            // If the exception isn't just a FileNotFoundException, throw this.
+            if (ex.getCause().getClass() != FileNotFoundException.class) {
+                throw ex;
+            }
 
-	    // If dump file not found, try download it from the server.
-	    dump = nationStates.getRegionDump(DailyDumpMode.DOWNLOAD_THEN_READ_LOCAL, region -> true).execute();
-	}
-	regionsWithNations = dump.stream()
-	        .collect(Collectors.toMap(region -> StringFunctions.normalizeName(region.name),
-	                region -> region.nationNames != null
-	                        ? region.nationNames.stream().map(nation -> StringFunctions.normalizeName(nation))
-	                                .collect(Collectors.toSet())
-	                        : new HashSet<>()));
-	hasImportedDumpFile = System.currentTimeMillis();
+            // If dump file not found, try download it from the server.
+            dump = nationStates.getRegionDump(DailyDumpMode.DOWNLOAD_THEN_READ_LOCAL, region -> true).execute();
+        }
+        regionsWithNations = dump.stream()
+                .collect(Collectors.toMap(region -> StringFunctions.normalizeName(region.getName()),
+                        region -> region.getNationNames().stream().map(nation -> StringFunctions.normalizeName(nation))
+                                .collect(Collectors.toSet())));
+        hasImportedDumpFile = System.currentTimeMillis();
     }
 }

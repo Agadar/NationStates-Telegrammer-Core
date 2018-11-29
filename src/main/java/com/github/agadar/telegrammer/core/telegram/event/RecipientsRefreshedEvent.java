@@ -10,7 +10,9 @@ import java.util.EventObject;
  */
 public class RecipientsRefreshedEvent extends EventObject {
 
+    private static final long serialVersionUID = 1L;
+
     public RecipientsRefreshedEvent(Object source) {
-	super(source);
+        super(source);
     }
 }

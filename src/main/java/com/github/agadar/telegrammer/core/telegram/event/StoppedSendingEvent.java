@@ -9,6 +9,8 @@ import java.util.EventObject;
  */
 public class StoppedSendingEvent extends EventObject {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      * True if the manager stopped as result of an error.
      */
@@ -38,12 +40,12 @@ public class StoppedSendingEvent extends EventObject {
 
     public StoppedSendingEvent(Object source, boolean causedByError, String errorMsg, int queuedSucces,
             int recipientDidntExist, int recipientIsBlocking, int disconnectOrOtherReason) {
-	super(source);
-	this.causedByError = causedByError;
-	this.errorMsg = errorMsg;
-	this.queuedSucces = queuedSucces;
-	this.recipientDidntExist = recipientDidntExist;
-	this.recipientIsBlocking = recipientIsBlocking;
-	this.disconnectOrOtherReason = disconnectOrOtherReason;
+        super(source);
+        this.causedByError = causedByError;
+        this.errorMsg = errorMsg;
+        this.queuedSucces = queuedSucces;
+        this.recipientDidntExist = recipientDidntExist;
+        this.recipientIsBlocking = recipientIsBlocking;
+        this.disconnectOrOtherReason = disconnectOrOtherReason;
     }
 }

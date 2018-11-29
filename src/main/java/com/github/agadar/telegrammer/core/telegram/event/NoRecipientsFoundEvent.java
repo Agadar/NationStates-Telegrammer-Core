@@ -10,6 +10,8 @@ import java.util.EventObject;
  */
 public class NoRecipientsFoundEvent extends EventObject {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      * Duration of the time-out in milliseconds.
      */
@@ -17,11 +19,10 @@ public class NoRecipientsFoundEvent extends EventObject {
 
     /**
      * @param source
-     * @param timeout
-     *            Duration of the time-out in milliseconds.
+     * @param timeout Duration of the time-out in milliseconds.
      */
     public NoRecipientsFoundEvent(Object source, int timeout) {
-	super(source);
-	this.timeOut = timeout;
+        super(source);
+        this.timeOut = timeout;
     }
 }

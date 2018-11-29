@@ -23,10 +23,10 @@ public final class StringFunctions {
      * The keyword used for finding the correct happenings in a list of happenings.
      */
     public static enum KeyWord {
-	became, // new delegates
-	refounded, // refounded nations
-	admitted // new WA members
-	;
+        became, // new delegates
+        refounded, // refounded nations
+        admitted // new WA members
+        ;
     }
 
     /**
@@ -47,11 +47,11 @@ public final class StringFunctions {
      * @return
      */
     public static HashSet<String> stringToHashSet(String string) {
-	if (string == null || string.isEmpty()) {
-	    return new HashSet<>();
-	}
-	final List<String> asList = Arrays.asList(string.trim().split("\\s*,\\s*"));
-	return asList.size() == 1 && asList.get(0).isEmpty() ? new HashSet<>() : new HashSet<>(asList);
+        if (string == null || string.isEmpty()) {
+            return new HashSet<>();
+        }
+        final List<String> asList = Arrays.asList(string.trim().split("\\s*,\\s*"));
+        return asList.size() == 1 && asList.get(0).isEmpty() ? new HashSet<>() : new HashSet<>(asList);
     }
 
     /**
@@ -61,23 +61,22 @@ public final class StringFunctions {
      * @return
      */
     public static ArrayList<String> stringToArrayList(String string) {
-	if (string == null || string.isEmpty()) {
-	    return new ArrayList<>();
-	}
-	return new ArrayList<>(Arrays.asList(string.trim().split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1)));
+        if (string == null || string.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return new ArrayList<>(Arrays.asList(string.trim().split(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", -1)));
     }
 
     /**
      * Parses the supplied string values to a set of RegionTags. Strings that cannot
      * be parsed are ignored.
      *
-     * @param tagsStrSet
-     *            The strings to parse
+     * @param tagsStrSet The strings to parse
      * @return The resulting RegionTags
      */
     public static Set<RegionTag> stringsToRegionTags(Collection<String> tagsStrSet) {
-	return tagsStrSet.stream().map((tagStr) -> RegionTag.fromString(tagStr)).filter(tag -> tag != RegionTag.NULL)
-		.collect(Collectors.toSet());
+        return tagsStrSet.stream().map((tagStr) -> RegionTag.fromString(tagStr)).filter(tag -> tag != RegionTag.NULL)
+                .collect(Collectors.toSet());
     }
 
     /**
@@ -89,9 +88,11 @@ public final class StringFunctions {
      * @return Nation names
      */
     public static Set<String> extractNationsFromHappenings(Collection<Happening> happenings, KeyWord keyword) {
-	return happenings.stream().filter(happening -> happening.description.contains(keyword.toString()))
-		.map(happening -> PATTERN.matcher(happening.description)).filter(matcher -> matcher.find())
-		.map(matcher -> matcher.group(1)).collect(Collectors.toSet());
+        return happenings.stream()
+                .filter(happening -> happening.getDescription().contains(keyword.toString()))
+                .map(happening -> PATTERN.matcher(happening.getDescription()))
+                .filter(matcher -> matcher.find())
+                .map(matcher -> matcher.group(1)).collect(Collectors.toSet());
     }
 
     /**
@@ -103,6 +104,6 @@ public final class StringFunctions {
      * @return
      */
     public static String normalizeName(String name) {
-	return name.replace(' ', '_').toLowerCase();
+        return name.replace(' ', '_').toLowerCase();
     }
 }

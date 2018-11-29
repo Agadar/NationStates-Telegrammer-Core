@@ -29,33 +29,34 @@ public class EjectedNationsProviderTest {
 
     @Before
     public void setUp() {
-	world = new World();
-	world.happenings = new TreeSet<>();
-	world.happenings.add(new EjectedHappening(193257689L, 1520092742L,
-		"@@demorlan_goricky@@ was ejected from %%canterbury%% by @@new_legland@@.", "new_legland",
-		"demorlan_goricky", true, "canterbury"));
-	world.happenings.add(new Happening(193260412L, 1520094314L,
-		"@@d-community@@ changed its national motto to \"Abrir todas las jaulas\"."));
+        world = new World();
+        world.setHappenings(new TreeSet<>());
+        world.getHappenings()
+                .add(new EjectedHappening(193257689L, 1520092742L,
+                        "@@demorlan_goricky@@ was ejected from %%canterbury%% by @@new_legland@@.", "new_legland",
+                        "demorlan_goricky", true, "canterbury"));
+        world.getHappenings().add(new Happening(193260412L, 1520094314L,
+                "@@d-community@@ changed its national motto to \"Abrir todas las jaulas\"."));
 
-	worldQueryMock = Mockito.mock(WorldQuery.class);
-	Mockito.when(worldQueryMock.execute()).thenReturn(world);
+        worldQueryMock = Mockito.mock(WorldQuery.class);
+        Mockito.when(worldQueryMock.execute()).thenReturn(world);
 
-	nationStatesMock = Mockito.mock(NationStates.class);
-	Mockito.when(nationStatesMock.getWorld(WorldShard.HAPPENINGS)).thenReturn(worldQueryMock);
+        nationStatesMock = Mockito.mock(NationStates.class);
+        Mockito.when(nationStatesMock.getWorld(WorldShard.HAPPENINGS)).thenReturn(worldQueryMock);
 
-	provider = new EjectedNationsProvider(nationStatesMock);
+        provider = new EjectedNationsProvider(nationStatesMock);
     }
 
     @Test
     public void testGetRecipients() {
-	System.out.println("testGetRecipients");
+        System.out.println("testGetRecipients");
 
-	// Act
-	final Set<String> ejectedNations = provider.getRecipients();
+        // Act
+        final Set<String> ejectedNations = provider.getRecipients();
 
-	// Assert
-	Assert.assertEquals(1, ejectedNations.size());
-	Assert.assertEquals("demorlan_goricky", ejectedNations.iterator().next());
+        // Assert
+        Assert.assertEquals(1, ejectedNations.size());
+        Assert.assertEquals("demorlan_goricky", ejectedNations.iterator().next());
     }
 
 }

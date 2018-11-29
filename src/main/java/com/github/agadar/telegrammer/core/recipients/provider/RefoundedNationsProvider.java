@@ -1,15 +1,12 @@
 package com.github.agadar.telegrammer.core.recipients.provider;
 
+import java.util.Set;
+
 import com.github.agadar.nationstates.INationStates;
-import com.github.agadar.nationstates.domain.world.World;
 import com.github.agadar.nationstates.enumerator.HappeningsFilter;
 import com.github.agadar.nationstates.shard.WorldShard;
 import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
-
 import com.github.agadar.telegrammer.core.util.StringFunctions;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Fetches recently refounded nations from the API.
@@ -24,12 +21,9 @@ public class RefoundedNationsProvider extends RecipientsProvider {
 
     @Override
     public Set<String> getRecipients() {
-        final World world = nationStates.getWorld(WorldShard.HAPPENINGS)
-                .happeningsFilter(HappeningsFilter.FOUNDING).execute();
-        if (world == null || world.happenings == null) {
-            return new HashSet<>();
-        }
-        return StringFunctions.extractNationsFromHappenings(world.happenings, StringFunctions.KeyWord.refounded);
+        var happenings = nationStates.getWorld(WorldShard.HAPPENINGS).happeningsFilter(HappeningsFilter.FOUNDING)
+                .execute().getHappenings();
+        return StringFunctions.extractNationsFromHappenings(happenings, StringFunctions.KeyWord.refounded);
     }
 
     @Override

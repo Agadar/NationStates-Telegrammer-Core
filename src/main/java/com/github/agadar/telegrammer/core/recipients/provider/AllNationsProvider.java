@@ -1,12 +1,10 @@
 package com.github.agadar.telegrammer.core.recipients.provider;
 
+import java.util.Set;
+
 import com.github.agadar.nationstates.INationStates;
-import com.github.agadar.nationstates.domain.world.World;
 import com.github.agadar.nationstates.shard.WorldShard;
 import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Fetches ALL nation names from the API.
@@ -21,11 +19,7 @@ public class AllNationsProvider extends RecipientsProvider {
 
     @Override
     public Set<String> getRecipients() {
-        final World world = nationStates.getWorld(WorldShard.NATIONS).execute();
-        if (world == null || world.nations == null) {
-            return new HashSet<>();
-        }
-        return world.nations;
+        return nationStates.getWorld(WorldShard.NATIONS).execute().getNations();
     }
 
     @Override

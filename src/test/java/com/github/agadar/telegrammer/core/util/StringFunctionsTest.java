@@ -20,43 +20,43 @@ public class StringFunctionsTest {
 
     @Test
     public void testStringsToRegionTags() {
-	System.out.println("testStringsToRegionTags");
+        System.out.println("testStringsToRegionTags");
 
-	// Arrange
-	final Set<RegionTag> expectedRegionTags = new HashSet();
-	expectedRegionTags.add(RegionTag.ANTI_CAPITALIST);
-	expectedRegionTags.add(RegionTag.CASUAL);
+        // Arrange
+        final Set<RegionTag> expectedRegionTags = new HashSet<RegionTag>();
+        expectedRegionTags.add(RegionTag.ANTI_CAPITALIST);
+        expectedRegionTags.add(RegionTag.CASUAL);
 
-	final Set<String> regionTagStrings = new HashSet();
-	regionTagStrings.add("anti-capitalist");
-	regionTagStrings.add("casual");
-	regionTagStrings.add("non-existent-tag-4765728462");
+        final Set<String> regionTagStrings = new HashSet<String>();
+        regionTagStrings.add("anti-capitalist");
+        regionTagStrings.add("casual");
+        regionTagStrings.add("non-existent-tag-4765728462");
 
-	// Act
-	final Set<RegionTag> regionTags = StringFunctions.stringsToRegionTags(regionTagStrings);
+        // Act
+        final Set<RegionTag> regionTags = StringFunctions.stringsToRegionTags(regionTagStrings);
 
-	// Assert
-	Assert.assertTrue(Objects.deepEquals(regionTags, expectedRegionTags));
+        // Assert
+        Assert.assertTrue(Objects.deepEquals(regionTags, expectedRegionTags));
 
     }
 
     @Test
     public void testExtractNationsFromHappenings() {
-	System.out.println("testExtractNationsFromHappenings");
+        System.out.println("testExtractNationsFromHappenings");
 
-	// Arrange
-	final Set<String> expectedNations = new HashSet();
-	expectedNations.add("tientang");
+        // Arrange
+        final Set<String> expectedNations = new HashSet<String>();
+        expectedNations.add("tientang");
 
-	final Set<Happening> happenings = new HashSet();
-	happenings.add(new Happening(193257689L, 1520092742L, "@@ninetang@@ applied to join the World Assembly."));
-	happenings.add(new Happening(193257689L, 1520092742L, "@@tientang@@ was admitted to the World Assembly."));
+        final Set<Happening> happenings = new HashSet<Happening>();
+        happenings.add(new Happening(193257689L, 1520092742L, "@@ninetang@@ applied to join the World Assembly."));
+        happenings.add(new Happening(193257689L, 1520092742L, "@@tientang@@ was admitted to the World Assembly."));
 
-	// Act
-	final Set<String> nations = StringFunctions.extractNationsFromHappenings(happenings, KeyWord.admitted);
+        // Act
+        final Set<String> nations = StringFunctions.extractNationsFromHappenings(happenings, KeyWord.admitted);
 
-	// Assert
-	Assert.assertTrue(Objects.deepEquals(expectedNations, nations));
+        // Assert
+        Assert.assertTrue(Objects.deepEquals(expectedNations, nations));
     }
 
 }

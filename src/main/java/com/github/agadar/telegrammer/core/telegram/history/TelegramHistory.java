@@ -37,75 +37,75 @@ public class TelegramHistory implements ITelegramHistory {
     private final ApplicationProperties properties;
 
     public TelegramHistory(ApplicationProperties properties, String historyFileName) {
-	this.properties = properties;
-	this.historyFile = Paths.get(historyFileName);
+        this.properties = properties;
+        this.historyFile = Paths.get(historyFileName);
     }
 
     @Override
     public SkippedRecipientReason getSkippedRecipientReason(String telegramId, String recipient) {
-	return history.get(new Tuple(telegramId, recipient));
+        return history.get(new Tuple<String, String>(telegramId, recipient));
     }
 
     @Override
     public boolean saveHistory(String telegramId, String recipient, SkippedRecipientReason reason) {
-	// If the history is null, instantiate it.
-	if (history == null) {
-	    history = new HashMap<>();
-	}
+        // If the history is null, instantiate it.
+        if (history == null) {
+            history = new HashMap<>();
+        }
 
-	// Add the new entry to the history.
-	history.put(new Tuple(telegramId, recipient), reason);
+        // Add the new entry to the history.
+        history.put(new Tuple<String, String>(telegramId, recipient), reason);
 
-	// Make sure the history file exists. If not, create it.
-	if (!Files.exists(this.historyFile)) {
-	    try {
-		Files.createFile(this.historyFile);
-	    } catch (IOException ex) {
-		return false;
-	    }
-	}
+        // Make sure the history file exists. If not, create it.
+        if (!Files.exists(this.historyFile)) {
+            try {
+                Files.createFile(this.historyFile);
+            } catch (IOException ex) {
+                return false;
+            }
+        }
 
-	// Persist the new entry to the history file.
-	final String entry = telegramId + SPLITSTRING + recipient + SPLITSTRING + reason.name()
-		+ System.lineSeparator();
-	try {
-	    Files.write(this.historyFile, entry.getBytes(), StandardOpenOption.APPEND);
-	} catch (IOException ex) {
-	    return false;
-	}
-	return true;
+        // Persist the new entry to the history file.
+        final String entry = telegramId + SPLITSTRING + recipient + SPLITSTRING + reason.name()
+                + System.lineSeparator();
+        try {
+            Files.write(this.historyFile, entry.getBytes(), StandardOpenOption.APPEND);
+        } catch (IOException ex) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public boolean loadHistory() {
-	history = new HashMap<>(); // Ensure history is new and empty.
+        history = new HashMap<>(); // Ensure history is new and empty.
 
-	// Break the history file contents into lines and iterate over them.
-	try (final Stream<String> lines = Files.lines(this.historyFile, Charset.defaultCharset())) {
-	    lines.map(line -> line.split(SPLITSTRING)).filter(splitLine -> splitLine.length >= 3).forEach(splitLine -> {
-		try {
-		    // Try parse the reason string to the correct type. If this succeeds, the line
-		    // was succesfully parsed,
-		    // so we add it to the history.
-		    final SkippedRecipientReason reason = SkippedRecipientReason.valueOf(splitLine[2]);
-		    final Tuple<String, String> telegramIdAndRecipient = new Tuple<>(splitLine[0], splitLine[1]);
-		    history.put(telegramIdAndRecipient, reason);
-		} catch (IllegalArgumentException | NullPointerException ex) {
-		    // Failed to parse the reason. We simply skip this line.
-		}
-	    });
-	} catch (IOException ex) {
-	    return false;
-	}
-	return true;
+        // Break the history file contents into lines and iterate over them.
+        try (final Stream<String> lines = Files.lines(this.historyFile, Charset.defaultCharset())) {
+            lines.map(line -> line.split(SPLITSTRING)).filter(splitLine -> splitLine.length >= 3).forEach(splitLine -> {
+                try {
+                    // Try parse the reason string to the correct type. If this succeeds, the line
+                    // was succesfully parsed,
+                    // so we add it to the history.
+                    final SkippedRecipientReason reason = SkippedRecipientReason.valueOf(splitLine[2]);
+                    final Tuple<String, String> telegramIdAndRecipient = new Tuple<>(splitLine[0], splitLine[1]);
+                    history.put(telegramIdAndRecipient, reason);
+                } catch (IllegalArgumentException | NullPointerException ex) {
+                    // Failed to parse the reason. We simply skip this line.
+                }
+            });
+        } catch (IOException ex) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public void removeOldRecipients(Collection<String> nations) {
-	for (final Iterator<String> it = nations.iterator(); it.hasNext();) {
-	    if (getSkippedRecipientReason(properties.telegramId, it.next()) != null) {
-		it.remove(); // Remove recipient
-	    }
-	}
+        for (final Iterator<String> it = nations.iterator(); it.hasNext();) {
+            if (getSkippedRecipientReason(properties.telegramId, it.next()) != null) {
+                it.remove(); // Remove recipient
+            }
+        }
     }
 }

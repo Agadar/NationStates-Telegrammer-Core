@@ -1,15 +1,12 @@
 package com.github.agadar.telegrammer.core.recipients.provider;
 
+import java.util.Set;
+
 import com.github.agadar.nationstates.INationStates;
-import com.github.agadar.nationstates.domain.worldassembly.WorldAssembly;
 import com.github.agadar.nationstates.enumerator.Council;
 import com.github.agadar.nationstates.shard.WorldAssemblyShard;
 import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
-
 import com.github.agadar.telegrammer.core.util.StringFunctions;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Fetches all recently NEW World Assembly delegates from the API.
@@ -24,15 +21,10 @@ public class NewDelegatesProvider extends RecipientsProvider {
 
     @Override
     public Set<String> getRecipients() {
-        final WorldAssembly worldAssembly = nationStates
-                .getWorldAssembly(Council.SECURITY_COUNCIL)
-                .shards(WorldAssemblyShard.RECENT_HAPPENINGS)
-                .execute();
-        if (worldAssembly == null || worldAssembly.recentHappenings == null) {
-            return new HashSet<>();
-        }
-        return StringFunctions.extractNationsFromHappenings(
-                worldAssembly.recentHappenings, StringFunctions.KeyWord.became);
+        var recentHappenings = nationStates.getWorldAssembly(Council.SECURITY_COUNCIL)
+                .shards(WorldAssemblyShard.RECENT_HAPPENINGS).execute()
+                .getRecentHappenings();
+        return StringFunctions.extractNationsFromHappenings(recentHappenings, StringFunctions.KeyWord.became);
     }
 
     @Override

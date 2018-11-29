@@ -11,6 +11,8 @@ import java.util.EventObject;
  */
 public class RecipientRemovedEvent extends EventObject {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      * The recipient in question.
      */
@@ -22,8 +24,8 @@ public class RecipientRemovedEvent extends EventObject {
     public final SkippedRecipientReason reason;
 
     public RecipientRemovedEvent(Object source, String recipient, SkippedRecipientReason reason) {
-	super(source);
-	this.recipient = recipient;
-	this.reason = reason;
+        super(source);
+        this.recipient = recipient;
+        this.reason = reason;
     }
 }
