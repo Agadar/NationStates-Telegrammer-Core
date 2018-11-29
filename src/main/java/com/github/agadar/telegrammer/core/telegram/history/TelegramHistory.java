@@ -4,6 +4,8 @@ import com.github.agadar.telegrammer.core.properties.ApplicationProperties;
 import com.github.agadar.telegrammer.core.telegram.SkippedRecipientReason;
 import com.github.agadar.telegrammer.core.util.Tuple;
 
+import lombok.NonNull;
+
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -36,18 +38,19 @@ public class TelegramHistory implements ITelegramHistory {
 
     private final ApplicationProperties properties;
 
-    public TelegramHistory(ApplicationProperties properties, String historyFileName) {
+    public TelegramHistory(@NonNull ApplicationProperties properties, @NonNull String historyFileName) {
         this.properties = properties;
         this.historyFile = Paths.get(historyFileName);
     }
 
     @Override
-    public SkippedRecipientReason getSkippedRecipientReason(String telegramId, String recipient) {
+    public SkippedRecipientReason getSkippedRecipientReason(@NonNull String telegramId, @NonNull String recipient) {
         return history.get(new Tuple<String, String>(telegramId, recipient));
     }
 
     @Override
-    public boolean saveHistory(String telegramId, String recipient, SkippedRecipientReason reason) {
+    public boolean saveHistory(@NonNull String telegramId, @NonNull String recipient,
+            @NonNull SkippedRecipientReason reason) {
         // If the history is null, instantiate it.
         if (history == null) {
             history = new HashMap<>();
@@ -101,9 +104,9 @@ public class TelegramHistory implements ITelegramHistory {
     }
 
     @Override
-    public void removeOldRecipients(Collection<String> nations) {
+    public void removeOldRecipients(@NonNull Collection<String> nations) {
         for (final Iterator<String> it = nations.iterator(); it.hasNext();) {
-            if (getSkippedRecipientReason(properties.telegramId, it.next()) != null) {
+            if (getSkippedRecipientReason(properties.getTelegramId(), it.next()) != null) {
                 it.remove(); // Remove recipient
             }
         }

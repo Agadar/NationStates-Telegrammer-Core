@@ -15,33 +15,33 @@ public class Tuple<X, Y> {
     public final Y y;
 
     public Tuple(X x, Y y) {
-	this.x = x;
-	this.y = y;
+        this.x = x;
+        this.y = y;
     }
 
     @Override
     public int hashCode() {
-	int hash = 7;
-	hash = 53 * hash + Objects.hashCode(this.x);
-	hash = 53 * hash + Objects.hashCode(this.y);
-	return hash;
+        int hash = 7;
+        hash = 53 * hash + Objects.hashCode(this.x);
+        hash = 53 * hash + Objects.hashCode(this.y);
+        return hash;
     }
 
     @Override
     public boolean equals(Object obj) {
-	if (this == obj) {
-	    return true;
-	}
-	if (obj == null) {
-	    return false;
-	}
-	if (getClass() != obj.getClass()) {
-	    return false;
-	}
-	final Tuple<?, ?> other = (Tuple<?, ?>) obj;
-	if (!Objects.equals(this.x, other.x)) {
-	    return false;
-	}
-	return Objects.equals(this.y, other.y);
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Tuple<?, ?> other = (Tuple<?, ?>) obj;
+        if (!Objects.equals(this.x, other.x)) {
+            return false;
+        }
+        return Objects.equals(this.y, other.y);
     }
 }

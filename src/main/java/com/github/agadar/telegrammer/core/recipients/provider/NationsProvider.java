@@ -2,6 +2,8 @@ package com.github.agadar.telegrammer.core.recipients.provider;
 
 import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
 
+import lombok.NonNull;
+
 import java.util.Set;
 
 /**
@@ -13,7 +15,7 @@ public class NationsProvider implements IRecipientsProvider {
 
     public final Set<String> nations;
 
-    public NationsProvider(Set<String> nations) {
+    public NationsProvider(@NonNull Set<String> nations) {
         this.nations = nations;
     }
 

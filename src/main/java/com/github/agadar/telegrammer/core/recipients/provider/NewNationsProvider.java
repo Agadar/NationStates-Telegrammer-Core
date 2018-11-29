@@ -7,6 +7,8 @@ import com.github.agadar.nationstates.INationStates;
 import com.github.agadar.nationstates.shard.WorldShard;
 import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
 
+import lombok.NonNull;
+
 /**
  * Fetches recently new nations from the API.
  *
@@ -14,7 +16,7 @@ import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
  */
 public class NewNationsProvider extends RecipientsProvider {
 
-    public NewNationsProvider(INationStates nationStates) {
+    public NewNationsProvider(@NonNull INationStates nationStates) {
         super(nationStates);
     }
 

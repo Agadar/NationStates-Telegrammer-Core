@@ -8,6 +8,8 @@ import com.github.agadar.nationstates.shard.WorldShard;
 import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
 import com.github.agadar.telegrammer.core.regiondumpaccess.IRegionDumpAccess;
 
+import lombok.NonNull;
+
 /**
  * Fetches nations from regions WITHOUT specified tags from the API.
  *
@@ -17,8 +19,8 @@ public class NationsInRegionsWithoutTagsProvider extends RecipientsProviderUsing
 
     public final Set<RegionTag> regionTags;
 
-    public NationsInRegionsWithoutTagsProvider(INationStates nationStates, IRegionDumpAccess regionDumpAccess,
-            Set<RegionTag> regionTags) {
+    public NationsInRegionsWithoutTagsProvider(@NonNull INationStates nationStates, @NonNull IRegionDumpAccess regionDumpAccess,
+            @NonNull Set<RegionTag> regionTags) {
         super(nationStates, regionDumpAccess);
         this.regionTags = regionTags;
     }

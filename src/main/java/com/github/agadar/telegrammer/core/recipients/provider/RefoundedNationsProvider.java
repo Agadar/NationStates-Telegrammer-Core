@@ -8,6 +8,8 @@ import com.github.agadar.nationstates.shard.WorldShard;
 import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
 import com.github.agadar.telegrammer.core.util.StringFunctions;
 
+import lombok.NonNull;
+
 /**
  * Fetches recently refounded nations from the API.
  *
@@ -15,7 +17,7 @@ import com.github.agadar.telegrammer.core.util.StringFunctions;
  */
 public class RefoundedNationsProvider extends RecipientsProvider {
 
-    public RefoundedNationsProvider(INationStates nationStates) {
+    public RefoundedNationsProvider(@NonNull INationStates nationStates) {
         super(nationStates);
     }
 

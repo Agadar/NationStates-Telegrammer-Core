@@ -3,6 +3,8 @@ package com.github.agadar.telegrammer.core.recipients.listbuilder;
 import com.github.agadar.telegrammer.core.recipients.filter.IRecipientsFilter;
 import com.github.agadar.telegrammer.core.telegram.history.ITelegramHistory;
 
+import lombok.NonNull;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -13,12 +15,12 @@ public class RecipientsListBuilder implements IRecipientsListBuilder {
     private final ITelegramHistory telegramHistory;
     private final List<IRecipientsFilter> filters;
 
-    public RecipientsListBuilder(ITelegramHistory telegramHistory) {
+    public RecipientsListBuilder(@NonNull ITelegramHistory telegramHistory) {
         this.telegramHistory = telegramHistory;
         filters = new ArrayList<>();
     }
 
-    public RecipientsListBuilder(ITelegramHistory telegramHistory, List<IRecipientsFilter> filters) {
+    public RecipientsListBuilder(@NonNull ITelegramHistory telegramHistory, @NonNull List<IRecipientsFilter> filters) {
         this.telegramHistory = telegramHistory;
         this.filters = filters;
     }
@@ -32,7 +34,7 @@ public class RecipientsListBuilder implements IRecipientsListBuilder {
     }
 
     @Override
-    public int addFilter(IRecipientsFilter filter) {
+    public int addFilter(@NonNull IRecipientsFilter filter) {
         filters.add(filter);
         return filters.indexOf(filter);
     }

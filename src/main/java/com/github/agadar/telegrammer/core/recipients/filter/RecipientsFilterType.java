@@ -1,11 +1,14 @@
 package com.github.agadar.telegrammer.core.recipients.filter;
 
+import lombok.NonNull;
+
 /**
  * The different types of recipient filters.
  *
  * @author Agadar (https://github.com/Agadar/)
  */
 public enum RecipientsFilterType {
+    
     ADD_TO_RECIPIENTS("(+) Add to recipients"),
     REMOVE_FROM_RECIPIENTS("(-) Remove from recipients"),
     REMOVE_RECIPIENTS_NOT_IN("(!) Remove from recipients not in");
@@ -18,7 +21,7 @@ public enum RecipientsFilterType {
      *
      * @param text
      */
-    private RecipientsFilterType(String text) {
+    private RecipientsFilterType(@NonNull String text) {
         this.text = text;
     }
 

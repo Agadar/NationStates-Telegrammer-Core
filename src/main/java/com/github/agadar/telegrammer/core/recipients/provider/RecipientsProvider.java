@@ -2,6 +2,8 @@ package com.github.agadar.telegrammer.core.recipients.provider;
 
 import com.github.agadar.nationstates.INationStates;
 
+import lombok.NonNull;
+
 /**
  * Defines usage of INationStates for all recipients providers.
  *
@@ -11,7 +13,7 @@ public abstract class RecipientsProvider implements IRecipientsProvider {
 
     final protected INationStates nationStates;
 
-    public RecipientsProvider(INationStates nationStates) {
+    public RecipientsProvider(@NonNull INationStates nationStates) {
         this.nationStates = nationStates;
     }
 }

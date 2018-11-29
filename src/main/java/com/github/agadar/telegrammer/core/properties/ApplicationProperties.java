@@ -3,19 +3,24 @@ package com.github.agadar.telegrammer.core.properties;
 import com.github.agadar.telegrammer.core.recipients.listbuilder.IRecipientsListBuilder;
 import com.github.agadar.telegrammer.core.telegram.TelegramType;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Holds properties used and set throughout the application.
  *
  * @author Agadar (https://github.com/Agadar/)
  */
+@Getter
+@Setter
 public class ApplicationProperties {
 
-    public String clientKey;
-    public String telegramId;
-    public String secretKey;
-    public TelegramType lastTelegramType;
-    public String fromRegion;
-    public boolean runIndefinitely;
-    public IRecipientsListBuilder recipientsListBuilder;
-    public boolean updateRecipientsAfterEveryTelegram;
+    private String clientKey;
+    private String telegramId;
+    private String secretKey;
+    private TelegramType lastTelegramType;
+    private String fromRegion;
+    private boolean runIndefinitely;
+    private IRecipientsListBuilder recipientsListBuilder;
+    private boolean updateRecipientsAfterEveryTelegram;
 }

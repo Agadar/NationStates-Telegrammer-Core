@@ -29,43 +29,43 @@ public abstract class AbstractPropertiesManager<T extends ApplicationProperties>
     private final IRecipientsListBuilderTranslator builderTranslator;
 
     public AbstractPropertiesManager(IRecipientsListBuilderTranslator builderTranslator, String propertiesFileName) {
-	this.builderTranslator = builderTranslator;
-	this.propertiesFileName = propertiesFileName;
+        this.builderTranslator = builderTranslator;
+        this.propertiesFileName = propertiesFileName;
     }
 
     @Override
     public boolean saveProperties(T properties) {
-	if (properties == null) {
-	    return false;
-	}
+        if (properties == null) {
+            return false;
+        }
 
-	final Properties propertiesMap = new Properties();
-	this.setPropertiesFromApplicationProperties(propertiesMap, properties);
+        final Properties propertiesMap = new Properties();
+        this.setPropertiesFromApplicationProperties(propertiesMap, properties);
 
-	try (OutputStream output = new FileOutputStream(this.propertiesFileName)) {
-	    propertiesMap.store(output, null);
-	} catch (IOException io) {
-	    return false;
-	}
-	return true;
+        try (OutputStream output = new FileOutputStream(this.propertiesFileName)) {
+            propertiesMap.store(output, null);
+        } catch (IOException io) {
+            return false;
+        }
+        return true;
     }
 
     @Override
     public T loadProperties(T properties) {
-	if (properties == null) {
-	    properties = this.createApplicationProperties();
-	}
+        if (properties == null) {
+            properties = this.createApplicationProperties();
+        }
 
-	final Properties propertiesMap = new Properties();
+        final Properties propertiesMap = new Properties();
 
-	try (InputStream input = new FileInputStream(this.propertiesFileName);) {
-	    propertiesMap.load(input);
-	} catch (IOException ex) {
-	    // Ignore: we're just going to use default values instead.
-	}
+        try (InputStream input = new FileInputStream(this.propertiesFileName);) {
+            propertiesMap.load(input);
+        } catch (IOException ex) {
+            // Ignore: we're just going to use default values instead.
+        }
 
-	this.setApplicationPropertiesFromProperties(properties, propertiesMap);
-	return properties;
+        this.setApplicationPropertiesFromProperties(properties, propertiesMap);
+        return properties;
     }
 
     /**
@@ -83,15 +83,16 @@ public abstract class AbstractPropertiesManager<T extends ApplicationProperties>
      * @param source
      */
     protected void setApplicationPropertiesFromProperties(T target, Properties source) {
-	target.clientKey = source.getProperty("clientKey", defaultStringValue);
-	target.fromRegion = source.getProperty("fromRegion", defaultStringValue);
-	target.lastTelegramType = valueOf(TelegramType.class, source.getProperty("telegramType"), TelegramType.NORMAL);
-	target.recipientsListBuilder = builderTranslator.toBuilder(source.getProperty("filters"));
-	target.runIndefinitely = Boolean.valueOf(source.getProperty("runIndefinitely", defaultBooleanValue));
-	target.secretKey = source.getProperty("secretKey", defaultStringValue);
-	target.telegramId = source.getProperty("telegramId", defaultStringValue);
-	target.updateRecipientsAfterEveryTelegram = Boolean
-	        .valueOf(source.getProperty("updateRecipientsAfterEveryTelegram", defaultBooleanValue));
+        target.setClientKey(source.getProperty("clientKey", defaultStringValue));
+        target.setFromRegion(source.getProperty("fromRegion", defaultStringValue));
+        target.setLastTelegramType(
+                valueOf(TelegramType.class, source.getProperty("telegramType"), TelegramType.NORMAL));
+        target.setRecipientsListBuilder(builderTranslator.toBuilder(source.getProperty("filters")));
+        target.setRunIndefinitely(Boolean.valueOf(source.getProperty("runIndefinitely", defaultBooleanValue)));
+        target.setSecretKey(source.getProperty("secretKey", defaultStringValue));
+        target.setTelegramId(source.getProperty("telegramId", defaultStringValue));
+        target.setUpdateRecipientsAfterEveryTelegram(
+                Boolean.valueOf(source.getProperty("updateRecipientsAfterEveryTelegram", defaultBooleanValue)));
     }
 
     /**
@@ -102,16 +103,16 @@ public abstract class AbstractPropertiesManager<T extends ApplicationProperties>
      * @param source
      */
     protected void setPropertiesFromApplicationProperties(Properties target, T source) {
-	target.setProperty("clientKey", source.clientKey == null ? defaultStringValue : source.clientKey);
-	target.setProperty("telegramId", source.telegramId == null ? defaultStringValue : source.telegramId);
-	target.setProperty("secretKey", source.secretKey == null ? defaultStringValue : source.secretKey);
-	target.setProperty("telegramType",
-	        source.lastTelegramType != null ? source.lastTelegramType.name() : TelegramType.NORMAL.name());
-	target.setProperty("fromRegion", source.fromRegion == null ? defaultStringValue : source.fromRegion);
-	target.setProperty("runIndefinitely", Boolean.toString(source.runIndefinitely));
-	target.setProperty("filters", builderTranslator.fromBuilder(source.recipientsListBuilder));
-	target.setProperty("updateRecipientsAfterEveryTelegram",
-	        Boolean.toString(source.updateRecipientsAfterEveryTelegram));
+        target.setProperty("clientKey", source.getClientKey() == null ? defaultStringValue : source.getClientKey());
+        target.setProperty("telegramId", source.getTelegramId() == null ? defaultStringValue : source.getTelegramId());
+        target.setProperty("secretKey", source.getSecretKey() == null ? defaultStringValue : source.getSecretKey());
+        target.setProperty("telegramType", source.getLastTelegramType() != null ? source.getLastTelegramType().name()
+                : TelegramType.NORMAL.name());
+        target.setProperty("fromRegion", source.getFromRegion() == null ? defaultStringValue : source.getFromRegion());
+        target.setProperty("runIndefinitely", Boolean.toString(source.isRunIndefinitely()));
+        target.setProperty("filters", builderTranslator.fromBuilder(source.getRecipientsListBuilder()));
+        target.setProperty("updateRecipientsAfterEveryTelegram",
+                Boolean.toString(source.isUpdateRecipientsAfterEveryTelegram()));
     }
 
     /**
@@ -119,17 +120,17 @@ public abstract class AbstractPropertiesManager<T extends ApplicationProperties>
      * if the specified enum type has no constant with the specified name, it
      * returns the specified default value.
      *
-     * @param <T>
+     * @param              <T>
      * @param type
      * @param string
      * @param defaultValue
      * @return
      */
     private <V extends Enum<V>> V valueOf(Class<V> type, String string, V defaultValue) {
-	try {
-	    return Enum.valueOf(type, string);
-	} catch (IllegalArgumentException | NullPointerException ex) {
-	    return defaultValue;
-	}
+        try {
+            return Enum.valueOf(type, string);
+        } catch (IllegalArgumentException | NullPointerException ex) {
+            return defaultValue;
+        }
     }
 }

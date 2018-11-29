@@ -8,6 +8,8 @@ import com.github.agadar.nationstates.shard.WorldAssemblyShard;
 import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
 import com.github.agadar.telegrammer.core.util.StringFunctions;
 
+import lombok.NonNull;
+
 /**
  * Fetches all recently NEW World Assembly delegates from the API.
  *
@@ -15,7 +17,7 @@ import com.github.agadar.telegrammer.core.util.StringFunctions;
  */
 public class NewDelegatesProvider extends RecipientsProvider {
 
-    public NewDelegatesProvider(INationStates nationStates) {
+    public NewDelegatesProvider(@NonNull INationStates nationStates) {
         super(nationStates);
     }
 

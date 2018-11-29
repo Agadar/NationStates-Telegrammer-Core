@@ -7,6 +7,8 @@ import com.github.agadar.nationstates.enumerator.Council;
 import com.github.agadar.nationstates.shard.WorldAssemblyShard;
 import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
 
+import lombok.NonNull;
+
 /**
  * Fetches World Assembly member nations from the API.
  *
@@ -14,7 +16,7 @@ import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
  */
 public class WorldAssemblyMembersProvider extends RecipientsProvider {
 
-    public WorldAssemblyMembersProvider(INationStates nationStates) {
+    public WorldAssemblyMembersProvider(@NonNull INationStates nationStates) {
         super(nationStates);
     }
 

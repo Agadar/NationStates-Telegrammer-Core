@@ -10,6 +10,8 @@ import com.github.agadar.nationstates.shard.RegionShard;
 import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
 import com.github.agadar.telegrammer.core.regiondumpaccess.IRegionDumpAccess;
 
+import lombok.NonNull;
+
 /**
  * Fetches all nations in embassy regions of supplied regions from the API.
  *
@@ -19,8 +21,8 @@ public class NationsInEmbassyRegionsProvider extends RecipientsProviderUsingDump
 
     public final Set<String> regionNames;
 
-    public NationsInEmbassyRegionsProvider(INationStates nationStates, IRegionDumpAccess regionDumpAccess,
-            Set<String> regionNames) {
+    public NationsInEmbassyRegionsProvider(@NonNull INationStates nationStates, @NonNull IRegionDumpAccess regionDumpAccess,
+            @NonNull Set<String> regionNames) {
         super(nationStates, regionDumpAccess);
         this.regionNames = regionNames;
     }

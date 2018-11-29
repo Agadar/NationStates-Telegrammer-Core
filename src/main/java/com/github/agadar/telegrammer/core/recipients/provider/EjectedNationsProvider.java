@@ -9,6 +9,8 @@ import com.github.agadar.nationstates.enumerator.HappeningsFilter;
 import com.github.agadar.nationstates.shard.WorldShard;
 import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
 
+import lombok.NonNull;
+
 /**
  * Fetches recently ejected nations from the API.
  *
@@ -16,7 +18,7 @@ import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
  */
 public class EjectedNationsProvider extends RecipientsProvider {
 
-    public EjectedNationsProvider(INationStates nationStates) {
+    public EjectedNationsProvider(@NonNull INationStates nationStates) {
         super(nationStates);
     }
 

@@ -12,13 +12,12 @@ import java.util.Collection;
 public interface ITelegramHistory {
 
     /**
-     * Gets the SkippedRecipientReason mapped to the given telegramId and
-     * recipient.
+     * Gets the SkippedRecipientReason mapped to the given telegramId and recipient.
      *
      * @param telegramId
      * @param recipient
      * @return The SkippedRecipientReason mapped to the given telegramId and
-     * recipient, otherwise null.
+     *         recipient, otherwise null.
      */
     public SkippedRecipientReason getSkippedRecipientReason(String telegramId, String recipient);
 
@@ -27,8 +26,8 @@ public interface ITelegramHistory {
      * file.
      *
      * @param telegramId Id of the sent telegram.
-     * @param recipient Recipient of the sent telegram.
-     * @param reason The reason for storing in history.
+     * @param recipient  Recipient of the sent telegram.
+     * @param reason     The reason for storing in history.
      * @return True if successful, otherwise false.
      */
     public boolean saveHistory(String telegramId, String recipient, SkippedRecipientReason reason);

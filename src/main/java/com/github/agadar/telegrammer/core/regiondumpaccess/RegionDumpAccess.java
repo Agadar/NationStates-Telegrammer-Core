@@ -11,6 +11,8 @@ import com.github.agadar.nationstates.domain.region.Region;
 import com.github.agadar.nationstates.enumerator.DailyDumpMode;
 import com.github.agadar.telegrammer.core.util.StringFunctions;
 
+import lombok.NonNull;
+
 public class RegionDumpAccess implements IRegionDumpAccess {
 
     /**
@@ -25,12 +27,12 @@ public class RegionDumpAccess implements IRegionDumpAccess {
 
     private final INationStates nationStates;
 
-    public RegionDumpAccess(INationStates nationStates) {
+    public RegionDumpAccess(@NonNull INationStates nationStates) {
         this.nationStates = nationStates;
     }
 
     @Override
-    public Set<String> getNationsInRegions(Collection<String> regionNames) {
+    public Set<String> getNationsInRegions(@NonNull Collection<String> regionNames) {
         this.importDumpFile();
         return regionNames.stream()
                 .map((regionName) -> StringFunctions.normalizeName(regionName))

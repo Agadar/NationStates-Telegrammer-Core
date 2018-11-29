@@ -13,12 +13,12 @@ import com.github.agadar.telegrammer.core.recipients.translator.IRecipientsListB
 public class BasicPropertiesManager extends AbstractPropertiesManager<ApplicationProperties> {
 
     public BasicPropertiesManager(IRecipientsListBuilderTranslator builderTranslator, String propertiesFileName) {
-	super(builderTranslator, propertiesFileName);
+        super(builderTranslator, propertiesFileName);
     }
 
     @Override
     protected ApplicationProperties createApplicationProperties() {
-	return new ApplicationProperties();
+        return new ApplicationProperties();
     }
 
 }
