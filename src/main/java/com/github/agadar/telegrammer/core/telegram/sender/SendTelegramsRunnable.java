@@ -169,8 +169,8 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
      * Updates the recipients from the API.
      */
     private void updateRecipientsFromApi() {
-        recipientsListBuilder.refreshFilters();
-        final RecipientsRefreshedEvent refrevent = new RecipientsRefreshedEvent(this);
+        var failedFilters = recipientsListBuilder.refreshFilters();
+        var refrevent = new RecipientsRefreshedEvent(this, failedFilters);
         synchronized (listeners) {
             listeners.stream().forEach((tsl) -> {
                 tsl.handleRecipientsRefreshed(refrevent);

@@ -1,14 +1,16 @@
 package com.github.agadar.telegrammer.core.recipients.listbuilder;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Set;
+
+import com.github.agadar.nationstates.exception.NationStatesAPIException;
 import com.github.agadar.telegrammer.core.recipients.filter.IRecipientsFilter;
 import com.github.agadar.telegrammer.core.telegram.history.ITelegramHistory;
 
 import lombok.NonNull;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 public class RecipientsListBuilder implements IRecipientsListBuilder {
 
@@ -40,8 +42,16 @@ public class RecipientsListBuilder implements IRecipientsListBuilder {
     }
 
     @Override
-    public void refreshFilters() {
-        filters.forEach(filter -> filter.refreshFilter());
+    public LinkedHashMap<IRecipientsFilter, NationStatesAPIException> refreshFilters() {
+        var failedFilters = new LinkedHashMap<IRecipientsFilter, NationStatesAPIException>();
+        filters.forEach(filter -> {
+            try {
+                filter.refreshFilter();
+            } catch (NationStatesAPIException ex) {
+                failedFilters.put(filter, ex);
+            }
+        });
+        return failedFilters;
     }
 
     @Override
