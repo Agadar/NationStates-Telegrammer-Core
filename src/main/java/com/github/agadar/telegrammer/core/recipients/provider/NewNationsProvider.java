@@ -1,9 +1,8 @@
 package com.github.agadar.telegrammer.core.recipients.provider;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.Collection;
 
-import com.github.agadar.nationstates.INationStates;
+import com.github.agadar.nationstates.NationStates;
 import com.github.agadar.nationstates.shard.WorldShard;
 import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
 
@@ -14,15 +13,15 @@ import lombok.NonNull;
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public class NewNationsProvider extends RecipientsProvider {
+public class NewNationsProvider extends NationStatesRecipientsProvider {
 
-    public NewNationsProvider(@NonNull INationStates nationStates) {
+    public NewNationsProvider(@NonNull NationStates nationStates) {
         super(nationStates);
     }
 
     @Override
-    public Set<String> getRecipients() {
-        return new LinkedHashSet<>(nationStates.getWorld(WorldShard.NEWEST_NATIONS).execute().getNewestNations());
+    public Collection<String> getRecipients() {
+        return nationStates.getWorld(WorldShard.NEWEST_NATIONS).execute().getNewestNations();
     }
 
     @Override

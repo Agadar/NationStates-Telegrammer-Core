@@ -1,16 +1,15 @@
 package com.github.agadar.telegrammer.core.util;
 
-import com.github.agadar.nationstates.domain.common.happening.Happening;
-import com.github.agadar.nationstates.enumerator.RegionTag;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import com.github.agadar.nationstates.domain.common.happening.Happening;
+import com.github.agadar.nationstates.enumerator.RegionTag;
 
 /**
  * Exposes some String-related utility functions.
@@ -74,9 +73,9 @@ public final class StringFunctions {
      * @param tagsStrSet The strings to parse
      * @return The resulting RegionTags
      */
-    public static Set<RegionTag> stringsToRegionTags(Collection<String> tagsStrSet) {
+    public static Collection<RegionTag> stringsToRegionTags(Collection<String> tagsStrSet) {
         return tagsStrSet.stream().map((tagStr) -> RegionTag.fromString(tagStr)).filter(tag -> tag != RegionTag.NULL)
-                .collect(Collectors.toSet());
+                .collect(Collectors.toList());
     }
 
     /**
@@ -87,12 +86,12 @@ public final class StringFunctions {
      * @param keyword
      * @return Nation names
      */
-    public static Set<String> extractNationsFromHappenings(Collection<Happening> happenings, KeyWord keyword) {
+    public static List<String> extractNationsFromHappenings(Collection<Happening> happenings, KeyWord keyword) {
         return happenings.stream()
                 .filter(happening -> happening.getDescription().contains(keyword.toString()))
                 .map(happening -> PATTERN.matcher(happening.getDescription()))
                 .filter(matcher -> matcher.find())
-                .map(matcher -> matcher.group(1)).collect(Collectors.toSet());
+                .map(matcher -> matcher.group(1)).collect(Collectors.toList());
     }
 
     /**

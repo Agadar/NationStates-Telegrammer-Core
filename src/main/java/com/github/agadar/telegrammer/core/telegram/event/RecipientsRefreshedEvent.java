@@ -1,10 +1,10 @@
 package com.github.agadar.telegrammer.core.telegram.event;
 
 import java.util.EventObject;
-import java.util.LinkedHashMap;
+import java.util.Map;
 
 import com.github.agadar.nationstates.exception.NationStatesAPIException;
-import com.github.agadar.telegrammer.core.recipients.filter.IRecipientsFilter;
+import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilter;
 
 import lombok.Getter;
 
@@ -23,10 +23,9 @@ public class RecipientsRefreshedEvent extends EventObject {
      * The filters that failed to be refreshed due to errors while communicating to
      * the API.
      */
-    private final LinkedHashMap<IRecipientsFilter, NationStatesAPIException> failedFilters;
+    private final Map<RecipientsFilter, NationStatesAPIException> failedFilters;
 
-    public RecipientsRefreshedEvent(Object source,
-            LinkedHashMap<IRecipientsFilter, NationStatesAPIException> failedFilters) {
+    public RecipientsRefreshedEvent(Object source, Map<RecipientsFilter, NationStatesAPIException> failedFilters) {
         super(source);
         this.failedFilters = failedFilters;
     }

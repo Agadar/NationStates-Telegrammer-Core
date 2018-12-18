@@ -1,12 +1,12 @@
 package com.github.agadar.telegrammer.core.recipients.provider;
 
-import java.util.Set;
+import java.util.Collection;
 
-import com.github.agadar.nationstates.INationStates;
+import com.github.agadar.nationstates.NationStates;
 import com.github.agadar.nationstates.enumerator.RegionTag;
 import com.github.agadar.nationstates.shard.WorldShard;
 import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
-import com.github.agadar.telegrammer.core.regiondumpaccess.IRegionDumpAccess;
+import com.github.agadar.telegrammer.core.regiondumpaccess.RegionDumpAccess;
 
 import lombok.NonNull;
 
@@ -17,16 +17,16 @@ import lombok.NonNull;
  */
 public class NationsInRegionsWithoutTagsProvider extends RecipientsProviderUsingDump {
 
-    public final Set<RegionTag> regionTags;
+    public final Collection<RegionTag> regionTags;
 
-    public NationsInRegionsWithoutTagsProvider(@NonNull INationStates nationStates, @NonNull IRegionDumpAccess regionDumpAccess,
-            @NonNull Set<RegionTag> regionTags) {
+    public NationsInRegionsWithoutTagsProvider(@NonNull NationStates nationStates, @NonNull RegionDumpAccess regionDumpAccess,
+            @NonNull Collection<RegionTag> regionTags) {
         super(nationStates, regionDumpAccess);
         this.regionTags = regionTags;
     }
 
     @Override
-    public Set<String> getRecipients() {
+    public Collection<String> getRecipients() {
         var regionTagsArray = regionTags.toArray(new RegionTag[regionTags.size()]);
         var regionsByTag = nationStates.getWorld(WorldShard.REGIONS_BY_TAG).regionsWithoutTags(regionTagsArray)
                 .execute().getRegionsByTag();

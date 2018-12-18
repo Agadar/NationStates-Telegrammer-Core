@@ -1,8 +1,8 @@
 package com.github.agadar.telegrammer.core.recipients.provider;
 
-import java.util.Set;
+import java.util.Collection;
 
-import com.github.agadar.nationstates.INationStates;
+import com.github.agadar.nationstates.NationStates;
 import com.github.agadar.nationstates.enumerator.Council;
 import com.github.agadar.nationstates.shard.WorldAssemblyShard;
 import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
@@ -15,14 +15,14 @@ import lombok.NonNull;
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public class NewDelegatesProvider extends RecipientsProvider {
+public class NewDelegatesProvider extends NationStatesRecipientsProvider {
 
-    public NewDelegatesProvider(@NonNull INationStates nationStates) {
+    public NewDelegatesProvider(@NonNull NationStates nationStates) {
         super(nationStates);
     }
 
     @Override
-    public Set<String> getRecipients() {
+    public Collection<String> getRecipients() {
         var recentHappenings = nationStates.getWorldAssembly(Council.SECURITY_COUNCIL)
                 .shards(WorldAssemblyShard.RECENT_HAPPENINGS).execute()
                 .getRecentHappenings();

@@ -1,9 +1,9 @@
 package com.github.agadar.telegrammer.core.recipients.translator;
 
 import com.github.agadar.nationstates.NationStatesMock;
-import com.github.agadar.telegrammer.core.recipients.filter.IRecipientsFilter;
-import com.github.agadar.telegrammer.core.recipients.filter.NullRecipientsFilter;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilter;
+import com.github.agadar.telegrammer.core.recipients.filter.NullRecipientsFilter;
+import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterImpl;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterType;
 import com.github.agadar.telegrammer.core.recipients.provider.NationsProvider;
 import com.github.agadar.telegrammer.core.regiondumpaccess.RegionDumpAccessMock;
@@ -19,11 +19,11 @@ import static org.junit.Assert.*;
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public class RecipientsFilterTranslatorTest {
+public class RecipientsFilterTranslatorImplTest {
 
-    private RecipientsFilterTranslator filterTranslator;
+    private RecipientsFilterTranslatorImpl filterTranslator;
 
-    private RecipientsProviderTranslator recipientsTranslator;
+    private RecipientsProviderTranslatorImpl recipientsTranslator;
     private NationStatesMock nationStatesMock;
     private RegionDumpAccessMock accessMock;
 
@@ -31,8 +31,8 @@ public class RecipientsFilterTranslatorTest {
     public void setUp() {
         nationStatesMock = new NationStatesMock();
         accessMock = new RegionDumpAccessMock();
-        recipientsTranslator = new RecipientsProviderTranslator(nationStatesMock, accessMock);
-        filterTranslator = new RecipientsFilterTranslator(recipientsTranslator);
+        recipientsTranslator = new RecipientsProviderTranslatorImpl(nationStatesMock, accessMock);
+        filterTranslator = new RecipientsFilterTranslatorImpl(recipientsTranslator);
     }
 
     @After
@@ -48,7 +48,7 @@ public class RecipientsFilterTranslatorTest {
         System.out.println("toFilter should return null-filter on null string");
 
         // Act
-        final IRecipientsFilter filter = filterTranslator.toFilter(null);
+        final RecipientsFilter filter = filterTranslator.toFilter(null);
 
         // Assert
         assertTrue(filter instanceof NullRecipientsFilter);
@@ -59,7 +59,7 @@ public class RecipientsFilterTranslatorTest {
         System.out.println("toFilter should return null-filter on empty string");
 
         // Act
-        final IRecipientsFilter filter = filterTranslator.toFilter("");
+        final RecipientsFilter filter = filterTranslator.toFilter("");
 
         // Assert
         assertTrue(filter instanceof NullRecipientsFilter);
@@ -70,7 +70,7 @@ public class RecipientsFilterTranslatorTest {
         System.out.println("toFilter should return null-filter on invalid string");
 
         // Act
-        final IRecipientsFilter filter = filterTranslator.toFilter("invalidString");
+        final RecipientsFilter filter = filterTranslator.toFilter("invalidString");
 
         // Assert
         assertTrue(filter instanceof NullRecipientsFilter);
@@ -81,11 +81,11 @@ public class RecipientsFilterTranslatorTest {
         System.out.println("toFilter should return RecipientsFilter on valid string");
 
         // Act
-        final IRecipientsFilter filter = filterTranslator.toFilter("ADD_TO_RECIPIENTS.NATIONS[agadar]");
+        final RecipientsFilter filter = filterTranslator.toFilter("ADD_TO_RECIPIENTS.NATIONS[agadar]");
 
         // Assert
-        assertTrue(filter instanceof RecipientsFilter);
-        final RecipientsFilter recipientsFilter = (RecipientsFilter) filter;
+        assertTrue(filter instanceof RecipientsFilterImpl);
+        final RecipientsFilterImpl recipientsFilter = (RecipientsFilterImpl) filter;
         assertEquals(recipientsFilter.filterType, RecipientsFilterType.ADD_TO_RECIPIENTS);
         assertTrue(recipientsFilter.recipientsProvider instanceof NationsProvider);
         assertEquals(((NationsProvider) recipientsFilter.recipientsProvider).nations.toString(), "[agadar]");
@@ -121,7 +121,7 @@ public class RecipientsFilterTranslatorTest {
         final HashSet<String> nations = new HashSet<>();
         nations.add("agadar");
         final NationsProvider provider = new NationsProvider(nations);
-        final RecipientsFilter filter = new RecipientsFilter(provider, RecipientsFilterType.ADD_TO_RECIPIENTS);
+        final RecipientsFilterImpl filter = new RecipientsFilterImpl(provider, RecipientsFilterType.ADD_TO_RECIPIENTS);
 
         // Act
         final String stringified = filterTranslator.fromFilter(filter);

@@ -1,18 +1,18 @@
 package com.github.agadar.telegrammer.core.recipients.provider;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Our null object for IRecipientsProviders.
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public class NullRecipientsProvider implements IRecipientsProvider {
+public class NullRecipientsProvider implements RecipientsProvider {
 
     @Override
-    public Set<String> getRecipients() {
-        return new HashSet<>();
+    public Collection<String> getRecipients() {
+        return Collections.emptyList();
     }
 
     @Override

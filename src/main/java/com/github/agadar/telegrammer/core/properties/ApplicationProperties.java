@@ -1,6 +1,6 @@
 package com.github.agadar.telegrammer.core.properties;
 
-import com.github.agadar.telegrammer.core.recipients.listbuilder.IRecipientsListBuilder;
+import com.github.agadar.telegrammer.core.recipients.listbuilder.RecipientsListBuilder;
 import com.github.agadar.telegrammer.core.telegram.TelegramType;
 
 import lombok.Getter;
@@ -21,6 +21,6 @@ public class ApplicationProperties {
     private TelegramType lastTelegramType;
     private String fromRegion;
     private boolean runIndefinitely;
-    private IRecipientsListBuilder recipientsListBuilder;
+    private RecipientsListBuilder recipientsListBuilder;
     private boolean updateRecipientsAfterEveryTelegram;
 }

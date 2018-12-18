@@ -9,7 +9,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.internal.util.collections.Sets;
 
-import com.github.agadar.nationstates.INationStates;
+import com.github.agadar.nationstates.NationStates;
 import com.github.agadar.nationstates.domain.region.Region;
 import com.github.agadar.nationstates.enumerator.DailyDumpMode;
 import com.github.agadar.nationstates.query.RegionDumpQuery;
@@ -18,11 +18,11 @@ import com.github.agadar.nationstates.query.RegionDumpQuery;
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public class RegionDumpAccessTest {
+public class RegionDumpAccessImplTest {
 
     private final RegionDumpQuery query = Mockito.mock(RegionDumpQuery.class);
-    private final INationStates nationStates = Mockito.mock(INationStates.class);
-    private final RegionDumpAccess regionDumpAccess = new RegionDumpAccess(nationStates);
+    private final NationStates nationStates = Mockito.mock(NationStates.class);
+    private final RegionDumpAccessImpl regionDumpAccess = new RegionDumpAccessImpl(nationStates);
 
     @SuppressWarnings("unchecked")
     @Test
@@ -48,7 +48,7 @@ public class RegionDumpAccessTest {
         Mockito.when(query.execute()).thenReturn(regions);
 
         // Act
-        final Set<String> actual = regionDumpAccess
+        var actual = regionDumpAccess
                 .getNationsInRegions(Sets.newSet("The Western Isles", "The Eastern Isles"));
 
         // Assert

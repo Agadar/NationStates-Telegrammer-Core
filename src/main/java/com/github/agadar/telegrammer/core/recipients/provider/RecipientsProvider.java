@@ -1,19 +1,18 @@
 package com.github.agadar.telegrammer.core.recipients.provider;
 
-import com.github.agadar.nationstates.INationStates;
-
-import lombok.NonNull;
+import java.util.Collection;
 
 /**
- * Defines usage of INationStates for all recipients providers.
+ * Responsible for fetching recipients (nation names) from the official API.
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public abstract class RecipientsProvider implements IRecipientsProvider {
+public interface RecipientsProvider {
 
-    final protected INationStates nationStates;
-
-    public RecipientsProvider(@NonNull INationStates nationStates) {
-        this.nationStates = nationStates;
-    }
+    /**
+     * Fetches the recipients, using any locally supplied parameters.
+     *
+     * @return The recipients
+     */
+    public Collection<String> getRecipients();
 }

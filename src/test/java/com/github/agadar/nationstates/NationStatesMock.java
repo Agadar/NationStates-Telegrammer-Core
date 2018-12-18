@@ -21,7 +21,7 @@ import com.github.agadar.nationstates.shard.WorldShard;
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public class NationStatesMock implements INationStates {
+public class NationStatesMock implements NationStates {
 
     @Override
     public void setUserAgent(String userAgent) {

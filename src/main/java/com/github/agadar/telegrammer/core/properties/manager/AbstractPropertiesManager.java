@@ -1,7 +1,7 @@
 package com.github.agadar.telegrammer.core.properties.manager;
 
 import com.github.agadar.telegrammer.core.properties.ApplicationProperties;
-import com.github.agadar.telegrammer.core.recipients.translator.IRecipientsListBuilderTranslator;
+import com.github.agadar.telegrammer.core.recipients.translator.RecipientsListBuilderTranslator;
 import com.github.agadar.telegrammer.core.telegram.TelegramType;
 
 import java.io.FileInputStream;
@@ -19,16 +19,16 @@ import java.util.Properties;
  *
  * @param <T>
  */
-public abstract class AbstractPropertiesManager<T extends ApplicationProperties> implements IPropertiesManager<T> {
+public abstract class AbstractPropertiesManager<T extends ApplicationProperties> implements PropertiesManager<T> {
 
     protected final String defaultStringValue = "";
     protected final String defaultBooleanValue = "false";
 
     private String propertiesFileName;
 
-    private final IRecipientsListBuilderTranslator builderTranslator;
+    private final RecipientsListBuilderTranslator builderTranslator;
 
-    public AbstractPropertiesManager(IRecipientsListBuilderTranslator builderTranslator, String propertiesFileName) {
+    public AbstractPropertiesManager(RecipientsListBuilderTranslator builderTranslator, String propertiesFileName) {
         this.builderTranslator = builderTranslator;
         this.propertiesFileName = propertiesFileName;
     }

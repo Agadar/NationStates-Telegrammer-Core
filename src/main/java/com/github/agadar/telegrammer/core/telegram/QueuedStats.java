@@ -1,7 +1,7 @@
 package com.github.agadar.telegrammer.core.telegram;
 
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 
 /**
  * Holder for telegram queued statistics, containing logic to properly keep
@@ -11,10 +11,10 @@ import java.util.Set;
  */
 public class QueuedStats {
 
-    private final Set<String> queuedSucces = new HashSet<>();
-    private final Set<String> recipientDidntExist = new HashSet<>();
-    private final Set<String> recipientIsBlocking = new HashSet<>();
-    private final Set<String> disconnectOrOtherReason = new HashSet<>();
+    private final Collection<String> queuedSucces = new HashSet<>();
+    private final Collection<String> recipientDidntExist = new HashSet<>();
+    private final Collection<String> recipientIsBlocking = new HashSet<>();
+    private final Collection<String> disconnectOrOtherReason = new HashSet<>();
 
     public void registerSucces(String recipient) {
         queuedSucces.add(recipient);

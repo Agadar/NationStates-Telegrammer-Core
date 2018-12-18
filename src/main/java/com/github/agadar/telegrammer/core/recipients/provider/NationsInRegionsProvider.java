@@ -1,9 +1,10 @@
 package com.github.agadar.telegrammer.core.recipients.provider;
 
-import java.util.Set;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.stream.Collectors;
 
-import com.github.agadar.nationstates.INationStates;
+import com.github.agadar.nationstates.NationStates;
 import com.github.agadar.nationstates.shard.RegionShard;
 import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
 
@@ -14,21 +15,21 @@ import lombok.NonNull;
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public class NationsInRegionsProvider extends RecipientsProvider {
+public class NationsInRegionsProvider extends NationStatesRecipientsProvider {
 
-    public final Set<String> regionNames;
+    public final Collection<String> regionNames;
 
-    public NationsInRegionsProvider(@NonNull INationStates nationStates, @NonNull Set<String> regionNames) {
+    public NationsInRegionsProvider(@NonNull NationStates nationStates, @NonNull Collection<String> regionNames) {
         super(nationStates);
         this.regionNames = regionNames;
     }
 
     @Override
-    public Set<String> getRecipients() {
+    public Collection<String> getRecipients() {
         return regionNames.stream()
                 .map(regionName -> getNationsInRegion(regionName))
-                .flatMap(Set::stream)
-                .collect(Collectors.toSet());
+                .flatMap(Collection::stream)
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     @Override
@@ -36,7 +37,7 @@ public class NationsInRegionsProvider extends RecipientsProvider {
         return RecipientsProviderType.NATIONS_IN_REGIONS.toString() + " " + regionNames.toString();
     }
 
-    private Set<String> getNationsInRegion(String regionName) {
+    private Collection<String> getNationsInRegion(String regionName) {
         return nationStates.getRegion(regionName).shards(RegionShard.NATION_NAMES).execute().getNationNames();
     }
 

@@ -3,13 +3,13 @@ package com.github.agadar.telegrammer.core.regiondumpaccess;
 import java.util.Collection;
 import java.util.Set;
 
-import com.github.agadar.telegrammer.core.regiondumpaccess.IRegionDumpAccess;
+import com.github.agadar.telegrammer.core.regiondumpaccess.RegionDumpAccess;
 
 /**
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public class RegionDumpAccessMock implements IRegionDumpAccess {
+public class RegionDumpAccessMock implements RegionDumpAccess {
 
     @Override
     public Set<String> getNationsInRegions(Collection<String> regionNames) {

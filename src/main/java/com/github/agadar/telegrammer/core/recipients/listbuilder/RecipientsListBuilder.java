@@ -1,72 +1,53 @@
 package com.github.agadar.telegrammer.core.recipients.listbuilder;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import com.github.agadar.nationstates.exception.NationStatesAPIException;
-import com.github.agadar.telegrammer.core.recipients.filter.IRecipientsFilter;
-import com.github.agadar.telegrammer.core.telegram.history.ITelegramHistory;
+import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilter;
 
-import lombok.NonNull;
+/**
+ * Assists in building a list of recipients, using filters and telegram history.
+ *
+ * @author Agadar (https://github.com/Agadar/)
+ */
+public interface RecipientsListBuilder {
 
-public class RecipientsListBuilder implements IRecipientsListBuilder {
+    /**
+     * @return The result of applying all filters, representing a recipients set.
+     */
+    public Collection<String> getRecipients();
 
-    private final ITelegramHistory telegramHistory;
-    private final List<IRecipientsFilter> filters;
+    /**
+     * @return The filters of this builder.
+     */
+    public List<RecipientsFilter> getFilters();
 
-    public RecipientsListBuilder(@NonNull ITelegramHistory telegramHistory) {
-        this.telegramHistory = telegramHistory;
-        filters = new ArrayList<>();
-    }
+    /**
+     * Appends a new filter to the end of this chain.
+     *
+     * @param filter
+     * @return The index of the added filter.
+     */
+    public int addFilter(RecipientsFilter filter);
 
-    public RecipientsListBuilder(@NonNull ITelegramHistory telegramHistory, @NonNull List<IRecipientsFilter> filters) {
-        this.telegramHistory = telegramHistory;
-        this.filters = filters;
-    }
+    /**
+     * Refreshes all filters.
+     * 
+     * @return A map of filters that failed with an error while refreshing.
+     */
+    public Map<RecipientsFilter, NationStatesAPIException> refreshFilters();
 
-    @Override
-    public Set<String> getRecipients() {
-        final HashSet<String> recipients = new HashSet<>();
-        filters.forEach(filter -> filter.applyFilterToRecipients(recipients));
-        telegramHistory.removeOldRecipients(recipients);
-        return recipients;
-    }
+    /**
+     * Removes the filter at the specified index.
+     *
+     * @param index
+     */
+    public void removeFilterAt(int index);
 
-    @Override
-    public int addFilter(@NonNull IRecipientsFilter filter) {
-        filters.add(filter);
-        return filters.indexOf(filter);
-    }
-
-    @Override
-    public LinkedHashMap<IRecipientsFilter, NationStatesAPIException> refreshFilters() {
-        var failedFilters = new LinkedHashMap<IRecipientsFilter, NationStatesAPIException>();
-        filters.forEach(filter -> {
-            try {
-                filter.refreshFilter();
-            } catch (NationStatesAPIException ex) {
-                failedFilters.put(filter, ex);
-            }
-        });
-        return failedFilters;
-    }
-
-    @Override
-    public void removeFilterAt(int index) {
-        filters.remove(index);
-    }
-
-    @Override
-    public void resetFilters() {
-        filters.clear();
-    }
-
-    @Override
-    public List<IRecipientsFilter> getFilters() {
-        return this.filters;
-    }
-
+    /**
+     * Clears this filter chain.
+     */
+    public void resetFilters();
 }

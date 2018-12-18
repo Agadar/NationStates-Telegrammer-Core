@@ -4,7 +4,7 @@ import com.github.agadar.telegrammer.core.telegram.SkippedRecipientReason;
 
 import java.util.Collection;
 
-public class TelegramHistoryMock implements ITelegramHistory {
+public class TelegramHistoryMock implements TelegramHistory {
 
     @Override
     public SkippedRecipientReason getSkippedRecipientReason(String telegramId, String recipient) {

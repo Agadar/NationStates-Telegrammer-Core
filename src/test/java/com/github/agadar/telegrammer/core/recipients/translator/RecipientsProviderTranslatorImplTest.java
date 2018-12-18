@@ -1,7 +1,7 @@
 package com.github.agadar.telegrammer.core.recipients.translator;
 
 import com.github.agadar.nationstates.NationStatesMock;
-import com.github.agadar.telegrammer.core.recipients.provider.IRecipientsProvider;
+import com.github.agadar.telegrammer.core.recipients.provider.RecipientsProvider;
 import com.github.agadar.telegrammer.core.recipients.provider.NationsProvider;
 import com.github.agadar.telegrammer.core.recipients.provider.NullRecipientsProvider;
 import com.github.agadar.telegrammer.core.regiondumpaccess.RegionDumpAccessMock;
@@ -17,9 +17,9 @@ import static org.junit.Assert.*;
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public class RecipientsProviderTranslatorTest {
+public class RecipientsProviderTranslatorImplTest {
 
-    private RecipientsProviderTranslator translator;
+    private RecipientsProviderTranslatorImpl translator;
 
     private NationStatesMock nationStatesMock;
     private RegionDumpAccessMock accessMock;
@@ -28,7 +28,7 @@ public class RecipientsProviderTranslatorTest {
     public void setUp() {
         nationStatesMock = new NationStatesMock();
         accessMock = new RegionDumpAccessMock();
-        translator = new RecipientsProviderTranslator(nationStatesMock, accessMock);
+        translator = new RecipientsProviderTranslatorImpl(nationStatesMock, accessMock);
     }
 
     @After
@@ -43,7 +43,7 @@ public class RecipientsProviderTranslatorTest {
         System.out.println("ToProvider should return null-provider on null string");
 
         // Act
-        final IRecipientsProvider provider = translator.toProvider(null);
+        final RecipientsProvider provider = translator.toProvider(null);
 
         // Assert
         assertTrue(provider instanceof NullRecipientsProvider);
@@ -54,7 +54,7 @@ public class RecipientsProviderTranslatorTest {
         System.out.println("ToProvider should return null-provider on empty string");
 
         // Act
-        final IRecipientsProvider provider = translator.toProvider("");
+        final RecipientsProvider provider = translator.toProvider("");
 
         // Assert
         assertTrue(provider instanceof NullRecipientsProvider);
@@ -65,7 +65,7 @@ public class RecipientsProviderTranslatorTest {
         System.out.println("ToProvider should return null-provider on invalid string");
 
         // Act
-        final IRecipientsProvider provider = translator.toProvider("someInvalidString");
+        final RecipientsProvider provider = translator.toProvider("someInvalidString");
 
         // Assert
         assertTrue(provider instanceof NullRecipientsProvider);
@@ -76,7 +76,7 @@ public class RecipientsProviderTranslatorTest {
         System.out.println("ToProvider should return empty NationsProvider on 'NATIONS'");
 
         // Act
-        final IRecipientsProvider provider = translator.toProvider("NATIONS");
+        final RecipientsProvider provider = translator.toProvider("NATIONS");
 
         // Assert
         assertTrue(provider instanceof NationsProvider);
@@ -89,7 +89,7 @@ public class RecipientsProviderTranslatorTest {
         System.out.println("ToProvider should return empty NationsProvider on 'NATIONS[]'");
 
         // Act
-        final IRecipientsProvider provider = translator.toProvider("NATIONS[]");
+        final RecipientsProvider provider = translator.toProvider("NATIONS[]");
 
         // Assert
         assertTrue(provider instanceof NationsProvider);
@@ -102,7 +102,7 @@ public class RecipientsProviderTranslatorTest {
         System.out.println("ToProvider should return NationsProvider on 'NATIONS[agadar]'");
 
         // Act
-        final IRecipientsProvider provider = translator.toProvider("NATIONS[agadar]");
+        final RecipientsProvider provider = translator.toProvider("NATIONS[agadar]");
 
         // Assert
         assertTrue(provider instanceof NationsProvider);
@@ -116,7 +116,7 @@ public class RecipientsProviderTranslatorTest {
         System.out.println("ToProvider should return NationsProvider on 'NATIONS[agadar,vancouvia]'");
 
         // Act
-        final IRecipientsProvider provider = translator.toProvider("NATIONS[agadar,vancouvia]");
+        final RecipientsProvider provider = translator.toProvider("NATIONS[agadar,vancouvia]");
 
         // Assert
         assertTrue(provider instanceof NationsProvider);
@@ -130,7 +130,7 @@ public class RecipientsProviderTranslatorTest {
         System.out.println("fromProvider should return emptry string on null");
 
         // Arrange
-        final IRecipientsProvider provider = null;
+        final RecipientsProvider provider = null;
 
         // Act
         final String stringified = translator.fromProvider(provider);
@@ -144,7 +144,7 @@ public class RecipientsProviderTranslatorTest {
         System.out.println("fromProvider should return emptry string on null-provider");
 
         // Arrange
-        final IRecipientsProvider provider = new NullRecipientsProvider();
+        final RecipientsProvider provider = new NullRecipientsProvider();
 
         // Act
         final String stringified = translator.fromProvider(provider);
@@ -158,7 +158,7 @@ public class RecipientsProviderTranslatorTest {
         System.out.println("fromProvider should return 'NATIONS[]' on empty NationsProvider");
 
         // Arrange
-        final IRecipientsProvider provider = new NationsProvider(new HashSet<>());
+        final RecipientsProvider provider = new NationsProvider(new HashSet<>());
 
         // Act
         final String stringified = translator.fromProvider(provider);
@@ -174,7 +174,7 @@ public class RecipientsProviderTranslatorTest {
         // Arrange
         final HashSet<String> nations = new HashSet<>();
         nations.add("agadar");
-        final IRecipientsProvider provider = new NationsProvider(nations);
+        final RecipientsProvider provider = new NationsProvider(nations);
 
         // Act
         final String stringified = translator.fromProvider(provider);
@@ -191,7 +191,7 @@ public class RecipientsProviderTranslatorTest {
         final HashSet<String> nations = new HashSet<>();
         nations.add("agadar");
         nations.add("vancouvia");
-        final IRecipientsProvider provider = new NationsProvider(nations);
+        final RecipientsProvider provider = new NationsProvider(nations);
 
         // Act
         final String stringified = translator.fromProvider(provider);

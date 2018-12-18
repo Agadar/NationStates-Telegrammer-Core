@@ -1,16 +1,16 @@
 package com.github.agadar.telegrammer.core.telegram.sender;
 
-import java.util.Set;
+import java.util.Collection;
 import java.util.function.Predicate;
 
-import com.github.agadar.nationstates.INationStates;
+import com.github.agadar.nationstates.NationStates;
 import com.github.agadar.nationstates.domain.nation.Nation;
 import com.github.agadar.nationstates.event.TelegramSentEvent;
 import com.github.agadar.nationstates.event.TelegramSentListener;
 import com.github.agadar.nationstates.query.TelegramQuery;
 import com.github.agadar.nationstates.shard.NationShard;
 import com.github.agadar.telegrammer.core.properties.ApplicationProperties;
-import com.github.agadar.telegrammer.core.recipients.listbuilder.IRecipientsListBuilder;
+import com.github.agadar.telegrammer.core.recipients.listbuilder.RecipientsListBuilder;
 import com.github.agadar.telegrammer.core.telegram.QueuedStats;
 import com.github.agadar.telegrammer.core.telegram.SkippedRecipientReason;
 import com.github.agadar.telegrammer.core.telegram.TelegramType;
@@ -19,7 +19,7 @@ import com.github.agadar.telegrammer.core.telegram.event.RecipientRemovedEvent;
 import com.github.agadar.telegrammer.core.telegram.event.RecipientsRefreshedEvent;
 import com.github.agadar.telegrammer.core.telegram.event.StoppedSendingEvent;
 import com.github.agadar.telegrammer.core.telegram.event.TelegramManagerListener;
-import com.github.agadar.telegrammer.core.telegram.history.ITelegramHistory;
+import com.github.agadar.telegrammer.core.telegram.history.TelegramHistory;
 
 /**
  * Runnable used by TelegramManager which sends the telegrams to the recipients.
@@ -28,16 +28,16 @@ import com.github.agadar.telegrammer.core.telegram.history.ITelegramHistory;
  */
 public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 
-    private final IRecipientsListBuilder recipientsListBuilder;
-    private final Set<TelegramManagerListener> listeners;
+    private final RecipientsListBuilder recipientsListBuilder;
+    private final Collection<TelegramManagerListener> listeners;
     private final int noRecipientsFoundTimeOut;
     private final QueuedStats queuedStats = new QueuedStats();
-    private final INationStates nationStates;
-    private final ITelegramHistory historyManager;
+    private final NationStates nationStates;
+    private final TelegramHistory historyManager;
     private final ApplicationProperties properties;
 
-    public SendTelegramsRunnable(IRecipientsListBuilder recipientsListBuilder, INationStates nationStates,
-            ITelegramHistory historyManager, ApplicationProperties properties, Set<TelegramManagerListener> listeners,
+    public SendTelegramsRunnable(RecipientsListBuilder recipientsListBuilder, NationStates nationStates,
+            TelegramHistory historyManager, ApplicationProperties properties, Collection<TelegramManagerListener> listeners,
             int noRecipientsFoundTimeOut) {
         this.recipientsListBuilder = recipientsListBuilder;
         this.nationStates = nationStates;
@@ -161,7 +161,7 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
      * @return
      */
     private String[] getRecipients() {
-        final Set<String> recipientsSet = recipientsListBuilder.getRecipients();
+        var recipientsSet = recipientsListBuilder.getRecipients();
         return recipientsSet.toArray(new String[recipientsSet.size()]);
     }
 

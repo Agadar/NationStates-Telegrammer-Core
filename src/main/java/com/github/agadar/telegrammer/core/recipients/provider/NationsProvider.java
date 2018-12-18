@@ -1,26 +1,26 @@
 package com.github.agadar.telegrammer.core.recipients.provider;
 
+import java.util.Collection;
+
 import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
 
 import lombok.NonNull;
-
-import java.util.Set;
 
 /**
  * Simply supplies whatever nation names were provided.
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public class NationsProvider implements IRecipientsProvider {
+public class NationsProvider implements RecipientsProvider {
 
-    public final Set<String> nations;
+    public final Collection<String> nations;
 
-    public NationsProvider(@NonNull Set<String> nations) {
+    public NationsProvider(@NonNull Collection<String> nations) {
         this.nations = nations;
     }
 
     @Override
-    public Set<String> getRecipients() {
+    public Collection<String> getRecipients() {
         return nations;
     }
 

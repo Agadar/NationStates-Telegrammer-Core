@@ -1,8 +1,7 @@
 package com.github.agadar.telegrammer.core.util;
 
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -23,20 +22,18 @@ public class StringFunctionsTest {
         System.out.println("testStringsToRegionTags");
 
         // Arrange
-        final Set<RegionTag> expectedRegionTags = new HashSet<RegionTag>();
-        expectedRegionTags.add(RegionTag.ANTI_CAPITALIST);
-        expectedRegionTags.add(RegionTag.CASUAL);
-
-        final Set<String> regionTagStrings = new HashSet<String>();
+        var regionTagStrings = new ArrayList<String>();
         regionTagStrings.add("anti-capitalist");
         regionTagStrings.add("casual");
         regionTagStrings.add("non-existent-tag-4765728462");
 
         // Act
-        final Set<RegionTag> regionTags = StringFunctions.stringsToRegionTags(regionTagStrings);
+        var regionTags = StringFunctions.stringsToRegionTags(regionTagStrings);
 
         // Assert
-        Assert.assertTrue(Objects.deepEquals(regionTags, expectedRegionTags));
+        Assert.assertEquals(2, regionTags.size());
+        Assert.assertTrue(regionTags.contains(RegionTag.ANTI_CAPITALIST));
+        Assert.assertTrue(regionTags.contains(RegionTag.CASUAL));
 
     }
 
@@ -45,18 +42,16 @@ public class StringFunctionsTest {
         System.out.println("testExtractNationsFromHappenings");
 
         // Arrange
-        final Set<String> expectedNations = new HashSet<String>();
-        expectedNations.add("tientang");
-
-        final Set<Happening> happenings = new HashSet<Happening>();
+        var happenings = new HashSet<Happening>();
         happenings.add(new Happening(193257689L, 1520092742L, "@@ninetang@@ applied to join the World Assembly."));
         happenings.add(new Happening(193257689L, 1520092742L, "@@tientang@@ was admitted to the World Assembly."));
 
         // Act
-        final Set<String> nations = StringFunctions.extractNationsFromHappenings(happenings, KeyWord.admitted);
+        var nations = StringFunctions.extractNationsFromHappenings(happenings, KeyWord.admitted);
 
         // Assert
-        Assert.assertTrue(Objects.deepEquals(expectedNations, nations));
+        Assert.assertEquals(1, nations.size());
+        Assert.assertEquals("tientang", nations.get(0));
     }
 
 }

@@ -1,7 +1,7 @@
 package com.github.agadar.telegrammer.core.properties.manager;
 
 import com.github.agadar.telegrammer.core.properties.ApplicationProperties;
-import com.github.agadar.telegrammer.core.recipients.translator.IRecipientsListBuilderTranslator;
+import com.github.agadar.telegrammer.core.recipients.translator.RecipientsListBuilderTranslator;
 
 /**
  * The most basic PropertiesManager, completing AbstractPropertiesManager by
@@ -12,7 +12,7 @@ import com.github.agadar.telegrammer.core.recipients.translator.IRecipientsListB
  */
 public class BasicPropertiesManager extends AbstractPropertiesManager<ApplicationProperties> {
 
-    public BasicPropertiesManager(IRecipientsListBuilderTranslator builderTranslator, String propertiesFileName) {
+    public BasicPropertiesManager(RecipientsListBuilderTranslator builderTranslator, String propertiesFileName) {
         super(builderTranslator, propertiesFileName);
     }
 

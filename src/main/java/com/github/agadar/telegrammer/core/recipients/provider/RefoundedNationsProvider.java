@@ -1,8 +1,8 @@
 package com.github.agadar.telegrammer.core.recipients.provider;
 
-import java.util.Set;
+import java.util.Collection;
 
-import com.github.agadar.nationstates.INationStates;
+import com.github.agadar.nationstates.NationStates;
 import com.github.agadar.nationstates.enumerator.HappeningsFilter;
 import com.github.agadar.nationstates.shard.WorldShard;
 import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
@@ -15,14 +15,14 @@ import lombok.NonNull;
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public class RefoundedNationsProvider extends RecipientsProvider {
+public class RefoundedNationsProvider extends NationStatesRecipientsProvider {
 
-    public RefoundedNationsProvider(@NonNull INationStates nationStates) {
+    public RefoundedNationsProvider(@NonNull NationStates nationStates) {
         super(nationStates);
     }
 
     @Override
-    public Set<String> getRecipients() {
+    public Collection<String> getRecipients() {
         var happenings = nationStates.getWorld(WorldShard.HAPPENINGS).happeningsFilter(HappeningsFilter.FOUNDING)
                 .execute().getHappenings();
         return StringFunctions.extractNationsFromHappenings(happenings, StringFunctions.KeyWord.refounded);
