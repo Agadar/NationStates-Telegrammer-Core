@@ -37,8 +37,8 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
     private final ApplicationProperties properties;
 
     public SendTelegramsRunnable(RecipientsListBuilder recipientsListBuilder, NationStates nationStates,
-            TelegramHistory historyManager, ApplicationProperties properties, Collection<TelegramManagerListener> listeners,
-            int noRecipientsFoundTimeOut) {
+            TelegramHistory historyManager, ApplicationProperties properties,
+            Collection<TelegramManagerListener> listeners, int noRecipientsFoundTimeOut) {
         this.recipientsListBuilder = recipientsListBuilder;
         this.nationStates = nationStates;
         this.historyManager = historyManager;
@@ -139,13 +139,13 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
         // called before this and the Telegram Id didn't change in the meantime,
         // so there is no need to make sure the entry for the current Telegram Id
         // changed.
-        if (event.isQueued()) {
+        event.getException().ifPresentOrElse(exception -> {
+            queuedStats.registerFailure(event.getRecipient(), null);
+        }, () -> {
             historyManager.saveHistory(properties.getTelegramId(), event.getRecipient(),
                     SkippedRecipientReason.PREVIOUS_RECIPIENT);
             queuedStats.registerSucces(event.getRecipient());
-        } else {
-            queuedStats.registerFailure(event.getRecipient(), null);
-        }
+        });
 
         synchronized (listeners) {
             listeners.stream().forEach((tsl) -> {
