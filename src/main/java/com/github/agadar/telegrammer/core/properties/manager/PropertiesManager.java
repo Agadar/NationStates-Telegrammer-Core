@@ -10,18 +10,24 @@ import com.github.agadar.telegrammer.core.properties.ApplicationProperties;
 public interface PropertiesManager<T extends ApplicationProperties> {
 
     /**
-     * Saves the application's properties to the file.
+     * Persists the application's properties to the file system.
      *
-     * @param properties
      * @return True if saving succeeded, false otherwise.
      */
-    public boolean saveProperties(T properties);
+    public boolean persistPropertiesToFileSystem();
 
     /**
-     * Loads the application's properties from the file.
+     * Loads the application's properties from the file system and caches them.
      *
      * @param properties
      * @return
      */
-    public T loadProperties(T properties);
+    public T loadPropertiesFromFileSystem();
+
+    /**
+     * Gets the cached application properties.
+     * 
+     * @return
+     */
+    public T getProperties();
 }

@@ -5,7 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import com.github.agadar.nationstates.NationStates;
-import com.github.agadar.telegrammer.core.properties.ApplicationProperties;
+import com.github.agadar.telegrammer.core.properties.manager.PropertiesManager;
 import com.github.agadar.telegrammer.core.recipients.listbuilder.RecipientsListBuilder;
 import com.github.agadar.telegrammer.core.telegram.event.TelegramManagerListener;
 import com.github.agadar.telegrammer.core.telegram.history.TelegramHistory;
@@ -26,18 +26,19 @@ public class TelegramSenderImpl implements TelegramSender {
 
     private final NationStates nationStates;
     private final TelegramHistory historyManager;
-    private final ApplicationProperties properties;
+    private final PropertiesManager<?> propertiesManager;
 
     public TelegramSenderImpl(@NonNull NationStates nationStates, @NonNull TelegramHistory historyManager,
-            @NonNull ApplicationProperties properties) {
+            @NonNull PropertiesManager<?> propertiesManager) {
         this.nationStates = nationStates;
         this.historyManager = historyManager;
-        this.properties = properties;
+        this.propertiesManager = propertiesManager;
     }
 
     @Override
     public void startSending(@NonNull RecipientsListBuilder recipientsListBuilder) {
         // Make sure all inputs are valid.
+        var properties = propertiesManager.getProperties();
         if (properties.getClientKey() == null || properties.getClientKey().isEmpty()) {
             throw new IllegalArgumentException("Please supply a Client Key!");
         }
@@ -63,8 +64,8 @@ public class TelegramSenderImpl implements TelegramSender {
         nationStates.setUserAgent(String.format(userAgentFormat, properties.getClientKey()));
 
         // Prepare the runnable.
-        final SendTelegramsRunnable sendTelegramsRunnable = new SendTelegramsRunnable(recipientsListBuilder,
-                nationStates, historyManager, properties, listeners, noAddresseesFoundTimeout);
+        var sendTelegramsRunnable = new SendTelegramsRunnable(recipientsListBuilder, nationStates, historyManager,
+                properties, listeners, noAddresseesFoundTimeout);
         telegramThread = new Thread(sendTelegramsRunnable);
         telegramThread.start();
     }

@@ -25,6 +25,7 @@ public abstract class AbstractPropertiesManager<T extends ApplicationProperties>
     protected final String defaultBooleanValue = "false";
 
     private String propertiesFileName;
+    private T properties;
 
     private final RecipientsListBuilderTranslator builderTranslator;
 
@@ -34,12 +35,12 @@ public abstract class AbstractPropertiesManager<T extends ApplicationProperties>
     }
 
     @Override
-    public boolean saveProperties(T properties) {
+    public boolean persistPropertiesToFileSystem() {
         if (properties == null) {
             return false;
         }
 
-        final Properties propertiesMap = new Properties();
+        var propertiesMap = new Properties();
         this.setPropertiesFromApplicationProperties(propertiesMap, properties);
 
         try (OutputStream output = new FileOutputStream(this.propertiesFileName)) {
@@ -51,12 +52,12 @@ public abstract class AbstractPropertiesManager<T extends ApplicationProperties>
     }
 
     @Override
-    public T loadProperties(T properties) {
+    public T loadPropertiesFromFileSystem() {
         if (properties == null) {
             properties = this.createApplicationProperties();
         }
 
-        final Properties propertiesMap = new Properties();
+        var propertiesMap = new Properties();
 
         try (InputStream input = new FileInputStream(this.propertiesFileName);) {
             propertiesMap.load(input);
@@ -65,6 +66,11 @@ public abstract class AbstractPropertiesManager<T extends ApplicationProperties>
         }
 
         this.setApplicationPropertiesFromProperties(properties, propertiesMap);
+        return properties;
+    }
+
+    @Override
+    public T getProperties() {
         return properties;
     }
 
