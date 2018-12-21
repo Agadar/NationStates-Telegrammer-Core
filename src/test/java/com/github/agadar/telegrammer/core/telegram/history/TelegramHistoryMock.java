@@ -8,22 +8,21 @@ public class TelegramHistoryMock implements TelegramHistory {
 
     @Override
     public SkippedRecipientReason getSkippedRecipientReason(String telegramId, String recipient) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public boolean saveHistory(String telegramId, String recipient, SkippedRecipientReason reason) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public boolean loadHistory() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void removeOldRecipients(Collection<String> nations) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void removeOldRecipients(Collection<String> nations, String telegramId) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
-
 }

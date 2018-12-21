@@ -15,9 +15,12 @@ import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilter;
 public interface RecipientsListBuilder {
 
     /**
-     * @return The result of applying all filters, representing a recipients set.
+     * @return The result of applying all filters for the specified telegram id,
+     *         representing a recipients set.
+     * @param telegramId
+     * @return A collection of recipients for the specified telegram id.
      */
-    public Collection<String> getRecipients();
+    public Collection<String> getRecipients(String telegramId);
 
     /**
      * @return The filters of this builder.

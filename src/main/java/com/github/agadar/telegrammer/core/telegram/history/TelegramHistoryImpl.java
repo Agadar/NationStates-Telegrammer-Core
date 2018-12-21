@@ -1,23 +1,21 @@
 package com.github.agadar.telegrammer.core.telegram.history;
 
-import com.github.agadar.telegrammer.core.properties.ApplicationProperties;
-import com.github.agadar.telegrammer.core.telegram.SkippedRecipientReason;
-import com.github.agadar.telegrammer.core.util.Tuple;
-
-import lombok.NonNull;
-
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.stream.Stream;
+
+import com.github.agadar.telegrammer.core.telegram.SkippedRecipientReason;
+import com.github.agadar.telegrammer.core.util.Tuple;
+
+import lombok.NonNull;
 
 public class TelegramHistoryImpl implements TelegramHistory {
 
@@ -36,10 +34,7 @@ public class TelegramHistoryImpl implements TelegramHistory {
      */
     private final Path historyFile;
 
-    private final ApplicationProperties properties;
-
-    public TelegramHistoryImpl(@NonNull ApplicationProperties properties, @NonNull String historyFileName) {
-        this.properties = properties;
+    public TelegramHistoryImpl(@NonNull String historyFileName) {
         this.historyFile = Paths.get(historyFileName);
     }
 
@@ -104,9 +99,9 @@ public class TelegramHistoryImpl implements TelegramHistory {
     }
 
     @Override
-    public void removeOldRecipients(@NonNull Collection<String> nations) {
+    public void removeOldRecipients(@NonNull Collection<String> nations, @NonNull String telegramId) {
         for (final Iterator<String> it = nations.iterator(); it.hasNext();) {
-            if (getSkippedRecipientReason(properties.getTelegramId(), it.next()) != null) {
+            if (getSkippedRecipientReason(telegramId, it.next()) != null) {
                 it.remove(); // Remove recipient
             }
         }

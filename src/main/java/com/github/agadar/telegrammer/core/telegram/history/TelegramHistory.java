@@ -40,9 +40,11 @@ public interface TelegramHistory {
     public boolean loadHistory();
 
     /**
-     * Removes invalid recipients from the supplied set.
+     * Removes recipients from the supplied collection that are invalid for the
+     * specified telegram id.
      *
      * @param nations
+     * @param telegramId
      */
-    public void removeOldRecipients(Collection<String> nations);
+    public void removeOldRecipients(Collection<String> nations, String telegramId);
 }

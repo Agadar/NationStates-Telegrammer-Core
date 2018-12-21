@@ -19,7 +19,8 @@ public class TelegramSenderImpl implements TelegramSender {
     private final int noAddresseesFoundTimeout = 60000; // Duration in milliseconds for timeout when no recipients were
                                                         // found while looping.
 
-    private final Collection<TelegramManagerListener> listeners = new HashSet<>(); // Listeners to events thrown by this.
+    private final Collection<TelegramManagerListener> listeners = new HashSet<>(); // Listeners to events thrown by
+                                                                                   // this.
 
     private Thread telegramThread; // The thread on which the TelegramQuery is running.
 
@@ -54,7 +55,7 @@ public class TelegramSenderImpl implements TelegramSender {
         }
 
         // Make sure there is at least one recipient to send the telegram to.
-        if (recipientsListBuilder.getRecipients().isEmpty()) {
+        if (recipientsListBuilder.getRecipients(properties.getTelegramId()).isEmpty()) {
             throw new IllegalArgumentException("Please supply at least one recipient!");
         }
 

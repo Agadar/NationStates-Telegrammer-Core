@@ -161,8 +161,8 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
      * @return
      */
     private String[] getRecipients() {
-        var recipientsSet = recipientsListBuilder.getRecipients();
-        return recipientsSet.toArray(new String[recipientsSet.size()]);
+        var recipients = recipientsListBuilder.getRecipients(properties.getTelegramId());
+        return recipients.toArray(new String[recipients.size()]);
     }
 
     /**

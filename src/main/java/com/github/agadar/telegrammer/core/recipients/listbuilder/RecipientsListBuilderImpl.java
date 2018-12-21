@@ -23,16 +23,17 @@ public class RecipientsListBuilderImpl implements RecipientsListBuilder {
         filters = new ArrayList<>();
     }
 
-    public RecipientsListBuilderImpl(@NonNull TelegramHistory telegramHistory, @NonNull List<RecipientsFilter> filters) {
+    public RecipientsListBuilderImpl(@NonNull TelegramHistory telegramHistory,
+            @NonNull List<RecipientsFilter> filters) {
         this.telegramHistory = telegramHistory;
         this.filters = filters;
     }
 
     @Override
-    public Collection<String> getRecipients() {
+    public Collection<String> getRecipients(@NonNull String telegramId) {
         var recipients = new LinkedHashSet<String>();
         filters.forEach(filter -> filter.applyFilterToRecipients(recipients));
-        telegramHistory.removeOldRecipients(recipients);
+        telegramHistory.removeOldRecipients(recipients, telegramId);
         return recipients;
     }
 
