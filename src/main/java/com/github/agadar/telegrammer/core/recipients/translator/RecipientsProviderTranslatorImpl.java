@@ -5,11 +5,10 @@ import java.util.HashSet;
 
 import com.github.agadar.nationstates.NationStates;
 import com.github.agadar.nationstates.enumerator.RegionTag;
-import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
+import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterType;
 import com.github.agadar.telegrammer.core.recipients.provider.AllNationsProvider;
 import com.github.agadar.telegrammer.core.recipients.provider.DelegatesProvider;
 import com.github.agadar.telegrammer.core.recipients.provider.EjectedNationsProvider;
-import com.github.agadar.telegrammer.core.recipients.provider.RecipientsProvider;
 import com.github.agadar.telegrammer.core.recipients.provider.NationsInEmbassyRegionsProvider;
 import com.github.agadar.telegrammer.core.recipients.provider.NationsInRegionsProvider;
 import com.github.agadar.telegrammer.core.recipients.provider.NationsInRegionsWithTagsProvider;
@@ -19,6 +18,7 @@ import com.github.agadar.telegrammer.core.recipients.provider.NewDelegatesProvid
 import com.github.agadar.telegrammer.core.recipients.provider.NewNationsProvider;
 import com.github.agadar.telegrammer.core.recipients.provider.NewWorldAssemblyMembersProvider;
 import com.github.agadar.telegrammer.core.recipients.provider.NullRecipientsProvider;
+import com.github.agadar.telegrammer.core.recipients.provider.RecipientsProvider;
 import com.github.agadar.telegrammer.core.recipients.provider.RefoundedNationsProvider;
 import com.github.agadar.telegrammer.core.recipients.provider.WorldAssemblyMembersProvider;
 import com.github.agadar.telegrammer.core.regiondumpaccess.RegionDumpAccess;
@@ -35,12 +35,12 @@ public class RecipientsProviderTranslatorImpl implements RecipientsProviderTrans
     }
 
     @Override
-    public RecipientsProvider toProvider(RecipientsProviderType providerType, Collection<String> input) {
-        if (providerType == null) {
+    public RecipientsProvider toProvider(RecipientsFilterType filterType, Collection<String> input) {
+        if (filterType == null) {
             return new NullRecipientsProvider();
         }
         input = normalizeNames(input);
-        switch (providerType) {
+        switch (filterType) {
 
             case ALL_NATIONS:
                 return new AllNationsProvider(nationStates);
@@ -91,77 +91,57 @@ public class RecipientsProviderTranslatorImpl implements RecipientsProviderTrans
     }
 
     @Override
-    public RecipientsProvider toProvider(String input) {
-        if (input == null || input.isEmpty()) {
-            return toProvider(null, null);
-        }
-        final String[] split = input.split("\\[");
-        RecipientsProviderType providerType;
-
-        try {
-            providerType = RecipientsProviderType.valueOf(split[0]);
-        } catch (IllegalArgumentException e) {
-            providerType = null;
-        }
-        HashSet<String> params;
-
-        if (split.length > 1) {
-            split[1] = split[1].substring(0, split[1].length() - 1);
-            params = StringFunctions.stringToHashSet(split[1]);
-        } else {
-            params = new HashSet<>();
-        }
-        return toProvider(providerType, params);
-    }
-
-    @Override
     public String fromProvider(RecipientsProvider provider) {
 
         if (provider instanceof AllNationsProvider) {
-            return RecipientsProviderType.ALL_NATIONS.name();
+            return RecipientsFilterType.ALL_NATIONS.name();
 
         } else if (provider instanceof EjectedNationsProvider) {
-            return RecipientsProviderType.EJECTED_NATIONS.name();
+            return RecipientsFilterType.EJECTED_NATIONS.name();
 
         } else if (provider instanceof NationsInEmbassyRegionsProvider) {
-            return RecipientsProviderType.NATIONS_IN_EMBASSY_REGIONS.name() + ((NationsInEmbassyRegionsProvider) provider).regionNames.toString();
+            return RecipientsFilterType.NATIONS_IN_EMBASSY_REGIONS.name()
+                    + ((NationsInEmbassyRegionsProvider) provider).regionNames.toString();
 
         } else if (provider instanceof NationsInRegionsWithTagsProvider) {
-            return RecipientsProviderType.NATIONS_IN_REGIONS_WITH_TAGS.name() + ((NationsInRegionsWithTagsProvider) provider).regionTags.toString();
+            return RecipientsFilterType.NATIONS_IN_REGIONS_WITH_TAGS.name()
+                    + ((NationsInRegionsWithTagsProvider) provider).regionTags.toString();
 
         } else if (provider instanceof NationsInRegionsWithoutTagsProvider) {
-            return RecipientsProviderType.NATIONS_IN_REGIONS_WITHOUT_TAGS.name() + ((NationsInRegionsWithoutTagsProvider) provider).regionTags.toString();
+            return RecipientsFilterType.NATIONS_IN_REGIONS_WITHOUT_TAGS.name()
+                    + ((NationsInRegionsWithoutTagsProvider) provider).regionTags.toString();
 
         } else if (provider instanceof NationsInRegionsProvider) {
-            return RecipientsProviderType.NATIONS_IN_REGIONS.name() + ((NationsInRegionsProvider) provider).regionNames.toString();
+            return RecipientsFilterType.NATIONS_IN_REGIONS.name()
+                    + ((NationsInRegionsProvider) provider).regionNames.toString();
 
         } else if (provider instanceof NewNationsProvider) {
-            return RecipientsProviderType.NEW_NATIONS.name();
+            return RecipientsFilterType.NEW_NATIONS.name();
 
         } else if (provider instanceof NewDelegatesProvider) {
-            return RecipientsProviderType.NEW_DELEGATES.name();
+            return RecipientsFilterType.NEW_DELEGATES.name();
 
         } else if (provider instanceof NewWorldAssemblyMembersProvider) {
-            return RecipientsProviderType.NEW_WORLD_ASSEMBLY_MEMBERS.name();
+            return RecipientsFilterType.NEW_WORLD_ASSEMBLY_MEMBERS.name();
 
         } else if (provider instanceof RefoundedNationsProvider) {
-            return RecipientsProviderType.REFOUNDED_NATIONS.name();
+            return RecipientsFilterType.REFOUNDED_NATIONS.name();
 
         } else if (provider instanceof NationsProvider) {
-            return RecipientsProviderType.NATIONS.name() + ((NationsProvider) provider).nations.toString();
+            return RecipientsFilterType.NATIONS.name() + ((NationsProvider) provider).nations.toString();
 
         } else if (provider instanceof DelegatesProvider) {
-            return RecipientsProviderType.DELEGATES.name();
+            return RecipientsFilterType.DELEGATES.name();
 
         } else if (provider instanceof WorldAssemblyMembersProvider) {
-            return RecipientsProviderType.WORLD_ASSEMBLY_MEMBERS.name();
+            return RecipientsFilterType.WORLD_ASSEMBLY_MEMBERS.name();
 
         }
         return "";
     }
 
     private Collection<String> normalizeNames(Collection<String> names) {
-        final HashSet<String> normalized = new HashSet<>();
+        var normalized = new HashSet<String>();
 
         if (names != null) {
             names.forEach(name -> {
@@ -172,7 +152,7 @@ public class RecipientsProviderTranslatorImpl implements RecipientsProviderTrans
     }
 
     private Collection<RegionTag> regionTagStringsToEnums(Collection<String> regionTags) {
-        final HashSet<RegionTag> enums = new HashSet<>();
+        var enums = new HashSet<RegionTag>();
 
         regionTags.forEach((regionTag) -> {
             try {

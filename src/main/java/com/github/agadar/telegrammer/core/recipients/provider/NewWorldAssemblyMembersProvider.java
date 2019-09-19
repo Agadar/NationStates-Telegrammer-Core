@@ -5,7 +5,7 @@ import java.util.Collection;
 import com.github.agadar.nationstates.NationStates;
 import com.github.agadar.nationstates.enumerator.Council;
 import com.github.agadar.nationstates.shard.WorldAssemblyShard;
-import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
+import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterType;
 import com.github.agadar.telegrammer.core.util.StringFunctions;
 
 import lombok.NonNull;
@@ -30,7 +30,7 @@ public class NewWorldAssemblyMembersProvider extends NationStatesRecipientsProvi
 
     @Override
     public String toString() {
-        return RecipientsProviderType.NEW_WORLD_ASSEMBLY_MEMBERS.toString();
+        return RecipientsFilterType.NEW_WORLD_ASSEMBLY_MEMBERS.toString();
     }
 
 }

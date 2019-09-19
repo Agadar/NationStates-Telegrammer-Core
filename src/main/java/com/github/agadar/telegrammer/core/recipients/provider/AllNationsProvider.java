@@ -4,7 +4,7 @@ import java.util.Collection;
 
 import com.github.agadar.nationstates.NationStates;
 import com.github.agadar.nationstates.shard.WorldShard;
-import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
+import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterType;
 
 import lombok.NonNull;
 
@@ -26,6 +26,6 @@ public class AllNationsProvider extends NationStatesRecipientsProvider {
 
     @Override
     public String toString() {
-        return RecipientsProviderType.ALL_NATIONS.toString();
+        return RecipientsFilterType.ALL_NATIONS.toString();
     }
 }

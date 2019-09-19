@@ -2,7 +2,7 @@ package com.github.agadar.telegrammer.core.recipients.provider;
 
 import java.util.Collection;
 
-import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
+import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterType;
 
 import lombok.NonNull;
 
@@ -26,7 +26,7 @@ public class NationsProvider implements RecipientsProvider {
 
     @Override
     public String toString() {
-        return RecipientsProviderType.NATIONS.toString() + " " + nations.toString();
+        return RecipientsFilterType.NATIONS.toString() + " " + nations.toString();
     }
 
 }

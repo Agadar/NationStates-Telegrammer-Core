@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import com.github.agadar.nationstates.NationStates;
 import com.github.agadar.nationstates.enumerator.EmbassyStatus;
 import com.github.agadar.nationstates.shard.RegionShard;
-import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
+import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterType;
 import com.github.agadar.telegrammer.core.regiondumpaccess.RegionDumpAccess;
 
 import lombok.NonNull;
@@ -35,7 +35,7 @@ public class NationsInEmbassyRegionsProvider extends RecipientsProviderUsingDump
 
     @Override
     public String toString() {
-        return RecipientsProviderType.NATIONS_IN_EMBASSY_REGIONS.toString() + " " + regionNames.toString();
+        return RecipientsFilterType.NATIONS_IN_EMBASSY_REGIONS.toString() + " " + regionNames.toString();
     }
 
     private Collection<String> getEmbassyRegionsOfRegions(Collection<String> regionNames) {

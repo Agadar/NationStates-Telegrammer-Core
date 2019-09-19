@@ -2,8 +2,8 @@ package com.github.agadar.telegrammer.core.recipients.translator;
 
 import com.github.agadar.nationstates.NationStatesMock;
 import com.github.agadar.telegrammer.core.recipients.filter.NullRecipientsFilter;
-import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterImpl;
-import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterType;
+import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterWithProvider;
+import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterAction;
 import com.github.agadar.telegrammer.core.recipients.listbuilder.RecipientsListBuilder;
 import com.github.agadar.telegrammer.core.recipients.provider.NationsProvider;
 import com.github.agadar.telegrammer.core.regiondumpaccess.RegionDumpAccessMock;
@@ -100,11 +100,11 @@ public class RecipientsListBuilderTranslatorImplTest {
         assertNotNull(builder.getFilters());
         assertEquals(1, builder.getFilters().size());
 
-        assertTrue(builder.getFilters().get(0) instanceof RecipientsFilterImpl);
-        final RecipientsFilterImpl filter = (RecipientsFilterImpl) builder.getFilters().get(0);
-        assertEquals(RecipientsFilterType.ADD_TO_RECIPIENTS, filter.filterType);
-        assertTrue(filter.recipientsProvider instanceof NationsProvider);
-        assertEquals("[agadar, vancouvia]", ((NationsProvider) filter.recipientsProvider).nations.toString());
+        assertTrue(builder.getFilters().get(0) instanceof RecipientsFilterWithProvider);
+        final RecipientsFilterWithProvider filter = (RecipientsFilterWithProvider) builder.getFilters().get(0);
+        assertEquals(RecipientsFilterAction.ADD_TO_RECIPIENTS, filter.getFilterAction());
+        assertTrue(filter.getRecipientsProvider() instanceof NationsProvider);
+        assertEquals("[agadar, vancouvia]", ((NationsProvider) filter.getRecipientsProvider()).nations.toString());
     }
 
     @Test
@@ -119,16 +119,16 @@ public class RecipientsListBuilderTranslatorImplTest {
         assertNotNull(builder.getFilters());
         assertEquals(2, builder.getFilters().size());
 
-        assertTrue(builder.getFilters().get(0) instanceof RecipientsFilterImpl);
-        final RecipientsFilterImpl filter = (RecipientsFilterImpl) builder.getFilters().get(0);
-        assertEquals(RecipientsFilterType.ADD_TO_RECIPIENTS, filter.filterType);
-        assertTrue(filter.recipientsProvider instanceof NationsProvider);
-        assertEquals("[agadar, vancouvia]", ((NationsProvider) filter.recipientsProvider).nations.toString());
+        assertTrue(builder.getFilters().get(0) instanceof RecipientsFilterWithProvider);
+        final RecipientsFilterWithProvider filter = (RecipientsFilterWithProvider) builder.getFilters().get(0);
+        assertEquals(RecipientsFilterAction.ADD_TO_RECIPIENTS, filter.getFilterAction());
+        assertTrue(filter.getRecipientsProvider() instanceof NationsProvider);
+        assertEquals("[agadar, vancouvia]", ((NationsProvider) filter.getRecipientsProvider()).nations.toString());
 
-        assertTrue(builder.getFilters().get(1) instanceof RecipientsFilterImpl);
-        final RecipientsFilterImpl filter2 = (RecipientsFilterImpl) builder.getFilters().get(1);
-        assertEquals(RecipientsFilterType.REMOVE_FROM_RECIPIENTS, filter2.filterType);
-        assertTrue(filter2.recipientsProvider instanceof NationsProvider);
-        assertEquals("[agadar, vancouvia]", ((NationsProvider) filter2.recipientsProvider).nations.toString());
+        assertTrue(builder.getFilters().get(1) instanceof RecipientsFilterWithProvider);
+        final RecipientsFilterWithProvider filter2 = (RecipientsFilterWithProvider) builder.getFilters().get(1);
+        assertEquals(RecipientsFilterAction.REMOVE_FROM_RECIPIENTS, filter2.getFilterAction());
+        assertTrue(filter2.getRecipientsProvider() instanceof NationsProvider);
+        assertEquals("[agadar, vancouvia]", ((NationsProvider) filter2.getRecipientsProvider()).nations.toString());
     }
 }

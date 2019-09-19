@@ -40,17 +40,17 @@ public final class StringFunctions {
     }
 
     /**
-     * Converts a comma-separated string to a hashset of strings.
+     * Converts a comma-separated string to a collection of strings.
      *
      * @param string
      * @return
      */
-    public static HashSet<String> stringToHashSet(String string) {
+    public static Collection<String> stringToHashSet(String string) {
         if (string == null || string.isEmpty()) {
-            return new HashSet<>();
+            return new HashSet<String>();
         }
-        final List<String> asList = Arrays.asList(string.trim().split("\\s*,\\s*"));
-        return asList.size() == 1 && asList.get(0).isEmpty() ? new HashSet<>() : new HashSet<>(asList);
+        var asList = Arrays.asList(string.trim().split("\\s*,\\s*"));
+        return asList.size() == 1 && asList.get(0).isEmpty() ? new HashSet<String>() : new HashSet<>(asList);
     }
 
     /**

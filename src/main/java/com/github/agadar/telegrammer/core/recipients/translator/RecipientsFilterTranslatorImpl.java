@@ -1,14 +1,20 @@
 package com.github.agadar.telegrammer.core.recipients.translator;
 
-import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
-import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilter;
-import com.github.agadar.telegrammer.core.recipients.filter.NullRecipientsFilter;
-import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterImpl;
-import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterType;
-import com.github.agadar.telegrammer.core.recipients.provider.RecipientsProvider;
-
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.logging.Level;
 
+import com.github.agadar.telegrammer.core.recipients.filter.NullRecipientsFilter;
+import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilter;
+import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterAction;
+import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterType;
+import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterWithProvider;
+import com.github.agadar.telegrammer.core.recipients.filter.RecipientsWithNumbersFilter;
+import com.github.agadar.telegrammer.core.util.StringFunctions;
+
+import lombok.extern.java.Log;
+
+@Log
 public class RecipientsFilterTranslatorImpl implements RecipientsFilterTranslator {
 
     private final RecipientsProviderTranslator providerTranslator;
@@ -18,9 +24,14 @@ public class RecipientsFilterTranslatorImpl implements RecipientsFilterTranslato
     }
 
     @Override
-    public RecipientsFilter toFilter(RecipientsFilterType filterType, RecipientsProviderType providerType, HashSet<String> input) {
-        final RecipientsProvider provider = providerTranslator.toProvider(providerType, input);
-        return new RecipientsFilterImpl(provider, filterType);
+    public RecipientsFilter toFilter(RecipientsFilterType filterType, RecipientsFilterAction filterAction,
+            Collection<String> input) {
+
+        if (filterType == RecipientsFilterType.NATIONS_WITH_NUMBERS) {
+            return new RecipientsWithNumbersFilter();
+        }
+        var provider = providerTranslator.toProvider(filterType, input);
+        return new RecipientsFilterWithProvider(provider, filterAction);
     }
 
     @Override
@@ -28,28 +39,45 @@ public class RecipientsFilterTranslatorImpl implements RecipientsFilterTranslato
         if (input == null || input.isEmpty()) {
             return new NullRecipientsFilter();
         }
-        final String[] split = input.split("\\.");
+        String[] split = input.split("\\.");
+        RecipientsFilterAction filterAction;
         RecipientsFilterType filterType;
 
         try {
+            filterAction = RecipientsFilterAction.valueOf(split[0]);
+            split = split[1].split("\\[");
             filterType = RecipientsFilterType.valueOf(split[0]);
-        } catch (IllegalArgumentException e) {
+        } catch (Exception ex) {
+            log.log(Level.SEVERE, "Failed to parse input", ex);
             return new NullRecipientsFilter();
         }
-        final String providerString = split.length > 1 ? split[1] : "";
-        final RecipientsProvider provider = providerTranslator.toProvider(providerString);
-        return new RecipientsFilterImpl(provider, filterType);
+        Collection<String> params;
+
+        if (split.length > 1) {
+            split[1] = split[1].substring(0, split[1].length() - 1);
+            params = StringFunctions.stringToHashSet(split[1]);
+        } else {
+            params = new HashSet<>();
+        }
+        return toFilter(filterType, filterAction, params);
     }
 
     @Override
     public String fromFilter(RecipientsFilter filter) {
-        if (filter instanceof RecipientsFilterImpl) {
-            final RecipientsFilterImpl recipientsFilter = (RecipientsFilterImpl) filter;
-            String stringified = recipientsFilter.filterType.name();
-            stringified += "." + providerTranslator.fromProvider(recipientsFilter.recipientsProvider);
-            return stringified;
+        if (filter == null || filter.getFilterAction() == null || filter instanceof NullRecipientsFilter) {
+            return "";
         }
-        return "";
+        String stringified = filter.getFilterAction().name();
+
+        if (filter instanceof RecipientsFilterWithProvider) {
+            var recipientsFilter = (RecipientsFilterWithProvider) filter;
+            stringified += "." + providerTranslator.fromProvider(recipientsFilter.getRecipientsProvider());
+
+        } else if (filter instanceof RecipientsWithNumbersFilter) {
+            stringified += "." + RecipientsFilterType.NATIONS_WITH_NUMBERS.name();
+
+        }
+        return stringified;
     }
 
 }

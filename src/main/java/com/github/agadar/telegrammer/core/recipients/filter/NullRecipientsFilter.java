@@ -3,11 +3,15 @@ package com.github.agadar.telegrammer.core.recipients.filter;
 import java.util.Collection;
 
 /**
- * Null-object for IRecipientsFilters.
+ * Null-object for RecipientsFilters.
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public class NullRecipientsFilter implements RecipientsFilter {
+public class NullRecipientsFilter extends RecipientsFilter {
+
+    public NullRecipientsFilter() {
+        super(RecipientsFilterAction.ADD_TO_RECIPIENTS);
+    }
 
     @Override
     public void applyFilterToRecipients(Collection<String> recipients) {

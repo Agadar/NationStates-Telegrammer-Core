@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 import com.github.agadar.nationstates.NationStates;
 import com.github.agadar.nationstates.shard.RegionShard;
-import com.github.agadar.telegrammer.core.recipients.RecipientsProviderType;
+import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterType;
 
 import lombok.NonNull;
 
@@ -34,7 +34,7 @@ public class NationsInRegionsProvider extends NationStatesRecipientsProvider {
 
     @Override
     public String toString() {
-        return RecipientsProviderType.NATIONS_IN_REGIONS.toString() + " " + regionNames.toString();
+        return RecipientsFilterType.NATIONS_IN_REGIONS.toString() + " " + regionNames.toString();
     }
 
     private Collection<String> getNationsInRegion(String regionName) {
