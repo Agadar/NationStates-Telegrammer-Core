@@ -2,7 +2,6 @@ package com.github.agadar.telegrammer.core.recipients.translator;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.logging.Level;
 
 import com.github.agadar.telegrammer.core.recipients.filter.NullRecipientsFilter;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilter;
@@ -12,9 +11,9 @@ import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterWith
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsWithNumbersFilter;
 import com.github.agadar.telegrammer.core.util.StringFunctions;
 
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
-@Log
+@Slf4j
 public class RecipientsFilterTranslatorImpl implements RecipientsFilterTranslator {
 
     private final RecipientsProviderTranslator providerTranslator;
@@ -48,7 +47,7 @@ public class RecipientsFilterTranslatorImpl implements RecipientsFilterTranslato
             split = split[1].split("\\[");
             filterType = RecipientsFilterType.valueOf(split[0]);
         } catch (Exception ex) {
-            log.log(Level.SEVERE, "Failed to parse input", ex);
+            log.error("Failed to parse input", ex);
             return new NullRecipientsFilter();
         }
         Collection<String> params;
