@@ -14,6 +14,4 @@ import com.github.agadar.telegrammer.core.recipients.provider.RecipientsProvider
 public interface RecipientsProviderTranslator {
 
     public RecipientsProvider toProvider(RecipientsFilterType filterType, Collection<String> input);
-
-    public String fromProvider(RecipientsProvider provider);
 }

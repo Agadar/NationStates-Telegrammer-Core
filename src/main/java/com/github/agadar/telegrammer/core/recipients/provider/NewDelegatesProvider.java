@@ -18,7 +18,7 @@ import lombok.NonNull;
 public class NewDelegatesProvider extends NationStatesRecipientsProvider {
 
     public NewDelegatesProvider(@NonNull NationStates nationStates) {
-        super(nationStates);
+        super(nationStates, RecipientsFilterType.NEW_DELEGATES);
     }
 
     @Override
@@ -28,10 +28,4 @@ public class NewDelegatesProvider extends NationStatesRecipientsProvider {
                 .getRecentHappenings();
         return StringFunctions.extractNationsFromHappenings(recentHappenings, StringFunctions.KeyWord.became);
     }
-
-    @Override
-    public String toString() {
-        return RecipientsFilterType.NEW_DELEGATES.toString();
-    }
-
 }

@@ -20,7 +20,7 @@ import lombok.NonNull;
 public class EjectedNationsProvider extends NationStatesRecipientsProvider {
 
     public EjectedNationsProvider(@NonNull NationStates nationStates) {
-        super(nationStates);
+        super(nationStates, RecipientsFilterType.EJECTED_NATIONS);
     }
 
     @Override
@@ -33,10 +33,4 @@ public class EjectedNationsProvider extends NationStatesRecipientsProvider {
                 .map(happening -> ((EjectedHappening) happening).getEjectedNation())
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
-
-    @Override
-    public String toString() {
-        return RecipientsFilterType.EJECTED_NATIONS.toString();
-    }
-
 }

@@ -90,7 +90,7 @@ public class RecipientsFilterTranslatorImplTest {
         var recipientsFilter = (RecipientsFilterWithProvider) filter;
         assertEquals(recipientsFilter.getFilterAction(), RecipientsFilterAction.ADD_TO_RECIPIENTS);
         assertTrue(recipientsFilter.getRecipientsProvider() instanceof NationsProvider);
-        assertEquals(((NationsProvider) recipientsFilter.getRecipientsProvider()).nations.toString(), "[]");
+        assertTrue(recipientsFilter.getRecipientsProvider().getRecipients().isEmpty());
     }
 
     @Test
@@ -105,7 +105,7 @@ public class RecipientsFilterTranslatorImplTest {
         var recipientsFilter = (RecipientsFilterWithProvider) filter;
         assertEquals(recipientsFilter.getFilterAction(), RecipientsFilterAction.ADD_TO_RECIPIENTS);
         assertTrue(recipientsFilter.getRecipientsProvider() instanceof NationsProvider);
-        assertEquals(((NationsProvider) recipientsFilter.getRecipientsProvider()).nations.toString(), "[]");
+        assertTrue(recipientsFilter.getRecipientsProvider().getRecipients().isEmpty());
     }
 
     @Test
@@ -120,7 +120,8 @@ public class RecipientsFilterTranslatorImplTest {
         final RecipientsFilterWithProvider recipientsFilter = (RecipientsFilterWithProvider) filter;
         assertEquals(recipientsFilter.getFilterAction(), RecipientsFilterAction.ADD_TO_RECIPIENTS);
         assertTrue(recipientsFilter.getRecipientsProvider() instanceof NationsProvider);
-        assertEquals(((NationsProvider) recipientsFilter.getRecipientsProvider()).nations.toString(), "[agadar]");
+        assertEquals(1, recipientsFilter.getRecipientsProvider().getRecipients().size());
+        assertTrue(recipientsFilter.getRecipientsProvider().getRecipients().contains("agadar"));
     }
 
     @Test
@@ -135,8 +136,10 @@ public class RecipientsFilterTranslatorImplTest {
         final RecipientsFilterWithProvider recipientsFilter = (RecipientsFilterWithProvider) filter;
         assertEquals(recipientsFilter.getFilterAction(), RecipientsFilterAction.ADD_TO_RECIPIENTS);
         assertTrue(recipientsFilter.getRecipientsProvider() instanceof NationsProvider);
-        assertEquals(((NationsProvider) recipientsFilter.getRecipientsProvider()).nations.toString(),
-                "[agadar, vancouvia]");
+        var recipients = recipientsFilter.getRecipientsProvider().getRecipients();
+        assertEquals(2, recipients.size());
+        assertTrue(recipients.contains("agadar"));
+        assertTrue(recipients.contains("vancouvia"));
     }
 
     @Test

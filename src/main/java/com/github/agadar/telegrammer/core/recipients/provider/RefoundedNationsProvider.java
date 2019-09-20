@@ -18,7 +18,7 @@ import lombok.NonNull;
 public class RefoundedNationsProvider extends NationStatesRecipientsProvider {
 
     public RefoundedNationsProvider(@NonNull NationStates nationStates) {
-        super(nationStates);
+        super(nationStates, RecipientsFilterType.REFOUNDED_NATIONS);
     }
 
     @Override
@@ -27,10 +27,4 @@ public class RefoundedNationsProvider extends NationStatesRecipientsProvider {
                 .execute().getHappenings();
         return StringFunctions.extractNationsFromHappenings(happenings, StringFunctions.KeyWord.refounded);
     }
-
-    @Override
-    public String toString() {
-        return RecipientsFilterType.REFOUNDED_NATIONS.toString();
-    }
-
 }

@@ -17,11 +17,14 @@ import lombok.NonNull;
  */
 public class NationsInRegionsWithTagsProvider extends RecipientsProviderUsingDump {
 
-    public final Collection<RegionTag> regionTags;
+    private final Collection<RegionTag> regionTags;
 
-    public NationsInRegionsWithTagsProvider(@NonNull NationStates nationStates, @NonNull RegionDumpAccess regionDumpAccess,
+    public NationsInRegionsWithTagsProvider(
+            @NonNull NationStates nationStates,
+            @NonNull RegionDumpAccess regionDumpAccess,
             @NonNull Collection<RegionTag> regionTags) {
-        super(nationStates, regionDumpAccess);
+
+        super(nationStates, regionDumpAccess, RecipientsFilterType.NATIONS_IN_REGIONS_WITH_TAGS);
         this.regionTags = regionTags;
     }
 
@@ -35,6 +38,11 @@ public class NationsInRegionsWithTagsProvider extends RecipientsProviderUsingDum
 
     @Override
     public String toString() {
-        return RecipientsFilterType.NATIONS_IN_REGIONS_WITH_TAGS.toString() + " " + regionTags.toString();
+        return super.toString() + " " + regionTags.toString();
+    }
+    
+    @Override
+    public String toConfigurationString() {
+        return super.toConfigurationString() + regionTags.toString();
     }
 }

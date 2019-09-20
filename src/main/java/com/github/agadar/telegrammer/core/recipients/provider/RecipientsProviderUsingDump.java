@@ -1,6 +1,7 @@
 package com.github.agadar.telegrammer.core.recipients.provider;
 
 import com.github.agadar.nationstates.NationStates;
+import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterType;
 import com.github.agadar.telegrammer.core.regiondumpaccess.RegionDumpAccess;
 
 import lombok.NonNull;
@@ -13,9 +14,13 @@ import lombok.NonNull;
 public abstract class RecipientsProviderUsingDump extends NationStatesRecipientsProvider {
 
     protected final RegionDumpAccess regionDumpAccess;
-    
-    public RecipientsProviderUsingDump(@NonNull NationStates nationStates, @NonNull RegionDumpAccess regionDumpAccess) {
-        super(nationStates);
+
+    public RecipientsProviderUsingDump(
+            @NonNull NationStates nationStates,
+            @NonNull RegionDumpAccess regionDumpAccess,
+            @NonNull RecipientsFilterType filterType) {
+
+        super(nationStates, filterType);
         this.regionDumpAccess = regionDumpAccess;
     }
 

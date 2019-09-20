@@ -17,10 +17,10 @@ import lombok.NonNull;
  */
 public class NationsInRegionsProvider extends NationStatesRecipientsProvider {
 
-    public final Collection<String> regionNames;
+    private final Collection<String> regionNames;
 
     public NationsInRegionsProvider(@NonNull NationStates nationStates, @NonNull Collection<String> regionNames) {
-        super(nationStates);
+        super(nationStates, RecipientsFilterType.NATIONS_IN_REGIONS);
         this.regionNames = regionNames;
     }
 
@@ -34,7 +34,12 @@ public class NationsInRegionsProvider extends NationStatesRecipientsProvider {
 
     @Override
     public String toString() {
-        return RecipientsFilterType.NATIONS_IN_REGIONS.toString() + " " + regionNames.toString();
+        return super.toString() + " " + regionNames.toString();
+    }
+
+    @Override
+    public String toConfigurationString() {
+        return super.toConfigurationString() + regionNames.toString();
     }
 
     private Collection<String> getNationsInRegion(String regionName) {

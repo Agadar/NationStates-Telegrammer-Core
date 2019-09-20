@@ -11,11 +11,12 @@ import lombok.NonNull;
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public class NationsProvider implements RecipientsProvider {
+public class NationsProvider extends RecipientsProvider {
 
-    public final Collection<String> nations;
+    private final Collection<String> nations;
 
     public NationsProvider(@NonNull Collection<String> nations) {
+        super(RecipientsFilterType.NATIONS);
         this.nations = nations;
     }
 
@@ -26,7 +27,12 @@ public class NationsProvider implements RecipientsProvider {
 
     @Override
     public String toString() {
-        return RecipientsFilterType.NATIONS.toString() + " " + nations.toString();
+        return super.toString() + " " + nations.toString();
+    }
+
+    @Override
+    public String toConfigurationString() {
+        return super.toConfigurationString() + nations.toString();
     }
 
 }

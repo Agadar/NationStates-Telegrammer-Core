@@ -1,6 +1,7 @@
 package com.github.agadar.telegrammer.core.recipients.provider;
 
 import com.github.agadar.nationstates.NationStates;
+import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterType;
 
 import lombok.NonNull;
 
@@ -9,11 +10,15 @@ import lombok.NonNull;
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public abstract class NationStatesRecipientsProvider implements RecipientsProvider {
+public abstract class NationStatesRecipientsProvider extends RecipientsProvider {
 
-    final protected NationStates nationStates;
+    protected final NationStates nationStates;
 
-    public NationStatesRecipientsProvider(@NonNull NationStates nationStates) {
+    public NationStatesRecipientsProvider(
+            @NonNull NationStates nationStates,
+            @NonNull RecipientsFilterType filterType) {
+
+        super(filterType);
         this.nationStates = nationStates;
     }
 }

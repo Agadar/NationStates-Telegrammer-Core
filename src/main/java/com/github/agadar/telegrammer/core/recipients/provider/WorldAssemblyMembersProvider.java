@@ -17,17 +17,12 @@ import lombok.NonNull;
 public class WorldAssemblyMembersProvider extends NationStatesRecipientsProvider {
 
     public WorldAssemblyMembersProvider(@NonNull NationStates nationStates) {
-        super(nationStates);
+        super(nationStates, RecipientsFilterType.WORLD_ASSEMBLY_MEMBERS);
     }
 
     @Override
     public Collection<String> getRecipients() {
         return nationStates.getWorldAssembly(Council.SECURITY_COUNCIL).shards(WorldAssemblyShard.MEMBERS).execute()
                 .getMembers();
-    }
-
-    @Override
-    public String toString() {
-        return RecipientsFilterType.WORLD_ASSEMBLY_MEMBERS.toString();
     }
 }

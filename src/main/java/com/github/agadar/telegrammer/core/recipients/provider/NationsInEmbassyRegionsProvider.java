@@ -19,11 +19,14 @@ import lombok.NonNull;
  */
 public class NationsInEmbassyRegionsProvider extends RecipientsProviderUsingDump {
 
-    public final Collection<String> regionNames;
+    private final Collection<String> regionNames;
 
-    public NationsInEmbassyRegionsProvider(@NonNull NationStates nationStates, @NonNull RegionDumpAccess regionDumpAccess,
+    public NationsInEmbassyRegionsProvider(
+            @NonNull NationStates nationStates,
+            @NonNull RegionDumpAccess regionDumpAccess,
             @NonNull Collection<String> regionNames) {
-        super(nationStates, regionDumpAccess);
+
+        super(nationStates, regionDumpAccess, RecipientsFilterType.NATIONS_IN_EMBASSY_REGIONS);
         this.regionNames = regionNames;
     }
 
@@ -35,7 +38,12 @@ public class NationsInEmbassyRegionsProvider extends RecipientsProviderUsingDump
 
     @Override
     public String toString() {
-        return RecipientsFilterType.NATIONS_IN_EMBASSY_REGIONS.toString() + " " + regionNames.toString();
+        return super.toString() + " " + regionNames.toString();
+    }
+
+    @Override
+    public String toConfigurationString() {
+        return super.toConfigurationString() + regionNames.toString();
     }
 
     private Collection<String> getEmbassyRegionsOfRegions(Collection<String> regionNames) {

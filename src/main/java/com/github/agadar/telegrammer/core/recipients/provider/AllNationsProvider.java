@@ -16,16 +16,11 @@ import lombok.NonNull;
 public class AllNationsProvider extends NationStatesRecipientsProvider {
 
     public AllNationsProvider(@NonNull NationStates nationStates) {
-        super(nationStates);
+        super(nationStates, RecipientsFilterType.ALL_NATIONS);
     }
 
     @Override
     public Collection<String> getRecipients() {
         return nationStates.getWorld(WorldShard.NATIONS).execute().getNations();
-    }
-
-    @Override
-    public String toString() {
-        return RecipientsFilterType.ALL_NATIONS.toString();
     }
 }

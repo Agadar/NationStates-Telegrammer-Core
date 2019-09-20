@@ -90,56 +90,6 @@ public class RecipientsProviderTranslatorImpl implements RecipientsProviderTrans
         }
     }
 
-    @Override
-    public String fromProvider(RecipientsProvider provider) {
-
-        if (provider instanceof AllNationsProvider) {
-            return RecipientsFilterType.ALL_NATIONS.name();
-
-        } else if (provider instanceof EjectedNationsProvider) {
-            return RecipientsFilterType.EJECTED_NATIONS.name();
-
-        } else if (provider instanceof NationsInEmbassyRegionsProvider) {
-            return RecipientsFilterType.NATIONS_IN_EMBASSY_REGIONS.name()
-                    + ((NationsInEmbassyRegionsProvider) provider).regionNames.toString();
-
-        } else if (provider instanceof NationsInRegionsWithTagsProvider) {
-            return RecipientsFilterType.NATIONS_IN_REGIONS_WITH_TAGS.name()
-                    + ((NationsInRegionsWithTagsProvider) provider).regionTags.toString();
-
-        } else if (provider instanceof NationsInRegionsWithoutTagsProvider) {
-            return RecipientsFilterType.NATIONS_IN_REGIONS_WITHOUT_TAGS.name()
-                    + ((NationsInRegionsWithoutTagsProvider) provider).regionTags.toString();
-
-        } else if (provider instanceof NationsInRegionsProvider) {
-            return RecipientsFilterType.NATIONS_IN_REGIONS.name()
-                    + ((NationsInRegionsProvider) provider).regionNames.toString();
-
-        } else if (provider instanceof NewNationsProvider) {
-            return RecipientsFilterType.NEW_NATIONS.name();
-
-        } else if (provider instanceof NewDelegatesProvider) {
-            return RecipientsFilterType.NEW_DELEGATES.name();
-
-        } else if (provider instanceof NewWorldAssemblyMembersProvider) {
-            return RecipientsFilterType.NEW_WORLD_ASSEMBLY_MEMBERS.name();
-
-        } else if (provider instanceof RefoundedNationsProvider) {
-            return RecipientsFilterType.REFOUNDED_NATIONS.name();
-
-        } else if (provider instanceof NationsProvider) {
-            return RecipientsFilterType.NATIONS.name() + ((NationsProvider) provider).nations.toString();
-
-        } else if (provider instanceof DelegatesProvider) {
-            return RecipientsFilterType.DELEGATES.name();
-
-        } else if (provider instanceof WorldAssemblyMembersProvider) {
-            return RecipientsFilterType.WORLD_ASSEMBLY_MEMBERS.name();
-
-        }
-        return "";
-    }
-
     private Collection<String> normalizeNames(Collection<String> names) {
         var normalized = new HashSet<String>();
 

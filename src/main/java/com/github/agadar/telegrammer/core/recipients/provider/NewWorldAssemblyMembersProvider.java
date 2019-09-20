@@ -18,7 +18,7 @@ import lombok.NonNull;
 public class NewWorldAssemblyMembersProvider extends NationStatesRecipientsProvider {
 
     public NewWorldAssemblyMembersProvider(@NonNull NationStates nationStates) {
-        super(nationStates);
+        super(nationStates, RecipientsFilterType.NEW_WORLD_ASSEMBLY_MEMBERS);
     }
 
     @Override
@@ -27,10 +27,4 @@ public class NewWorldAssemblyMembersProvider extends NationStatesRecipientsProvi
                 .shards(WorldAssemblyShard.RECENT_MEMBER_LOG).execute().getRecentMemberLog();
         return StringFunctions.extractNationsFromHappenings(recentMemberLog, StringFunctions.KeyWord.admitted);
     }
-
-    @Override
-    public String toString() {
-        return RecipientsFilterType.NEW_WORLD_ASSEMBLY_MEMBERS.toString();
-    }
-
 }

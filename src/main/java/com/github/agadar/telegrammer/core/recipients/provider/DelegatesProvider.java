@@ -17,7 +17,7 @@ import lombok.NonNull;
 public class DelegatesProvider extends NationStatesRecipientsProvider {
 
     public DelegatesProvider(@NonNull NationStates nationStates) {
-        super(nationStates);
+        super(nationStates, RecipientsFilterType.DELEGATES);
     }
 
     @Override
@@ -26,10 +26,5 @@ public class DelegatesProvider extends NationStatesRecipientsProvider {
                 .shards(WorldAssemblyShard.DELEGATES)
                 .execute()
                 .getDelegates();
-    }
-
-    @Override
-    public String toString() {
-        return RecipientsFilterType.DELEGATES.toString();
     }
 }

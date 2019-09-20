@@ -93,7 +93,8 @@ public class RecipientsListBuilderTranslatorImplTest {
         System.out.println("toBuilder should create an IRecipientsListBuilder with 1 filter on valid string");
 
         // Act
-        final RecipientsListBuilder builder = builderTranslator.toBuilder("[\"ADD_TO_RECIPIENTS.NATIONS[agadar, vancouvia]\"]");
+        final RecipientsListBuilder builder = builderTranslator
+                .toBuilder("[\"ADD_TO_RECIPIENTS.NATIONS[agadar, vancouvia]\"]");
 
         // Assert
         assertNotNull(builder);
@@ -104,7 +105,10 @@ public class RecipientsListBuilderTranslatorImplTest {
         final RecipientsFilterWithProvider filter = (RecipientsFilterWithProvider) builder.getFilters().get(0);
         assertEquals(RecipientsFilterAction.ADD_TO_RECIPIENTS, filter.getFilterAction());
         assertTrue(filter.getRecipientsProvider() instanceof NationsProvider);
-        assertEquals("[agadar, vancouvia]", ((NationsProvider) filter.getRecipientsProvider()).nations.toString());
+        var recipients = filter.getRecipientsProvider().getRecipients();
+        assertEquals(2, recipients.size());
+        assertTrue(recipients.contains("agadar"));
+        assertTrue(recipients.contains("vancouvia"));
     }
 
     @Test
@@ -112,7 +116,8 @@ public class RecipientsListBuilderTranslatorImplTest {
         System.out.println("toBuilder should create an IRecipientsListBuilder with 2+ filters on valid string");
 
         // Act
-        final RecipientsListBuilder builder = builderTranslator.toBuilder("[\"ADD_TO_RECIPIENTS.NATIONS[agadar, vancouvia]\", \"REMOVE_FROM_RECIPIENTS.NATIONS[agadar, vancouvia]\"]");
+        final RecipientsListBuilder builder = builderTranslator.toBuilder(
+                "[\"ADD_TO_RECIPIENTS.NATIONS[agadar, vancouvia]\", \"REMOVE_FROM_RECIPIENTS.NATIONS[agadar, vancouvia]\"]");
 
         // Assert
         assertNotNull(builder);
@@ -123,12 +128,18 @@ public class RecipientsListBuilderTranslatorImplTest {
         final RecipientsFilterWithProvider filter = (RecipientsFilterWithProvider) builder.getFilters().get(0);
         assertEquals(RecipientsFilterAction.ADD_TO_RECIPIENTS, filter.getFilterAction());
         assertTrue(filter.getRecipientsProvider() instanceof NationsProvider);
-        assertEquals("[agadar, vancouvia]", ((NationsProvider) filter.getRecipientsProvider()).nations.toString());
+        var recipients = filter.getRecipientsProvider().getRecipients();
+        assertEquals(2, recipients.size());
+        assertTrue(recipients.contains("agadar"));
+        assertTrue(recipients.contains("vancouvia"));
 
         assertTrue(builder.getFilters().get(1) instanceof RecipientsFilterWithProvider);
         final RecipientsFilterWithProvider filter2 = (RecipientsFilterWithProvider) builder.getFilters().get(1);
         assertEquals(RecipientsFilterAction.REMOVE_FROM_RECIPIENTS, filter2.getFilterAction());
         assertTrue(filter2.getRecipientsProvider() instanceof NationsProvider);
-        assertEquals("[agadar, vancouvia]", ((NationsProvider) filter2.getRecipientsProvider()).nations.toString());
+        var recipients2 = filter2.getRecipientsProvider().getRecipients();
+        assertEquals(2, recipients2.size());
+        assertTrue(recipients2.contains("agadar"));
+        assertTrue(recipients2.contains("vancouvia"));
     }
 }

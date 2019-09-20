@@ -70,7 +70,7 @@ public class RecipientsFilterTranslatorImpl implements RecipientsFilterTranslato
 
         if (filter instanceof RecipientsFilterWithProvider) {
             var recipientsFilter = (RecipientsFilterWithProvider) filter;
-            stringified += "." + providerTranslator.fromProvider(recipientsFilter.getRecipientsProvider());
+            stringified += "." + recipientsFilter.getRecipientsProvider().toConfigurationString();
 
         } else if (filter instanceof RecipientsWithNumbersFilter) {
             stringified += "." + RecipientsFilterType.NATIONS_WITH_NUMBERS.name();
