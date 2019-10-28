@@ -3,8 +3,6 @@ package com.github.agadar.telegrammer.core.recipients.translator;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashSet;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -141,45 +139,4 @@ public class RecipientsFilterTranslatorImplTest {
         assertTrue(recipients.contains("agadar"));
         assertTrue(recipients.contains("vancouvia"));
     }
-
-    @Test
-    public void testFromFilter_null() {
-        System.out.println("fromFilter should return empty string on null");
-
-        // Act
-        final String stringified = filterTranslator.fromFilter(null);
-
-        // Assert
-        assertEquals("", stringified);
-    }
-
-    @Test
-    public void testFromFilter_nullfilter() {
-        System.out.println("fromFilter should return empty string on null-filter");
-
-        // Act
-        final String stringified = filterTranslator.fromFilter(new NullRecipientsFilter());
-
-        // Assert
-        assertEquals("", stringified);
-    }
-
-    @Test
-    public void testFromFilter_filter() {
-        System.out.println("fromFilter should return correct string on RecipientsFilter");
-
-        // Arrange
-        final HashSet<String> nations = new HashSet<>();
-        nations.add("agadar");
-        final NationsProvider provider = new NationsProvider(nations);
-        final RecipientsFilterWithProvider filter = new RecipientsFilterWithProvider(provider,
-                RecipientsFilterAction.ADD_TO_RECIPIENTS);
-
-        // Act
-        final String stringified = filterTranslator.fromFilter(filter);
-
-        // Assert
-        assertEquals("ADD_TO_RECIPIENTS.NATIONS[agadar]", stringified);
-    }
-
 }

@@ -13,18 +13,19 @@ public class RecipientsListBuilderTranslatorImpl implements RecipientsListBuilde
     private final TelegramHistory telegramHistory;
     private final RecipientsFilterTranslator filterTranslator;
 
-    public RecipientsListBuilderTranslatorImpl(TelegramHistory telegramHistory, RecipientsFilterTranslator filterTranslator) {
+    public RecipientsListBuilderTranslatorImpl(TelegramHistory telegramHistory,
+            RecipientsFilterTranslator filterTranslator) {
         this.telegramHistory = telegramHistory;
         this.filterTranslator = filterTranslator;
     }
 
     @Override
     public RecipientsListBuilder toBuilder(String input) {
-        final ArrayList<RecipientsFilter> filters = new ArrayList<>();
+        var filters = new ArrayList<RecipientsFilter>();
 
         if (input != null && input.length() > 1) {
             input = input.substring(1, input.length() - 1);
-            final ArrayList<String> split = StringFunctions.stringToArrayList(input);
+            var split = StringFunctions.stringToArrayList(input);
 
             split.forEach((part) -> {
                 part = part.trim().replace("\"", "");
@@ -33,15 +34,4 @@ public class RecipientsListBuilderTranslatorImpl implements RecipientsListBuilde
         }
         return new RecipientsListBuilderImpl(telegramHistory, filters);
     }
-
-    @Override
-    public String fromBuilder(RecipientsListBuilder builder) {
-        final ArrayList<String> stringified = new ArrayList<>();
-        builder.getFilters().forEach((filter) -> {
-            final String filterString = filterTranslator.fromFilter(filter);
-            stringified.add("\"" + filterString + "\"");
-        });
-        return stringified.toString();
-    }
-
 }

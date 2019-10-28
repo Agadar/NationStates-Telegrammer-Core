@@ -116,7 +116,7 @@ public abstract class AbstractPropertiesManager<T extends ApplicationProperties>
                 : TelegramType.NORMAL.name());
         target.setProperty("fromRegion", source.getFromRegion() == null ? defaultStringValue : source.getFromRegion());
         target.setProperty("runIndefinitely", Boolean.toString(source.isRunIndefinitely()));
-        target.setProperty("filters", builderTranslator.fromBuilder(source.getRecipientsListBuilder()));
+        target.setProperty("filters", source.getRecipientsListBuilder().toConfigurationString());
         target.setProperty("updateRecipientsAfterEveryTelegram",
                 Boolean.toString(source.isUpdateRecipientsAfterEveryTelegram()));
     }

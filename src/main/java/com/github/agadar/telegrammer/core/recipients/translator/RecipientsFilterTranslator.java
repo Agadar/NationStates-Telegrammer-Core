@@ -18,6 +18,4 @@ public interface RecipientsFilterTranslator {
             Collection<String> input);
 
     public RecipientsFilter toFilter(String input);
-
-    public String fromFilter(RecipientsFilter filter);
 }

@@ -53,4 +53,11 @@ public interface RecipientsListBuilder {
      * Clears this filter chain.
      */
     public void resetFilters();
+
+    /**
+     * Gets the configuration string representation of this builder.
+     * 
+     * @return The configuration string representation of this builder.
+     */
+    public String toConfigurationString();
 }

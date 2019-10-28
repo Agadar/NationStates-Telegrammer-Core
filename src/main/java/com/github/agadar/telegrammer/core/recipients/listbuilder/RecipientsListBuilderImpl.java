@@ -6,6 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.github.agadar.nationstates.exception.NationStatesAPIException;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilter;
@@ -69,6 +70,13 @@ public class RecipientsListBuilderImpl implements RecipientsListBuilder {
     @Override
     public List<RecipientsFilter> getFilters() {
         return this.filters;
+    }
+
+    @Override
+    public String toConfigurationString() {
+        return filters.stream()
+                .map(filter -> "\"" + filter.toConfigurationString() + "\"")
+                .collect(Collectors.joining(", ", "[", "]"));
     }
 
 }

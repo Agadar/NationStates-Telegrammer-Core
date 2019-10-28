@@ -61,22 +61,4 @@ public class RecipientsFilterTranslatorImpl implements RecipientsFilterTranslato
         return toFilter(filterType, filterAction, params);
     }
 
-    @Override
-    public String fromFilter(RecipientsFilter filter) {
-        if (filter == null || filter.getFilterAction() == null || filter instanceof NullRecipientsFilter) {
-            return "";
-        }
-        String stringified = filter.getFilterAction().name();
-
-        if (filter instanceof RecipientsFilterWithProvider) {
-            var recipientsFilter = (RecipientsFilterWithProvider) filter;
-            stringified += "." + recipientsFilter.getRecipientsProvider().toConfigurationString();
-
-        } else if (filter instanceof RecipientsWithNumbersFilter) {
-            stringified += "." + RecipientsFilterType.NATIONS_WITH_NUMBERS.name();
-
-        }
-        return stringified;
-    }
-
 }

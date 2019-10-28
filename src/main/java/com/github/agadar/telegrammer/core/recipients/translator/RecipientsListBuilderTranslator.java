@@ -3,7 +3,7 @@ package com.github.agadar.telegrammer.core.recipients.translator;
 import com.github.agadar.telegrammer.core.recipients.listbuilder.RecipientsListBuilder;
 
 /**
- * Helper class that makes translating between IRecipientListBuilders and
+ * Helper class that makes translating between RecipientListBuilders and
  * corresponding enums/strings easier.
  *
  * @author Agadar (https://github.com/Agadar/)
@@ -11,7 +11,5 @@ import com.github.agadar.telegrammer.core.recipients.listbuilder.RecipientsListB
 public interface RecipientsListBuilderTranslator {
 
     public RecipientsListBuilder toBuilder(String input);
-
-    public String fromBuilder(RecipientsListBuilder builder);
 
 }

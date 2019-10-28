@@ -23,4 +23,9 @@ public class NullRecipientsFilter extends RecipientsFilter {
         /**/
     }
 
+    @Override
+    public String toConfigurationString() {
+        return "";
+    }
+
 }

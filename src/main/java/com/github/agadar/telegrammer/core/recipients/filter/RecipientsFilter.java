@@ -36,6 +36,15 @@ public abstract class RecipientsFilter {
      * something along those lines.
      */
     public abstract void refreshFilter();
+    
+    /**
+     * Gets the configuration string representation of this filter.
+     * 
+     * @return The configuration string representation of this filter.
+     */
+    public String toConfigurationString() {
+        return filterAction.name();
+    }
 
     @Override
     public String toString() {

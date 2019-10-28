@@ -38,15 +38,15 @@ public class RecipientsFilterWithProvider extends RecipientsFilter {
     @Override
     public void applyFilterToRecipients(@NonNull Collection<String> recipients) {
         switch (filterAction) {
-            case ADD_TO_RECIPIENTS:
-                recipients.addAll(filterNationNames);
-                break;
-            case REMOVE_FROM_RECIPIENTS:
-                recipients.removeAll(filterNationNames);
-                break;
-            case REMOVE_RECIPIENTS_NOT_IN:
-                recipients.retainAll(filterNationNames);
-                break;
+        case ADD_TO_RECIPIENTS:
+            recipients.addAll(filterNationNames);
+            break;
+        case REMOVE_FROM_RECIPIENTS:
+            recipients.removeAll(filterNationNames);
+            break;
+        case REMOVE_RECIPIENTS_NOT_IN:
+            recipients.retainAll(filterNationNames);
+            break;
         }
     }
 
@@ -58,6 +58,11 @@ public class RecipientsFilterWithProvider extends RecipientsFilter {
     @Override
     public String toString() {
         return super.toString() + " " + recipientsProvider.toString();
+    }
+
+    @Override
+    public String toConfigurationString() {
+        return super.toConfigurationString() + "." + recipientsProvider.toConfigurationString();
     }
 
 }

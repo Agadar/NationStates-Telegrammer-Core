@@ -33,4 +33,9 @@ public class RecipientsWithNumbersFilter extends RecipientsFilter {
         return super.toString() + " " + RecipientsFilterType.NATIONS_WITH_NUMBERS.toString();
     }
 
+    @Override
+    public String toConfigurationString() {
+        return super.toConfigurationString() + "." + RecipientsFilterType.NATIONS_WITH_NUMBERS.name();
+    }
+
 }

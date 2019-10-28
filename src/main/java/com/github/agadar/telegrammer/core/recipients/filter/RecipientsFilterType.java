@@ -27,7 +27,9 @@ public enum RecipientsFilterType {
     WORLD_ASSEMBLY_MEMBERS("World Assembly members");
 
     private final String text;
-    @Getter private final RecipientsFilterAction[] supportedActions;
+    
+    @Getter
+    private final RecipientsFilterAction[] supportedActions;
 
     private RecipientsFilterType(String text) {
         this(text, new RecipientsFilterAction[] {
