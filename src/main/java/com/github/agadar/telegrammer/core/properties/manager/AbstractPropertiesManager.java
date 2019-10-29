@@ -4,6 +4,8 @@ import com.github.agadar.telegrammer.core.properties.ApplicationProperties;
 import com.github.agadar.telegrammer.core.recipients.translator.RecipientsListBuilderTranslator;
 import com.github.agadar.telegrammer.core.telegram.TelegramType;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -19,6 +21,7 @@ import java.util.Properties;
  *
  * @param <T>
  */
+@Slf4j
 public abstract class AbstractPropertiesManager<T extends ApplicationProperties> implements PropertiesManager<T> {
 
     protected final String defaultStringValue = "";
@@ -45,7 +48,9 @@ public abstract class AbstractPropertiesManager<T extends ApplicationProperties>
 
         try (OutputStream output = new FileOutputStream(this.propertiesFileName)) {
             propertiesMap.store(output, null);
-        } catch (IOException io) {
+
+        } catch (IOException ex) {
+            log.error("An error occured while persisting properties to file", ex);
             return false;
         }
         return true;
@@ -61,8 +66,9 @@ public abstract class AbstractPropertiesManager<T extends ApplicationProperties>
 
         try (InputStream input = new FileInputStream(this.propertiesFileName);) {
             propertiesMap.load(input);
+
         } catch (IOException ex) {
-            // Ignore: we're just going to use default values instead.
+            log.error("An error occured while loading properties from file", ex);
         }
 
         this.setApplicationPropertiesFromProperties(properties, propertiesMap);
@@ -126,7 +132,7 @@ public abstract class AbstractPropertiesManager<T extends ApplicationProperties>
      * if the specified enum type has no constant with the specified name, it
      * returns the specified default value.
      *
-     * @param              <T>
+     * @param <T>
      * @param type
      * @param string
      * @param defaultValue
@@ -135,7 +141,9 @@ public abstract class AbstractPropertiesManager<T extends ApplicationProperties>
     private <V extends Enum<V>> V valueOf(Class<V> type, String string, V defaultValue) {
         try {
             return Enum.valueOf(type, string);
+
         } catch (IllegalArgumentException | NullPointerException ex) {
+            log.error("An error occured while parsing a value from the properties file", ex);
             return defaultValue;
         }
     }

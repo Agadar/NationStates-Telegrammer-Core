@@ -24,6 +24,9 @@ import com.github.agadar.telegrammer.core.recipients.provider.WorldAssemblyMembe
 import com.github.agadar.telegrammer.core.regiondumpaccess.RegionDumpAccess;
 import com.github.agadar.telegrammer.core.util.StringFunctions;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class RecipientsProviderTranslatorImpl implements RecipientsProviderTranslator {
 
     private final NationStates nationStates;
@@ -107,8 +110,8 @@ public class RecipientsProviderTranslatorImpl implements RecipientsProviderTrans
         regionTags.forEach((regionTag) -> {
             try {
                 enums.add(RegionTag.fromString(regionTag));
-            } catch (IllegalArgumentException err) {
-                // Silent ignore.
+            } catch (IllegalArgumentException ex) {
+                log.error("Stumbled upon unknown region tag", ex);
             }
         });
         return enums;

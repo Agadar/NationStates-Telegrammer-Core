@@ -8,15 +8,15 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import com.github.agadar.telegrammer.core.telegram.SkippedRecipientReason;
 import com.github.agadar.telegrammer.core.util.Tuple;
 
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class TelegramHistoryImpl implements TelegramHistory {
 
     /**
@@ -59,16 +59,18 @@ public class TelegramHistoryImpl implements TelegramHistory {
             try {
                 Files.createFile(this.historyFile);
             } catch (IOException ex) {
+                log.error("Failed to create the history file", ex);
                 return false;
             }
         }
 
         // Persist the new entry to the history file.
-        final String entry = telegramId + SPLITSTRING + recipient + SPLITSTRING + reason.name()
+        String entry = telegramId + SPLITSTRING + recipient + SPLITSTRING + reason.name()
                 + System.lineSeparator();
         try {
             Files.write(this.historyFile, entry.getBytes(), StandardOpenOption.APPEND);
         } catch (IOException ex) {
+            log.error("Failed to write to the history file", ex);
             return false;
         }
         return true;
@@ -79,20 +81,21 @@ public class TelegramHistoryImpl implements TelegramHistory {
         history = new HashMap<>(); // Ensure history is new and empty.
 
         // Break the history file contents into lines and iterate over them.
-        try (final Stream<String> lines = Files.lines(this.historyFile, Charset.defaultCharset())) {
+        try (var lines = Files.lines(this.historyFile, Charset.defaultCharset())) {
             lines.map(line -> line.split(SPLITSTRING)).filter(splitLine -> splitLine.length >= 3).forEach(splitLine -> {
                 try {
                     // Try parse the reason string to the correct type. If this succeeds, the line
-                    // was succesfully parsed,
-                    // so we add it to the history.
-                    final SkippedRecipientReason reason = SkippedRecipientReason.valueOf(splitLine[2]);
-                    final Tuple<String, String> telegramIdAndRecipient = new Tuple<>(splitLine[0], splitLine[1]);
+                    // was successfully parsed, so we add it to the history.
+                    var reason = SkippedRecipientReason.valueOf(splitLine[2]);
+                    var telegramIdAndRecipient = new Tuple<>(splitLine[0], splitLine[1]);
                     history.put(telegramIdAndRecipient, reason);
+                    
                 } catch (IllegalArgumentException | NullPointerException ex) {
-                    // Failed to parse the reason. We simply skip this line.
+                    log.error("Failed to parse a history file line", ex);
                 }
             });
         } catch (IOException ex) {
+            log.error("Failed to read from the history file", ex);
             return false;
         }
         return true;
@@ -100,7 +103,7 @@ public class TelegramHistoryImpl implements TelegramHistory {
 
     @Override
     public void removeOldRecipients(@NonNull Collection<String> nations, @NonNull String telegramId) {
-        for (final Iterator<String> it = nations.iterator(); it.hasNext();) {
+        for (var it = nations.iterator(); it.hasNext();) {
             if (getSkippedRecipientReason(telegramId, it.next()) != null) {
                 it.remove(); // Remove recipient
             }

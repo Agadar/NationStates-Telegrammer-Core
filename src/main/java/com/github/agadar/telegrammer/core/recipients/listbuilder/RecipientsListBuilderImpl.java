@@ -13,7 +13,9 @@ import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilter;
 import com.github.agadar.telegrammer.core.telegram.history.TelegramHistory;
 
 import lombok.NonNull;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class RecipientsListBuilderImpl implements RecipientsListBuilder {
 
     private final TelegramHistory telegramHistory;
@@ -51,6 +53,7 @@ public class RecipientsListBuilderImpl implements RecipientsListBuilder {
             try {
                 filter.refreshFilter();
             } catch (NationStatesAPIException ex) {
+                log.error("An error occured while refreshing a filter", ex);
                 failedFilters.put(filter, ex);
             }
         });
