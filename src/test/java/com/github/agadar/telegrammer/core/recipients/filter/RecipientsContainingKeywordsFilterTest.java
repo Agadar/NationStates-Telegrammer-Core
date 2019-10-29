@@ -3,6 +3,7 @@ package com.github.agadar.telegrammer.core.recipients.filter;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -10,24 +11,26 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Tests {@link RecipientsWithNumbersFilter}.
+ * Tests {@link RecipientsContainingKeywordsFilter}.
  * 
  * @author Agadar (https://github.com/Agadar/)
  *
  */
-public class RecipientsWithNumbersFilterTest {
+public class RecipientsContainingKeywordsFilterTest {
 
     private RecipientsFilter filter;
     private Collection<String> recipients;
 
     @Before
     public void initialise() {
-        filter = new RecipientsWithNumbersFilter();
+        var keywords = Arrays.asList("noob", "scrub", "l2p");
+        filter = new RecipientsContainingKeywordsFilter(keywords);
+
         recipients = new HashSet<String>();
         recipients.add("agadar");
-        recipients.add("agadar1");
+        recipients.add("agadarnoob");
         recipients.add("vancouvia");
-        recipients.add("2vancouvia");
+        recipients.add("scrubvancouvia");
     }
 
     @Test
@@ -49,7 +52,7 @@ public class RecipientsWithNumbersFilterTest {
         String stringified = filter.toString();
 
         // Assert
-        assertEquals("(-) Nations with numbers in name", stringified);
+        assertEquals("(-) Nations containing specific keywords [noob, scrub, l2p]", stringified);
     }
 
     @Test
@@ -59,6 +62,6 @@ public class RecipientsWithNumbersFilterTest {
         String stringified = filter.toConfigurationString();
 
         // Assert
-        assertEquals("REMOVE_FROM_RECIPIENTS.NATIONS_WITH_NUMBERS", stringified);
+        assertEquals("REMOVE_FROM_RECIPIENTS.NATIONS_CONTAINING_KEYWORDS[noob, scrub, l2p]", stringified);
     }
 }

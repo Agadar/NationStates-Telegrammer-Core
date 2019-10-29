@@ -29,14 +29,14 @@ public abstract class RecipientsFilter {
      *
      * @param recipients The recipients to apply this filter upon.
      */
-    public abstract void applyFilterToRecipients(Collection<String> recipients);
+    public abstract void applyFilterToRecipients(@NonNull Collection<String> recipients);
 
     /**
      * Refreshes this filter, which may involve a call to an external server or
      * something along those lines.
      */
     public abstract void refreshFilter();
-    
+
     /**
      * Gets the configuration string representation of this filter.
      * 

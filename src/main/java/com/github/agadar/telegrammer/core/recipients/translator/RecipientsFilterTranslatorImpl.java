@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import com.github.agadar.telegrammer.core.recipients.filter.NullRecipientsFilter;
+import com.github.agadar.telegrammer.core.recipients.filter.RecipientsContainingKeywordsFilter;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilter;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterAction;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterType;
@@ -28,7 +29,11 @@ public class RecipientsFilterTranslatorImpl implements RecipientsFilterTranslato
 
         if (filterType == RecipientsFilterType.NATIONS_WITH_NUMBERS) {
             return new RecipientsWithNumbersFilter();
+
+        } else if (filterType == RecipientsFilterType.NATIONS_CONTAINING_KEYWORDS) {
+            return new RecipientsContainingKeywordsFilter(input);
         }
+
         var provider = providerTranslator.toProvider(filterType, input);
         return new RecipientsFilterWithProvider(provider, filterAction);
     }

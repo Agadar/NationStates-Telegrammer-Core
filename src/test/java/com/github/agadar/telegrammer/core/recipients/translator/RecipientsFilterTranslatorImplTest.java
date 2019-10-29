@@ -127,7 +127,7 @@ public class RecipientsFilterTranslatorImplTest {
         System.out.println("toFilter should return RecipientsFilter on valid string");
 
         // Act
-        final RecipientsFilter filter = filterTranslator.toFilter("ADD_TO_RECIPIENTS.NATIONS[agadar,vancouvia]");
+        final RecipientsFilter filter = filterTranslator.toFilter("ADD_TO_RECIPIENTS.NATIONS[agadar, vancouvia]");
 
         // Assert
         assertTrue(filter instanceof RecipientsFilterWithProvider);

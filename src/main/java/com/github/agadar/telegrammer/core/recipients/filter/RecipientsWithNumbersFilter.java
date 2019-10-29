@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 public class RecipientsWithNumbersFilter extends RecipientsFilter {
 
     private final Pattern numbersPattern = Pattern.compile("\\d");
+    private final RecipientsFilterType filterType = RecipientsFilterType.NATIONS_WITH_NUMBERS;
 
     public RecipientsWithNumbersFilter() {
         super(RecipientsFilterAction.REMOVE_FROM_RECIPIENTS);
@@ -30,12 +31,12 @@ public class RecipientsWithNumbersFilter extends RecipientsFilter {
 
     @Override
     public String toString() {
-        return super.toString() + " " + RecipientsFilterType.NATIONS_WITH_NUMBERS.toString();
+        return super.toString() + " " + filterType.toString();
     }
 
     @Override
     public String toConfigurationString() {
-        return super.toConfigurationString() + "." + RecipientsFilterType.NATIONS_WITH_NUMBERS.name();
+        return super.toConfigurationString() + "." + filterType.name();
     }
 
 }
