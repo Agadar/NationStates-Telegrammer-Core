@@ -7,7 +7,7 @@
     <!-- General properties -->
     <groupId>com.github.agadar.telegrammer</groupId>
     <artifactId>nationstates-telegrammer-core</artifactId>
-    <version>4.1.0</version>
+    <version>5.0.0</version>
     <packaging>jar</packaging>
     <name>NationStates Telegrammer Core</name>
     <description>Core/shared functionalities for consuming the NationStates telegram API.</description>
