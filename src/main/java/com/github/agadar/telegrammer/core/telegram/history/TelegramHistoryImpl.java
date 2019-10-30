@@ -3,6 +3,7 @@ package com.github.agadar.telegrammer.core.telegram.history;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -89,11 +90,15 @@ public class TelegramHistoryImpl implements TelegramHistory {
                     var reason = SkippedRecipientReason.valueOf(splitLine[2]);
                     var telegramIdAndRecipient = new Tuple<>(splitLine[0], splitLine[1]);
                     history.put(telegramIdAndRecipient, reason);
-                    
+
                 } catch (IllegalArgumentException | NullPointerException ex) {
                     log.error("Failed to parse a history file line", ex);
                 }
             });
+        } catch (NoSuchFileException ex) {
+            log.info("Couldn't read history file as it does not (yet) exist");
+            return false;
+
         } catch (IOException ex) {
             log.error("Failed to read from the history file", ex);
             return false;
