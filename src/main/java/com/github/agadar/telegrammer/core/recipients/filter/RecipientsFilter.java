@@ -2,6 +2,8 @@ package com.github.agadar.telegrammer.core.recipients.filter;
 
 import java.util.Collection;
 
+import com.github.agadar.nationstates.exception.NationStatesAPIException;
+
 import lombok.Getter;
 import lombok.NonNull;
 
@@ -34,8 +36,11 @@ public abstract class RecipientsFilter {
     /**
      * Refreshes this filter, which may involve a call to an external server or
      * something along those lines.
+     * 
+     * @throws NationStatesAPIException If something went wrong while calling the
+     *                                  NationStates API.
      */
-    public abstract void refreshFilter();
+    public abstract void refreshFilter() throws NationStatesAPIException;
 
     /**
      * Gets the configuration string representation of this filter.

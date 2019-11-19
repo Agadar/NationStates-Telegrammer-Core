@@ -6,11 +6,13 @@ import java.util.stream.Collectors;
 
 import com.github.agadar.nationstates.NationStates;
 import com.github.agadar.nationstates.enumerator.EmbassyStatus;
+import com.github.agadar.nationstates.exception.NationStatesAPIException;
 import com.github.agadar.nationstates.shard.RegionShard;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterType;
 import com.github.agadar.telegrammer.core.regiondumpaccess.RegionDumpAccess;
 
 import lombok.NonNull;
+import lombok.SneakyThrows;
 
 /**
  * Fetches all nations in embassy regions of supplied regions from the API.
@@ -31,7 +33,7 @@ public class NationsInEmbassyRegionsProvider extends RecipientsProviderUsingDump
     }
 
     @Override
-    public Collection<String> getRecipients() {
+    public Collection<String> getRecipients() throws NationStatesAPIException {
         var embassyRegionsOfRegions = getEmbassyRegionsOfRegions(regionNames);
         return regionDumpAccess.getNationsInRegions(embassyRegionsOfRegions);
     }
@@ -46,13 +48,15 @@ public class NationsInEmbassyRegionsProvider extends RecipientsProviderUsingDump
         return super.toConfigurationString() + regionNames.toString();
     }
 
-    private Collection<String> getEmbassyRegionsOfRegions(Collection<String> regionNames) {
+    private Collection<String> getEmbassyRegionsOfRegions(Collection<String> regionNames)
+            throws NationStatesAPIException {
         return regionNames.stream()
                 .map((regionName) -> getEmbassyRegionsOfRegion(regionName))
                 .flatMap(Collection::stream)
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
+    @SneakyThrows
     private Collection<String> getEmbassyRegionsOfRegion(String regionName) {
         return nationStates.getRegion(regionName).shards(RegionShard.EMBASSIES).execute()
                 .getEmbassies().stream()

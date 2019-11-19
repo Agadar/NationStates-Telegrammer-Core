@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import com.github.agadar.nationstates.NationStates;
 import com.github.agadar.nationstates.enumerator.RegionTag;
+import com.github.agadar.nationstates.exception.NationStatesAPIException;
 import com.github.agadar.nationstates.shard.WorldShard;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterType;
 import com.github.agadar.telegrammer.core.regiondumpaccess.RegionDumpAccess;
@@ -29,7 +30,7 @@ public class NationsInRegionsWithoutTagsProvider extends RecipientsProviderUsing
     }
 
     @Override
-    public Collection<String> getRecipients() {
+    public Collection<String> getRecipients() throws NationStatesAPIException {
         var regionTagsArray = regionTags.toArray(new RegionTag[regionTags.size()]);
         var regionsByTag = nationStates.getWorld(WorldShard.REGIONS_BY_TAG).regionsWithoutTags(regionTagsArray)
                 .execute().getRegionsByTag();

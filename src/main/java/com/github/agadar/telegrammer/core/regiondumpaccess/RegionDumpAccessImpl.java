@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import com.github.agadar.nationstates.NationStates;
 import com.github.agadar.nationstates.domain.region.Region;
 import com.github.agadar.nationstates.enumerator.DailyDumpMode;
+import com.github.agadar.nationstates.exception.NationStatesAPIException;
 import com.github.agadar.telegrammer.core.util.StringFunctions;
 
 import lombok.NonNull;
@@ -32,7 +33,8 @@ public class RegionDumpAccessImpl implements RegionDumpAccess {
     }
 
     @Override
-    public Collection<String> getNationsInRegions(@NonNull Collection<String> regionNames) {
+    public Collection<String> getNationsInRegions(@NonNull Collection<String> regionNames)
+            throws NationStatesAPIException {
         this.importDumpFile();
         return regionNames.stream()
                 .map((regionName) -> StringFunctions.normalizeName(regionName))
@@ -42,11 +44,7 @@ public class RegionDumpAccessImpl implements RegionDumpAccess {
                 .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
-    /**
-     * Imports the dump file if it hadn't been done already within the last 24
-     * hours.
-     */
-    private void importDumpFile() {
+    private void importDumpFile() throws NationStatesAPIException {
         if (regionsWithNations != null && System.currentTimeMillis() - hasImportedDumpFile < 24 * 60 * 60 * 1000) {
             return;
         }
@@ -54,7 +52,7 @@ public class RegionDumpAccessImpl implements RegionDumpAccess {
 
         try {
             dump = nationStates.getRegionDump(DailyDumpMode.READ_LOCAL, region -> true).execute();
-        } catch (Exception ex) {
+        } catch (NationStatesAPIException ex) {
 
             // If the exception isn't just a FileNotFoundException, throw this.
             if (ex.getCause().getClass() != FileNotFoundException.class) {

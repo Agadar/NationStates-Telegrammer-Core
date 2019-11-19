@@ -64,8 +64,8 @@ public class TelegramSenderImpl implements TelegramSender {
         nationStates.setUserAgent(String.format(userAgentFormat, properties.getClientKey()));
 
         // Prepare the runnable.
-        var sendTelegramsRunnable = new SendTelegramsRunnable(recipientsListBuilder, nationStates, historyManager,
-                properties, listeners, noAddresseesFoundTimeout);
+        var sendTelegramsRunnable = new SendTelegramsRunnable(recipientsListBuilder, listeners,
+                noAddresseesFoundTimeout, nationStates, historyManager, properties);
         telegramThread = new Thread(sendTelegramsRunnable);
         telegramThread.start();
     }

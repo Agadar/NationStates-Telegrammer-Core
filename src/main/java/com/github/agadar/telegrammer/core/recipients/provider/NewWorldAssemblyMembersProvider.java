@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import com.github.agadar.nationstates.NationStates;
 import com.github.agadar.nationstates.enumerator.Council;
+import com.github.agadar.nationstates.exception.NationStatesAPIException;
 import com.github.agadar.nationstates.shard.WorldAssemblyShard;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterType;
 import com.github.agadar.telegrammer.core.util.StringFunctions;
@@ -22,7 +23,7 @@ public class NewWorldAssemblyMembersProvider extends NationStatesRecipientsProvi
     }
 
     @Override
-    public Collection<String> getRecipients() {
+    public Collection<String> getRecipients() throws NationStatesAPIException {
         var recentMemberLog = nationStates.getWorldAssembly(Council.SECURITY_COUNCIL)
                 .shards(WorldAssemblyShard.RECENT_MEMBER_LOG).execute().getRecentMemberLog();
         return StringFunctions.extractNationsFromHappenings(recentMemberLog, StringFunctions.KeyWord.admitted);

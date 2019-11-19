@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.github.agadar.nationstates.NationStatesMock;
+import com.github.agadar.nationstates.exception.NationStatesAPIException;
 import com.github.agadar.telegrammer.core.recipients.filter.NullRecipientsFilter;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilter;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterAction;
@@ -77,7 +78,7 @@ public class RecipientsFilterTranslatorImplTest {
     }
 
     @Test
-    public void testToProvider_emptyNations() {
+    public void testToProvider_emptyNations() throws NationStatesAPIException {
         System.out.println("toFilter should return empty NationsProvider on 'ADD_TO_RECIPIENTS.NATIONS'");
 
         // Act
@@ -92,7 +93,7 @@ public class RecipientsFilterTranslatorImplTest {
     }
 
     @Test
-    public void testToProvider_emptyNations2() {
+    public void testToProvider_emptyNations2() throws NationStatesAPIException {
         System.out.println("toFilter should return empty NationsProvider on 'ADD_TO_RECIPIENTS.NATIONS[]'");
 
         // Act
@@ -107,7 +108,7 @@ public class RecipientsFilterTranslatorImplTest {
     }
 
     @Test
-    public void testToFilter_valid() {
+    public void testToFilter_valid() throws NationStatesAPIException {
         System.out.println("toFilter should return RecipientsFilter on valid string");
 
         // Act
@@ -123,7 +124,7 @@ public class RecipientsFilterTranslatorImplTest {
     }
 
     @Test
-    public void testToFilter_valid2() {
+    public void testToFilter_valid2() throws NationStatesAPIException {
         System.out.println("toFilter should return RecipientsFilter on valid string");
 
         // Act

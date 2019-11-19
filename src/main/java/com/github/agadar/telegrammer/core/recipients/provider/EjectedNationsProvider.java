@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import com.github.agadar.nationstates.NationStates;
 import com.github.agadar.nationstates.domain.common.happening.EjectedHappening;
 import com.github.agadar.nationstates.enumerator.HappeningsFilter;
+import com.github.agadar.nationstates.exception.NationStatesAPIException;
 import com.github.agadar.nationstates.shard.WorldShard;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterType;
 
@@ -24,7 +25,7 @@ public class EjectedNationsProvider extends NationStatesRecipientsProvider {
     }
 
     @Override
-    public Collection<String> getRecipients() {
+    public Collection<String> getRecipients() throws NationStatesAPIException {
         return nationStates.getWorld(WorldShard.HAPPENINGS)
                 .happeningsFilter(HappeningsFilter.EJECT)
                 .execute()

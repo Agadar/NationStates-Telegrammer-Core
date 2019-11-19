@@ -3,6 +3,7 @@ package com.github.agadar.telegrammer.core.recipients.provider;
 import java.util.Collection;
 
 import com.github.agadar.nationstates.NationStates;
+import com.github.agadar.nationstates.exception.NationStatesAPIException;
 import com.github.agadar.nationstates.shard.WorldShard;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterType;
 
@@ -20,7 +21,7 @@ public class AllNationsProvider extends NationStatesRecipientsProvider {
     }
 
     @Override
-    public Collection<String> getRecipients() {
+    public Collection<String> getRecipients() throws NationStatesAPIException {
         return nationStates.getWorld(WorldShard.NATIONS).execute().getNations();
     }
 }

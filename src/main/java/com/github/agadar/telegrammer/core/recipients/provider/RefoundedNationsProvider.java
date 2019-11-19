@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import com.github.agadar.nationstates.NationStates;
 import com.github.agadar.nationstates.enumerator.HappeningsFilter;
+import com.github.agadar.nationstates.exception.NationStatesAPIException;
 import com.github.agadar.nationstates.shard.WorldShard;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterType;
 import com.github.agadar.telegrammer.core.util.StringFunctions;
@@ -22,7 +23,7 @@ public class RefoundedNationsProvider extends NationStatesRecipientsProvider {
     }
 
     @Override
-    public Collection<String> getRecipients() {
+    public Collection<String> getRecipients() throws NationStatesAPIException {
         var happenings = nationStates.getWorld(WorldShard.HAPPENINGS).happeningsFilter(HappeningsFilter.FOUNDING)
                 .execute().getHappenings();
         return StringFunctions.extractNationsFromHappenings(happenings, StringFunctions.KeyWord.refounded);

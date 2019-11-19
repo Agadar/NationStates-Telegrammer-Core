@@ -1,6 +1,7 @@
 package com.github.agadar.telegrammer.core.recipients.translator;
 
 import com.github.agadar.nationstates.NationStatesMock;
+import com.github.agadar.nationstates.exception.NationStatesAPIException;
 import com.github.agadar.telegrammer.core.recipients.filter.NullRecipientsFilter;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterWithProvider;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterAction;
@@ -89,7 +90,7 @@ public class RecipientsListBuilderTranslatorImplTest {
     }
 
     @Test
-    public void testToBuilder_valid() {
+    public void testToBuilder_valid() throws NationStatesAPIException {
         System.out.println("toBuilder should create an IRecipientsListBuilder with 1 filter on valid string");
 
         // Act
@@ -112,7 +113,7 @@ public class RecipientsListBuilderTranslatorImplTest {
     }
 
     @Test
-    public void testToBuilder_valid2() {
+    public void testToBuilder_valid2() throws NationStatesAPIException {
         System.out.println("toBuilder should create an IRecipientsListBuilder with 2+ filters on valid string");
 
         // Act

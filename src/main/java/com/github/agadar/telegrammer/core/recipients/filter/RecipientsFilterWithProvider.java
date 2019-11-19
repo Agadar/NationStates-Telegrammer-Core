@@ -3,6 +3,7 @@ package com.github.agadar.telegrammer.core.recipients.filter;
 import java.util.Collection;
 import java.util.Collections;
 
+import com.github.agadar.nationstates.exception.NationStatesAPIException;
 import com.github.agadar.telegrammer.core.recipients.provider.RecipientsProvider;
 
 import lombok.Getter;
@@ -38,20 +39,20 @@ public class RecipientsFilterWithProvider extends RecipientsFilter {
     @Override
     public void applyFilterToRecipients(@NonNull Collection<String> recipients) {
         switch (filterAction) {
-        case ADD_TO_RECIPIENTS:
-            recipients.addAll(filterNationNames);
-            break;
-        case REMOVE_FROM_RECIPIENTS:
-            recipients.removeAll(filterNationNames);
-            break;
-        case REMOVE_RECIPIENTS_NOT_IN:
-            recipients.retainAll(filterNationNames);
-            break;
+            case ADD_TO_RECIPIENTS:
+                recipients.addAll(filterNationNames);
+                break;
+            case REMOVE_FROM_RECIPIENTS:
+                recipients.removeAll(filterNationNames);
+                break;
+            case REMOVE_RECIPIENTS_NOT_IN:
+                recipients.retainAll(filterNationNames);
+                break;
         }
     }
 
     @Override
-    public void refreshFilter() {
+    public void refreshFilter() throws NationStatesAPIException {
         filterNationNames = recipientsProvider.getRecipients();
     }
 

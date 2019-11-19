@@ -19,6 +19,7 @@ import com.github.agadar.telegrammer.core.telegram.event.StoppedSendingEvent;
 import com.github.agadar.telegrammer.core.telegram.event.TelegramManagerListener;
 import com.github.agadar.telegrammer.core.telegram.history.TelegramHistory;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -27,28 +28,18 @@ import lombok.extern.slf4j.Slf4j;
  * @author Agadar (https://github.com/Agadar/)
  */
 @Slf4j
+@RequiredArgsConstructor
 public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 
+    private final QueuedStats queuedStats = new QueuedStats();
     private final RecipientsListBuilder recipientsListBuilder;
     private final Collection<TelegramManagerListener> listeners;
     private final int noRecipientsFoundTimeOut;
-    private final QueuedStats queuedStats = new QueuedStats();
     private final NationStates nationStates;
     private final TelegramHistory historyManager;
     private final ApplicationProperties properties;
 
     private String[] recipients;
-
-    public SendTelegramsRunnable(RecipientsListBuilder recipientsListBuilder, NationStates nationStates,
-            TelegramHistory historyManager, ApplicationProperties properties,
-            Collection<TelegramManagerListener> listeners, int noRecipientsFoundTimeOut) {
-        this.recipientsListBuilder = recipientsListBuilder;
-        this.nationStates = nationStates;
-        this.historyManager = historyManager;
-        this.properties = properties;
-        this.listeners = listeners;
-        this.noRecipientsFoundTimeOut = noRecipientsFoundTimeOut;
-    }
 
     @Override
     public void run() {

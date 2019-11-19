@@ -2,6 +2,7 @@ package com.github.agadar.telegrammer.core.recipients.provider;
 
 import java.util.Collection;
 
+import com.github.agadar.nationstates.exception.NationStatesAPIException;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterType;
 
 import lombok.AllArgsConstructor;
@@ -22,8 +23,9 @@ public abstract class RecipientsProvider {
      * Fetches the recipients, using any locally supplied parameters.
      *
      * @return The recipients
+     * @throws NationStatesAPIException If getting the recipients failed.
      */
-    public abstract Collection<String> getRecipients();
+    public abstract Collection<String> getRecipients() throws NationStatesAPIException;
 
     /**
      * Gets the configuration string representation of this provider.

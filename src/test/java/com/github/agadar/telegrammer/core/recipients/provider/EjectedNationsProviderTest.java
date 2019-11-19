@@ -12,6 +12,7 @@ import com.github.agadar.nationstates.DefaultNationStatesImpl;
 import com.github.agadar.nationstates.domain.common.happening.EjectedHappening;
 import com.github.agadar.nationstates.domain.common.happening.Happening;
 import com.github.agadar.nationstates.domain.world.World;
+import com.github.agadar.nationstates.exception.NationStatesAPIException;
 import com.github.agadar.nationstates.query.WorldQuery;
 import com.github.agadar.nationstates.shard.WorldShard;
 
@@ -27,7 +28,7 @@ public class EjectedNationsProviderTest {
     private World world;
 
     @Before
-    public void setUp() {
+    public void setUp() throws NationStatesAPIException {
         world = new World();
         world.setHappenings(new ArrayList<>());
         world.getHappenings()
@@ -47,7 +48,7 @@ public class EjectedNationsProviderTest {
     }
 
     @Test
-    public void testGetRecipients() {
+    public void testGetRecipients() throws NationStatesAPIException {
         System.out.println("testGetRecipients");
 
         // Act
