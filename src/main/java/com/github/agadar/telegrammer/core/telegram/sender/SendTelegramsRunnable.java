@@ -64,6 +64,12 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
             var stoppedEvent = new StoppedSendingEvent(this, false, null,
                     queuedStats.getQueuedSucces(), queuedStats.getRecipientDidntExist(),
                     queuedStats.getRecipientIsBlocking(), queuedStats.getDisconnectOrOtherReason());
+
+            log.info(
+                    "Stopped queueing telegrams. Queued: {}; blocked by category: {}; recipients not found: {}; failed: {}",
+                    stoppedEvent.getQueuedSucces(), stoppedEvent.getRecipientIsBlocking(),
+                    stoppedEvent.getRecipientDidntExist(), stoppedEvent.getDisconnectOrOtherReason());
+
             listeners.stream().forEach((tsl) -> {
                 tsl.handleStoppedSending(stoppedEvent);
             });
@@ -149,7 +155,6 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
     private void sendSpecialTelegram(Predicate<String> canReceivePredicate) {
         int index = 0;
         while ((index = getIndexOfNextRecipientThatCanReceive(canReceivePredicate, index)) != -1) {
-
             if (Thread.currentThread().isInterrupted()) {
                 break;
             }
@@ -159,6 +164,9 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 
     private void performNoRecipientsFoundBehavior() throws InterruptedException {
         var event = new NoRecipientsFoundEvent(this, noRecipientsFoundTimeOut);
+        log.info("No recipients were found. Sleeping for {} seconds before refreshing recipients again",
+                event.getTimeOut() / 1000);
+
         synchronized (listeners) {
             listeners.stream().forEach((tsl) -> {
                 tsl.handleNoRecipientsFound(event);
@@ -186,7 +194,14 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
      */
     private void updateRecipientsFromApi() {
         var failedFilters = recipientsListBuilder.refreshFilters();
+
+        if (failedFilters.isEmpty()) {
+            log.info("Refreshed filters without failures");
+        } else {
+            log.warn("Failures occured while refreshing filters. Check error logs");
+        }
         var refrevent = new RecipientsRefreshedEvent(this, failedFilters);
+
         synchronized (listeners) {
             listeners.stream().forEach((tsl) -> {
                 tsl.handleRecipientsRefreshed(refrevent);
@@ -264,6 +279,7 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
             queuedStats.registerFailure(recipient, reason);
             historyManager.saveHistory(properties.getTelegramId(), recipient, reason);
             var event = new RecipientRemovedEvent(this, recipient, reason);
+            log.info("Skipping recipient '{}' for the following reason: {}", recipient, reason);
 
             synchronized (listeners) {
                 listeners.stream().forEach((tsl) -> {
