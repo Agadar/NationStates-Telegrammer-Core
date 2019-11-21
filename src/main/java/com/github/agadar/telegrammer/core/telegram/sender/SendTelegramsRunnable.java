@@ -61,15 +61,8 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
             /* Just fall through to finally. */
 
         } finally {
-            var stoppedEvent = new StoppedSendingEvent(this, false, null,
-                    queuedStats.getQueuedSucces(), queuedStats.getRecipientDidntExist(),
-                    queuedStats.getRecipientIsBlocking(), queuedStats.getDisconnectOrOtherReason());
-
-            log.info(
-                    "Stopped queueing telegrams. Queued: {}; blocked by category: {}; recipients not found: {}; failed: {}",
-                    stoppedEvent.getQueuedSucces(), stoppedEvent.getRecipientIsBlocking(),
-                    stoppedEvent.getRecipientDidntExist(), stoppedEvent.getDisconnectOrOtherReason());
-
+            var stoppedEvent = createStoppedEvent();
+            logStoppedEvent(stoppedEvent);
             listeners.stream().forEach((tsl) -> {
                 tsl.handleStoppedSending(stoppedEvent);
             });
@@ -332,5 +325,18 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
             }
         }
         return startingIndex;
+    }
+
+    private StoppedSendingEvent createStoppedEvent() {
+        return new StoppedSendingEvent(this, queuedStats.getQueuedSucces(),
+                queuedStats.getRecipientDidntExist(), queuedStats.getRecipientIsBlocking(),
+                queuedStats.getDisconnectOrOtherReason());
+    }
+
+    private void logStoppedEvent(StoppedSendingEvent stoppedEvent) {
+        log.info(
+                "Stopped queueing telegrams. Queued: {}; blocked by category: {}; recipients not found: {}; failed: {}",
+                stoppedEvent.getQueuedSucces(), stoppedEvent.getRecipientIsBlocking(),
+                stoppedEvent.getRecipientDidntExist(), stoppedEvent.getDisconnectOrOtherReason());
     }
 }
