@@ -12,6 +12,7 @@ import com.github.agadar.nationstates.DefaultNationStatesImpl;
 import com.github.agadar.nationstates.domain.common.happening.EjectedHappening;
 import com.github.agadar.nationstates.domain.common.happening.Happening;
 import com.github.agadar.nationstates.domain.world.World;
+import com.github.agadar.nationstates.enumerator.HappeningsFilter;
 import com.github.agadar.nationstates.exception.NationStatesAPIException;
 import com.github.agadar.nationstates.query.WorldQuery;
 import com.github.agadar.nationstates.shard.WorldShard;
@@ -40,6 +41,7 @@ public class EjectedNationsProviderTest {
 
         worldQueryMock = Mockito.mock(WorldQuery.class);
         Mockito.when(worldQueryMock.execute()).thenReturn(world);
+        Mockito.when(worldQueryMock.happeningsFilter(HappeningsFilter.EJECT)).thenReturn(worldQueryMock);
 
         nationStatesMock = Mockito.mock(DefaultNationStatesImpl.class);
         Mockito.when(nationStatesMock.getWorld(WorldShard.HAPPENINGS)).thenReturn(worldQueryMock);
