@@ -108,10 +108,6 @@ public class TelegramHistoryImpl implements TelegramHistory {
 
     @Override
     public void removeOldRecipients(@NonNull Collection<String> nations, @NonNull String telegramId) {
-        for (var it = nations.iterator(); it.hasNext();) {
-            if (getSkippedRecipientReason(telegramId, it.next()) != null) {
-                it.remove(); // Remove recipient
-            }
-        }
+        nations.removeIf(nation -> getSkippedRecipientReason(telegramId, nation) != null);
     }
 }

@@ -9,24 +9,22 @@ import com.github.agadar.telegrammer.core.properties.manager.PropertiesManager;
 import com.github.agadar.telegrammer.core.recipients.listbuilder.RecipientsListBuilder;
 import com.github.agadar.telegrammer.core.telegram.event.TelegramManagerListener;
 import com.github.agadar.telegrammer.core.telegram.history.TelegramHistory;
+import com.github.agadar.telegrammer.core.telegram.progress.ProgressSummary;
 
 import lombok.NonNull;
 
 public class TelegramSenderImpl implements TelegramSender {
 
-    private final String userAgentFormat = "Agadar's Telegrammer using Client "
-            + "Key '%s' (https://github.com/Agadar/NationStates-Telegrammer)"; // User agent string for formatting.
-    private final int noAddresseesFoundTimeout = 60000; // Duration in milliseconds for timeout when no recipients were
-                                                        // found while looping.
-
-    private final Collection<TelegramManagerListener> listeners = new HashSet<>(); // Listeners to events thrown by
-                                                                                   // this.
-
-    private Thread telegramThread; // The thread on which the TelegramQuery is running.
+    private final String userAgentFormat = "Agadar's Telegrammer using Client Key '%s' (https://github.com/Agadar/NationStates-Telegrammer)";
+    private final int noAddresseesFoundTimeout = 60000;
+    private final Collection<TelegramManagerListener> listeners = new HashSet<>();
 
     private final NationStates nationStates;
     private final TelegramHistory historyManager;
     private final PropertiesManager<?> propertiesManager;
+
+    private Thread telegramThread;
+    private SendTelegramsRunnable sendTelegramsRunnable;
 
     public TelegramSenderImpl(@NonNull NationStates nationStates, @NonNull TelegramHistory historyManager,
             @NonNull PropertiesManager<?> propertiesManager) {
@@ -64,7 +62,7 @@ public class TelegramSenderImpl implements TelegramSender {
         nationStates.setUserAgent(String.format(userAgentFormat, properties.getClientKey()));
 
         // Prepare the runnable.
-        var sendTelegramsRunnable = new SendTelegramsRunnable(recipientsListBuilder, listeners,
+        sendTelegramsRunnable = new SendTelegramsRunnable(recipientsListBuilder, listeners,
                 noAddresseesFoundTimeout, nationStates, historyManager, properties);
         telegramThread = new Thread(sendTelegramsRunnable);
         telegramThread.start();
@@ -83,5 +81,10 @@ public class TelegramSenderImpl implements TelegramSender {
         synchronized (listeners) {
             listeners.addAll(Arrays.asList(newlisteners));
         }
+    }
+
+    @Override
+    public ProgressSummary getProgressSummary() {
+        return sendTelegramsRunnable.getProgressSummary();
     }
 }

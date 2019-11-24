@@ -1,6 +1,7 @@
 package com.github.agadar.telegrammer.core.telegram.sender;
 
 import com.github.agadar.telegrammer.core.telegram.event.TelegramManagerListener;
+import com.github.agadar.telegrammer.core.telegram.progress.ProgressSummary;
 import com.github.agadar.telegrammer.core.recipients.listbuilder.RecipientsListBuilder;
 
 /**
@@ -26,8 +27,14 @@ public interface TelegramSender {
     /**
      * Registers new telegram manager listeners.
      *
-     * @param newlisteners
-     *            the listeners to register
+     * @param newlisteners the listeners to register
      */
     public void addListeners(TelegramManagerListener... newlisteners);
+
+    /**
+     * Gets a summary of the current telegram queuing progress.
+     * 
+     * @return A summary of the current telegram queuing progress.
+     */
+    public ProgressSummary getProgressSummary();
 }

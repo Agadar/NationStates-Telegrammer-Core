@@ -9,7 +9,6 @@ import com.github.agadar.nationstates.event.TelegramSentListener;
 import com.github.agadar.nationstates.shard.NationShard;
 import com.github.agadar.telegrammer.core.properties.ApplicationProperties;
 import com.github.agadar.telegrammer.core.recipients.listbuilder.RecipientsListBuilder;
-import com.github.agadar.telegrammer.core.telegram.QueuedStats;
 import com.github.agadar.telegrammer.core.telegram.SkippedRecipientReason;
 import com.github.agadar.telegrammer.core.telegram.TelegramType;
 import com.github.agadar.telegrammer.core.telegram.event.NoRecipientsFoundEvent;
@@ -18,6 +17,8 @@ import com.github.agadar.telegrammer.core.telegram.event.RecipientsRefreshedEven
 import com.github.agadar.telegrammer.core.telegram.event.StoppedSendingEvent;
 import com.github.agadar.telegrammer.core.telegram.event.TelegramManagerListener;
 import com.github.agadar.telegrammer.core.telegram.history.TelegramHistory;
+import com.github.agadar.telegrammer.core.telegram.progress.ProgressSummarizer;
+import com.github.agadar.telegrammer.core.telegram.progress.ProgressSummary;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 
-    private final QueuedStats queuedStats = new QueuedStats();
+    private final ProgressSummarizer progressSummarizer = new ProgressSummarizer();
     private final RecipientsListBuilder recipientsListBuilder;
     private final Collection<TelegramManagerListener> listeners;
     private final int noRecipientsFoundTimeOut;
@@ -76,11 +77,11 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
         // so there is no need to make sure the entry for the current Telegram Id
         // changed.
         event.getException().ifPresentOrElse(exception -> {
-            queuedStats.registerFailure(event.getRecipient(), null);
+            progressSummarizer.registerFailure(event.getRecipient(), null);
         }, () -> {
             historyManager.saveHistory(properties.getTelegramId(), event.getRecipient(),
                     SkippedRecipientReason.PREVIOUS_RECIPIENT);
-            queuedStats.registerSucces(event.getRecipient());
+            progressSummarizer.registerSucces(event.getRecipient());
         });
 
         synchronized (listeners) {
@@ -88,6 +89,15 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
                 tsl.handleTelegramSent(event);
             });
         }
+    }
+
+    /**
+     * Gets a summary of the current telegram queuing progress.
+     * 
+     * @return A summary of the current telegram queuing progress.
+     */
+    public ProgressSummary getProgressSummary() {
+        return progressSummarizer.getProgressSummary();
     }
 
     private void performTelegramSendingBehavior() {
@@ -269,7 +279,7 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
      */
     private boolean canReceiveXTelegrams(SkippedRecipientReason reason, String recipient) {
         if (reason != null) {
-            queuedStats.registerFailure(recipient, reason);
+            progressSummarizer.registerFailure(recipient, reason);
             historyManager.saveHistory(properties.getTelegramId(), recipient, reason);
             var event = new RecipientRemovedEvent(this, recipient, reason);
             log.info("Skipping recipient '{}' for the following reason: {}", recipient, reason);
@@ -328,9 +338,7 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
     }
 
     private StoppedSendingEvent createStoppedEvent() {
-        return new StoppedSendingEvent(this, queuedStats.getQueuedSucces(),
-                queuedStats.getRecipientDidntExist(), queuedStats.getRecipientIsBlocking(),
-                queuedStats.getDisconnectOrOtherReason());
+        return new StoppedSendingEvent(this, progressSummarizer.getProgressSummary());
     }
 
     private void logStoppedEvent(StoppedSendingEvent stoppedEvent) {

@@ -2,6 +2,8 @@ package com.github.agadar.telegrammer.core.telegram.event;
 
 import java.util.EventObject;
 
+import com.github.agadar.telegrammer.core.telegram.progress.ProgressSummary;
+
 import lombok.Getter;
 
 /**
@@ -33,12 +35,17 @@ public class StoppedSendingEvent extends EventObject {
      */
     private final int disconnectOrOtherReason;
 
-    public StoppedSendingEvent(Object source, int queuedSucces, int recipientDidntExist, int recipientIsBlocking,
-            int disconnectOrOtherReason) {
+    /**
+     * Constructor.
+     * 
+     * @param source          The component that fired this event.
+     * @param progressSummary The (final) telegram queuing progress.
+     */
+    public StoppedSendingEvent(Object source, ProgressSummary progressSummary) {
         super(source);
-        this.queuedSucces = queuedSucces;
-        this.recipientDidntExist = recipientDidntExist;
-        this.recipientIsBlocking = recipientIsBlocking;
-        this.disconnectOrOtherReason = disconnectOrOtherReason;
+        this.queuedSucces = progressSummary.getQueuedSucces();
+        this.recipientDidntExist = progressSummary.getRecipientDidntExist();
+        this.recipientIsBlocking = progressSummary.getRecipientIsBlocking();
+        this.disconnectOrOtherReason = progressSummary.getDisconnectOrOtherReason();
     }
 }
