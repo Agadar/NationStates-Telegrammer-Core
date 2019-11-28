@@ -5,8 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import com.github.agadar.nationstates.NationStates;
-import com.github.agadar.telegrammer.core.properties.manager.PropertiesManager;
-import com.github.agadar.telegrammer.core.recipients.listbuilder.RecipientsListBuilder;
+import com.github.agadar.telegrammer.core.settings.TelegrammerSettings;
 import com.github.agadar.telegrammer.core.telegram.event.TelegramManagerListener;
 import com.github.agadar.telegrammer.core.telegram.history.TelegramHistory;
 import com.github.agadar.telegrammer.core.telegram.progress.ProgressSummary;
@@ -21,29 +20,26 @@ public class TelegramSenderImpl implements TelegramSender {
 
     private final NationStates nationStates;
     private final TelegramHistory historyManager;
-    private final PropertiesManager<?> propertiesManager;
 
     private Thread telegramThread;
     private SendTelegramsRunnable sendTelegramsRunnable;
 
-    public TelegramSenderImpl(@NonNull NationStates nationStates, @NonNull TelegramHistory historyManager,
-            @NonNull PropertiesManager<?> propertiesManager) {
+    public TelegramSenderImpl(@NonNull NationStates nationStates, @NonNull TelegramHistory historyManager) {
         this.nationStates = nationStates;
         this.historyManager = historyManager;
-        this.propertiesManager = propertiesManager;
     }
 
     @Override
-    public void startSending(@NonNull RecipientsListBuilder recipientsListBuilder) {
+    public void startSending(@NonNull TelegrammerSettings settings) {
+
         // Make sure all inputs are valid.
-        var properties = propertiesManager.getProperties();
-        if (properties.getClientKey() == null || properties.getClientKey().isEmpty()) {
+        if (settings.getClientKey().isEmpty()) {
             throw new IllegalArgumentException("Please supply a Client Key!");
         }
-        if (properties.getTelegramId() == null || properties.getTelegramId().isEmpty()) {
+        if (settings.getTelegramId().isEmpty()) {
             throw new IllegalArgumentException("Please supply a Telegram Id!");
         }
-        if (properties.getSecretKey() == null || properties.getSecretKey().isEmpty()) {
+        if (settings.getSecretKey().isEmpty()) {
             throw new IllegalArgumentException("Please supply a Secret Key!");
         }
 
@@ -54,16 +50,16 @@ public class TelegramSenderImpl implements TelegramSender {
         }
 
         // Make sure there is at least one recipient to send the telegram to.
-        if (recipientsListBuilder.getRecipients(properties.getTelegramId()).isEmpty()) {
+        if (settings.getFilters().getRecipients(settings.getTelegramId()).isEmpty()) {
             throw new IllegalArgumentException("Please supply at least one recipient!");
         }
 
         // Update user agent.
-        nationStates.setUserAgent(String.format(userAgentFormat, properties.getClientKey()));
+        nationStates.setUserAgent(String.format(userAgentFormat, settings.getClientKey()));
 
         // Prepare the runnable.
-        sendTelegramsRunnable = new SendTelegramsRunnable(recipientsListBuilder, listeners,
-                noAddresseesFoundTimeout, nationStates, historyManager, properties);
+        sendTelegramsRunnable = new SendTelegramsRunnable(listeners, noAddresseesFoundTimeout, nationStates,
+                historyManager, settings);
         telegramThread = new Thread(sendTelegramsRunnable);
         telegramThread.start();
     }

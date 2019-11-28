@@ -1,8 +1,8 @@
 package com.github.agadar.telegrammer.core.telegram.sender;
 
+import com.github.agadar.telegrammer.core.settings.TelegrammerSettings;
 import com.github.agadar.telegrammer.core.telegram.event.TelegramManagerListener;
 import com.github.agadar.telegrammer.core.telegram.progress.ProgressSummary;
-import com.github.agadar.telegrammer.core.recipients.listbuilder.RecipientsListBuilder;
 
 /**
  * Manages the sending of telegrams.
@@ -14,10 +14,9 @@ public interface TelegramSender {
     /**
      * Starts sending the telegram to the recipients.
      *
-     * @param recipientsListBuilder
-     * @throws IllegalArgumentException If the variables are not properly set.
+     * @param settings The settings to use for sending telegrams.
      */
-    public void startSending(RecipientsListBuilder recipientsListBuilder);
+    public void startSending(TelegrammerSettings settings);
 
     /**
      * Stops sending the telegram to the recipients.
