@@ -7,17 +7,17 @@ import com.github.agadar.nationstates.NationStates;
 import com.github.agadar.nationstates.event.TelegramSentEvent;
 import com.github.agadar.nationstates.event.TelegramSentListener;
 import com.github.agadar.nationstates.shard.NationShard;
+import com.github.agadar.telegrammer.core.TelegrammerListener;
 import com.github.agadar.telegrammer.core.event.NoRecipientsFoundEvent;
 import com.github.agadar.telegrammer.core.event.RecipientRemovedEvent;
 import com.github.agadar.telegrammer.core.event.RecipientsRefreshedEvent;
 import com.github.agadar.telegrammer.core.event.StoppedSendingEvent;
-import com.github.agadar.telegrammer.core.event.TelegrammerListener;
 import com.github.agadar.telegrammer.core.history.TelegramHistory;
 import com.github.agadar.telegrammer.core.misc.SkippedRecipientReason;
 import com.github.agadar.telegrammer.core.misc.TelegramType;
 import com.github.agadar.telegrammer.core.progress.ProgressSummarizer;
 import com.github.agadar.telegrammer.core.progress.ProgressSummary;
-import com.github.agadar.telegrammer.core.settings.TelegrammerCoreSettings;
+import com.github.agadar.telegrammer.core.settings.CoreSettings;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +36,7 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
     private final int noRecipientsFoundTimeOut;
     private final NationStates nationStates;
     private final TelegramHistory historyManager;
-    private final TelegrammerCoreSettings settings;
+    private final CoreSettings settings;
 
     private String[] recipients;
 

@@ -1,6 +1,6 @@
 package com.github.agadar.telegrammer.core.settings;
 
-import static com.github.agadar.telegrammer.core.settings.TelegrammerCoreSettingsKeys.*;
+import static com.github.agadar.telegrammer.core.settings.CoreSettingsKeys.*;
 
 import com.github.agadar.telegrammer.core.misc.TelegramType;
 import com.github.agadar.telegrammer.core.recipients.listbuilder.RecipientsListBuilder;
@@ -15,7 +15,7 @@ import lombok.NonNull;
  * @author Agadar (https://github.com/Agadar/)
  *
  */
-public class TelegrammerCoreSettings {
+public class CoreSettings {
 
     private final Settings settings;
 
@@ -26,7 +26,7 @@ public class TelegrammerCoreSettings {
      *                          settings.
      * @param builderTranslator Specifically for parsing the 'filters' setting.
      */
-    public TelegrammerCoreSettings(@NonNull Settings settings,
+    public CoreSettings(@NonNull Settings settings,
             @NonNull RecipientsListBuilderTranslator builderTranslator) {
         this.settings = settings;
         settings.addStringSetting(CLIENT_KEY.getKey(), "");

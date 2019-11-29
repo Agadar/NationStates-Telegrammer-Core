@@ -3,12 +3,11 @@ package com.github.agadar.telegrammer.core;
 import java.util.Collection;
 
 import com.github.agadar.nationstates.NationStates;
-import com.github.agadar.telegrammer.core.event.TelegrammerListener;
 import com.github.agadar.telegrammer.core.progress.ProgressSummary;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilter;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterAction;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterType;
-import com.github.agadar.telegrammer.core.settings.TelegrammerCoreSettings;
+import com.github.agadar.telegrammer.core.settings.CoreSettings;
 
 import lombok.NonNull;
 
@@ -61,7 +60,7 @@ public interface Telegrammer {
      * 
      * @return The telegrammer core specific settings.
      */
-    public TelegrammerCoreSettings getTelegrammerCoreSettings();
+    public CoreSettings getTelegrammerCoreSettings();
 
     /**
      * Gets the underlying NationStates component.

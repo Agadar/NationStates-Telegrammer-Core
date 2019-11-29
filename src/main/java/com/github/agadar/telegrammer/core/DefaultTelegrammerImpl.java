@@ -7,20 +7,20 @@ import java.util.HashSet;
 import com.github.agadar.nationstates.DefaultNationStatesImpl;
 import com.github.agadar.nationstates.NationStates;
 import com.github.agadar.nationstates.exception.NationStatesAPIException;
-import com.github.agadar.telegrammer.core.event.TelegrammerListener;
 import com.github.agadar.telegrammer.core.history.TelegramHistory;
 import com.github.agadar.telegrammer.core.history.TelegramHistoryImpl;
 import com.github.agadar.telegrammer.core.progress.ProgressSummary;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilter;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterAction;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterType;
+import com.github.agadar.telegrammer.core.recipients.translator.RecipientsFilterTranslator;
 import com.github.agadar.telegrammer.core.recipients.translator.RecipientsFilterTranslatorImpl;
 import com.github.agadar.telegrammer.core.recipients.translator.RecipientsListBuilderTranslatorImpl;
 import com.github.agadar.telegrammer.core.recipients.translator.RecipientsProviderTranslatorImpl;
 import com.github.agadar.telegrammer.core.regiondumpaccess.RegionDumpAccessImpl;
 import com.github.agadar.telegrammer.core.runnable.SendTelegramsRunnable;
 import com.github.agadar.telegrammer.core.settings.Settings;
-import com.github.agadar.telegrammer.core.settings.TelegrammerCoreSettings;
+import com.github.agadar.telegrammer.core.settings.CoreSettings;
 
 import lombok.NonNull;
 
@@ -37,8 +37,8 @@ public class DefaultTelegrammerImpl implements Telegrammer {
 
     private final NationStates nationStates;
     private final TelegramHistory telegramHistory;
-    private final TelegrammerCoreSettings coreSettings;
-    private final RecipientsFilterTranslatorImpl filterTranslator;
+    private final CoreSettings coreSettings;
+    private final RecipientsFilterTranslator filterTranslator;
 
     private Thread telegramThread;
     private SendTelegramsRunnable sendTelegramsRunnable;
@@ -65,7 +65,7 @@ public class DefaultTelegrammerImpl implements Telegrammer {
         filterTranslator = new RecipientsFilterTranslatorImpl(providerTranslator);
         telegramHistory = new TelegramHistoryImpl(".nationstates-telegrammer.history");
         var listBuilderTranslator = new RecipientsListBuilderTranslatorImpl(telegramHistory, filterTranslator);
-        coreSettings = new TelegrammerCoreSettings(settings, listBuilderTranslator);
+        coreSettings = new CoreSettings(settings, listBuilderTranslator);
         telegramHistory.loadHistory();
     }
 
@@ -133,7 +133,7 @@ public class DefaultTelegrammerImpl implements Telegrammer {
     }
 
     @Override
-    public TelegrammerCoreSettings getTelegrammerCoreSettings() {
+    public CoreSettings getTelegrammerCoreSettings() {
         return coreSettings;
     }
 

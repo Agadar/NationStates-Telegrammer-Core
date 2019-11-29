@@ -1,7 +1,10 @@
-package com.github.agadar.telegrammer.core.event;
+package com.github.agadar.telegrammer.core;
 
 import com.github.agadar.nationstates.event.TelegramSentEvent;
-import com.github.agadar.telegrammer.core.Telegrammer;
+import com.github.agadar.telegrammer.core.event.NoRecipientsFoundEvent;
+import com.github.agadar.telegrammer.core.event.RecipientRemovedEvent;
+import com.github.agadar.telegrammer.core.event.RecipientsRefreshedEvent;
+import com.github.agadar.telegrammer.core.event.StoppedSendingEvent;
 
 /**
  * Listener for {@link Telegrammer} events.
