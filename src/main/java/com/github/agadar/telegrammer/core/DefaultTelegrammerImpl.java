@@ -34,18 +34,31 @@ public class DefaultTelegrammerImpl implements Telegrammer {
 
     private final int noAddresseesFoundTimeout = 60000;
     private final Collection<TelegrammerListener> listeners = new HashSet<>();
-    private final Settings settings = new Settings(".nationstates-telegrammer.properties");
 
-    private NationStates nationStates;
-    private TelegramHistory telegramHistory;
-    private TelegrammerCoreSettings coreSettings;
-    private RecipientsFilterTranslatorImpl filterTranslator;
+    private final NationStates nationStates;
+    private final TelegramHistory telegramHistory;
+    private final TelegrammerCoreSettings coreSettings;
+    private final RecipientsFilterTranslatorImpl filterTranslator;
 
     private Thread telegramThread;
     private SendTelegramsRunnable sendTelegramsRunnable;
 
-    @Override
-    public void initialise(@NonNull String userAgent) throws NationStatesAPIException {
+    /**
+     * Constructor.
+     * 
+     * @param userAgent The user agent to use for API calls. NationStates moderators
+     *                  should be able to identify you and your script via your user
+     *                  agent. As such, try providing at least your nation name, and
+     *                  preferably include your e-mail address, a link to a website
+     *                  you own, or something else that can help them contact you if
+     *                  needed.
+     * @param settings  The application-wide settings, to which this component adds
+     *                  its own settings.
+     * @throws NationStatesAPIException If initializing the underlying
+     *                                  {@link NationStates} failed.
+     */
+    public DefaultTelegrammerImpl(@NonNull String userAgent, @NonNull Settings settings)
+            throws NationStatesAPIException {
         nationStates = new DefaultNationStatesImpl(userAgent);
         var regionDumpAccess = new RegionDumpAccessImpl(nationStates);
         var providerTranslator = new RecipientsProviderTranslatorImpl(nationStates, regionDumpAccess);
@@ -53,7 +66,6 @@ public class DefaultTelegrammerImpl implements Telegrammer {
         telegramHistory = new TelegramHistoryImpl(".nationstates-telegrammer.history");
         var listBuilderTranslator = new RecipientsListBuilderTranslatorImpl(telegramHistory, filterTranslator);
         coreSettings = new TelegrammerCoreSettings(settings, listBuilderTranslator);
-        settings.loadPropertiesFile();
         telegramHistory.loadHistory();
     }
 
@@ -96,6 +108,9 @@ public class DefaultTelegrammerImpl implements Telegrammer {
             throw new IllegalArgumentException("Please supply at least one recipient!");
         }
 
+        // Update settings.
+        coreSettings.savePropertiesFile();
+
         // Prepare the runnable.
         sendTelegramsRunnable = new SendTelegramsRunnable(listeners, noAddresseesFoundTimeout, nationStates,
                 telegramHistory, coreSettings);
@@ -115,11 +130,6 @@ public class DefaultTelegrammerImpl implements Telegrammer {
             telegramThread = null;
             sendTelegramsRunnable = null;
         }
-    }
-
-    @Override
-    public Settings getSettings() {
-        return settings;
     }
 
     @Override

@@ -104,15 +104,6 @@ public class TelegrammerCoreSettings {
     }
 
     /**
-     * Loads the properties file, parsing the values within and updating the
-     * settings values. This refreshes ALL settings, not just the ones registered by
-     * this component.
-     */
-    public void loadPropertiesFile() {
-        settings.loadPropertiesFile();
-    }
-
-    /**
      * Saves the properties file. This saves ALL settings, not just the ones
      * registered by this component.
      */
