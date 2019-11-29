@@ -2,7 +2,7 @@ package com.github.agadar.telegrammer.core.sender;
 
 import com.github.agadar.telegrammer.core.event.TelegramManagerListener;
 import com.github.agadar.telegrammer.core.progress.ProgressSummary;
-import com.github.agadar.telegrammer.core.settings.TelegrammerSettings;
+import com.github.agadar.telegrammer.core.settings.TelegrammerCoreSettings;
 
 /**
  * Manages the sending of telegrams.
@@ -16,7 +16,7 @@ public interface TelegramSender {
      *
      * @param settings The settings to use for sending telegrams.
      */
-    public void startSending(TelegrammerSettings settings);
+    public void startSending(TelegrammerCoreSettings settings);
 
     /**
      * Stops sending the telegram to the recipients.

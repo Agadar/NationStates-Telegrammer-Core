@@ -17,7 +17,7 @@ import com.github.agadar.telegrammer.core.misc.SkippedRecipientReason;
 import com.github.agadar.telegrammer.core.misc.TelegramType;
 import com.github.agadar.telegrammer.core.progress.ProgressSummarizer;
 import com.github.agadar.telegrammer.core.progress.ProgressSummary;
-import com.github.agadar.telegrammer.core.settings.TelegrammerSettings;
+import com.github.agadar.telegrammer.core.settings.TelegrammerCoreSettings;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +36,7 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
     private final int noRecipientsFoundTimeOut;
     private final NationStates nationStates;
     private final TelegramHistory historyManager;
-    private final TelegrammerSettings settings;
+    private final TelegrammerCoreSettings settings;
 
     private String[] recipients;
 

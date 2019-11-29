@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public enum TelegrammerSettingsKeys {
+public enum TelegrammerCoreSettingsKeys {
 
     CLIENT_KEY("clientKey"),
     FROM_REGION("fromRegion"),

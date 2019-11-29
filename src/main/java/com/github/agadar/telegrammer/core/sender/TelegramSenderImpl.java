@@ -8,7 +8,7 @@ import com.github.agadar.nationstates.NationStates;
 import com.github.agadar.telegrammer.core.event.TelegramManagerListener;
 import com.github.agadar.telegrammer.core.history.TelegramHistory;
 import com.github.agadar.telegrammer.core.progress.ProgressSummary;
-import com.github.agadar.telegrammer.core.settings.TelegrammerSettings;
+import com.github.agadar.telegrammer.core.settings.TelegrammerCoreSettings;
 
 import lombok.NonNull;
 
@@ -30,7 +30,7 @@ public class TelegramSenderImpl implements TelegramSender {
     }
 
     @Override
-    public void startSending(@NonNull TelegrammerSettings settings) {
+    public void startSending(@NonNull TelegrammerCoreSettings settings) {
 
         // Make sure all inputs are valid.
         if (settings.getClientKey().isEmpty()) {
