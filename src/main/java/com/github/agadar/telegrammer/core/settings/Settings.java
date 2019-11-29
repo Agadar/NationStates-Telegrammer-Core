@@ -57,7 +57,7 @@ public class Settings {
      *         name already exists.
      */
     public boolean addBooleanSetting(@NonNull String key, boolean value) {
-        var setting = new Setting<Boolean>(key, boolean.class, Boolean::valueOf, bool -> Boolean.toString(bool), value);
+        var setting = new Setting<Boolean>(key, Boolean.class, Boolean::valueOf, bool -> Boolean.toString(bool), value);
         return addSetting(setting);
     }
 
@@ -70,7 +70,7 @@ public class Settings {
      *         name already exists.
      */
     public boolean addIntegerSetting(@NonNull String key, int value) {
-        var setting = new Setting<Integer>(key, int.class, Integer::valueOf, integer -> Integer.toString(integer),
+        var setting = new Setting<Integer>(key, Integer.class, Integer::valueOf, integer -> Integer.toString(integer),
                 value);
         return addSetting(setting);
     }

@@ -26,7 +26,8 @@ public class TelegrammerCoreSettings {
      *                          settings.
      * @param builderTranslator Specifically for parsing the 'filters' setting.
      */
-    public TelegrammerCoreSettings(@NonNull Settings settings, @NonNull RecipientsListBuilderTranslator builderTranslator) {
+    public TelegrammerCoreSettings(@NonNull Settings settings,
+            @NonNull RecipientsListBuilderTranslator builderTranslator) {
         this.settings = settings;
         settings.addStringSetting(CLIENT_KEY.getKey(), "");
         settings.addStringSetting(FROM_REGION.getKey(), "");
@@ -75,7 +76,7 @@ public class TelegrammerCoreSettings {
     }
 
     public boolean getRunIndefinitely() {
-        return settings.getValue(RUN_INDEFINITELY.getKey(), boolean.class);
+        return settings.getValue(RUN_INDEFINITELY.getKey(), Boolean.class);
     }
 
     public void setUpdateAfterEveryTelegram(boolean updateAfterEveryTelegram) {
@@ -83,11 +84,11 @@ public class TelegrammerCoreSettings {
     }
 
     public boolean getUpdateAfterEveryTelegram() {
-        return settings.getValue(UPDATE_AFTER_EVERY_TELEGRAM.getKey(), boolean.class);
+        return settings.getValue(UPDATE_AFTER_EVERY_TELEGRAM.getKey(), Boolean.class);
     }
 
     public void setTelegramType(@NonNull TelegramType telegramType) {
-        settings.setValue(TELEGRAM_TYPE.getKey(), TelegramType.class);
+        settings.setValue(TELEGRAM_TYPE.getKey(), telegramType);
     }
 
     public TelegramType getTelegramType() {
@@ -100,6 +101,23 @@ public class TelegrammerCoreSettings {
 
     public RecipientsListBuilder getFilters() {
         return settings.getValue(FILTERS.getKey(), RecipientsListBuilder.class);
+    }
+
+    /**
+     * Loads the properties file, parsing the values within and updating the
+     * settings values. This refreshes ALL settings, not just the ones registered by
+     * this component.
+     */
+    public void loadPropertiesFile() {
+        settings.loadPropertiesFile();
+    }
+
+    /**
+     * Saves the properties file. This saves ALL settings, not just the ones
+     * registered by this component.
+     */
+    public void savePropertiesFile() {
+        settings.savePropertiesFile();
     }
 
     private Setting<TelegramType> createTelegramTypeSetting() {
