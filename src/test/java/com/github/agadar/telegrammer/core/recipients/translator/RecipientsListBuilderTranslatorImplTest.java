@@ -2,13 +2,13 @@ package com.github.agadar.telegrammer.core.recipients.translator;
 
 import com.github.agadar.nationstates.NationStatesMock;
 import com.github.agadar.nationstates.exception.NationStatesAPIException;
+import com.github.agadar.telegrammer.core.history.TelegramHistoryMock;
 import com.github.agadar.telegrammer.core.recipients.filter.NullRecipientsFilter;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterWithProvider;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterAction;
 import com.github.agadar.telegrammer.core.recipients.listbuilder.RecipientsListBuilder;
 import com.github.agadar.telegrammer.core.recipients.provider.NationsProvider;
 import com.github.agadar.telegrammer.core.regiondumpaccess.RegionDumpAccessMock;
-import com.github.agadar.telegrammer.core.telegram.history.TelegramHistoryMock;
 
 import org.junit.After;
 import org.junit.Before;

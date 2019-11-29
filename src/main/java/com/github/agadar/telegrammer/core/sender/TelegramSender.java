@@ -1,8 +1,8 @@
-package com.github.agadar.telegrammer.core.telegram.sender;
+package com.github.agadar.telegrammer.core.sender;
 
+import com.github.agadar.telegrammer.core.event.TelegramManagerListener;
+import com.github.agadar.telegrammer.core.progress.ProgressSummary;
 import com.github.agadar.telegrammer.core.settings.TelegrammerSettings;
-import com.github.agadar.telegrammer.core.telegram.event.TelegramManagerListener;
-import com.github.agadar.telegrammer.core.telegram.progress.ProgressSummary;
 
 /**
  * Manages the sending of telegrams.

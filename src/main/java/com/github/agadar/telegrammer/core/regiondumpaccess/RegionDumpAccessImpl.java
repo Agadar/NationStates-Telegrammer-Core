@@ -10,7 +10,7 @@ import com.github.agadar.nationstates.NationStates;
 import com.github.agadar.nationstates.domain.region.Region;
 import com.github.agadar.nationstates.enumerator.DailyDumpMode;
 import com.github.agadar.nationstates.exception.NationStatesAPIException;
-import com.github.agadar.telegrammer.core.util.StringFunctions;
+import com.github.agadar.telegrammer.core.misc.StringFunctions;
 
 import lombok.NonNull;
 

@@ -1,4 +1,4 @@
-package com.github.agadar.telegrammer.core.telegram.history;
+package com.github.agadar.telegrammer.core.history;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -11,8 +11,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.github.agadar.telegrammer.core.telegram.SkippedRecipientReason;
-import com.github.agadar.telegrammer.core.util.Tuple;
+import com.github.agadar.telegrammer.core.misc.SkippedRecipientReason;
+import com.github.agadar.telegrammer.core.misc.Tuple;
 
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;

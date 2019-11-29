@@ -1,9 +1,9 @@
-package com.github.agadar.telegrammer.core.telegram.progress;
+package com.github.agadar.telegrammer.core.progress;
 
 import java.util.Collection;
 import java.util.HashSet;
 
-import com.github.agadar.telegrammer.core.telegram.SkippedRecipientReason;
+import com.github.agadar.telegrammer.core.misc.SkippedRecipientReason;
 
 import lombok.NonNull;
 

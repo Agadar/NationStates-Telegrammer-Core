@@ -1,8 +1,8 @@
-package com.github.agadar.telegrammer.core.telegram.event;
+package com.github.agadar.telegrammer.core.event;
 
 import java.util.EventObject;
 
-import com.github.agadar.telegrammer.core.telegram.progress.ProgressSummary;
+import com.github.agadar.telegrammer.core.progress.ProgressSummary;
 
 import lombok.Getter;
 

@@ -1,10 +1,10 @@
 package com.github.agadar.telegrammer.core.recipients.translator;
 
+import com.github.agadar.telegrammer.core.history.TelegramHistory;
+import com.github.agadar.telegrammer.core.misc.StringFunctions;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilter;
 import com.github.agadar.telegrammer.core.recipients.listbuilder.RecipientsListBuilder;
 import com.github.agadar.telegrammer.core.recipients.listbuilder.RecipientsListBuilderImpl;
-import com.github.agadar.telegrammer.core.telegram.history.TelegramHistory;
-import com.github.agadar.telegrammer.core.util.StringFunctions;
 
 import java.util.ArrayList;
 

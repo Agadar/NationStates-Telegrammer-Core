@@ -1,4 +1,4 @@
-package com.github.agadar.telegrammer.core.util;
+package com.github.agadar.telegrammer.core.misc;
 
 import java.util.Objects;
 

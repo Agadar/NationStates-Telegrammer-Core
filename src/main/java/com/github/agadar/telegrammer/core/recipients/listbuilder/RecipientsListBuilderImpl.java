@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.github.agadar.nationstates.exception.NationStatesAPIException;
+import com.github.agadar.telegrammer.core.history.TelegramHistory;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilter;
-import com.github.agadar.telegrammer.core.telegram.history.TelegramHistory;
 
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;

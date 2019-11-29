@@ -5,6 +5,7 @@ import java.util.HashSet;
 
 import com.github.agadar.nationstates.NationStates;
 import com.github.agadar.nationstates.enumerator.RegionTag;
+import com.github.agadar.telegrammer.core.misc.StringFunctions;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterType;
 import com.github.agadar.telegrammer.core.recipients.provider.AllNationsProvider;
 import com.github.agadar.telegrammer.core.recipients.provider.DelegatesProvider;
@@ -22,7 +23,6 @@ import com.github.agadar.telegrammer.core.recipients.provider.RecipientsProvider
 import com.github.agadar.telegrammer.core.recipients.provider.RefoundedNationsProvider;
 import com.github.agadar.telegrammer.core.recipients.provider.WorldAssemblyMembersProvider;
 import com.github.agadar.telegrammer.core.regiondumpaccess.RegionDumpAccess;
-import com.github.agadar.telegrammer.core.util.StringFunctions;
 
 import lombok.extern.slf4j.Slf4j;
 

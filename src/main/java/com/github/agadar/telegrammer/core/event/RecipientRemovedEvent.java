@@ -1,10 +1,10 @@
-package com.github.agadar.telegrammer.core.telegram.event;
-
-import com.github.agadar.telegrammer.core.telegram.SkippedRecipientReason;
+package com.github.agadar.telegrammer.core.event;
 
 import lombok.Getter;
 
 import java.util.EventObject;
+
+import com.github.agadar.telegrammer.core.misc.SkippedRecipientReason;
 
 /**
  * Published by TelegramManager when a recipient was removed from the recipients

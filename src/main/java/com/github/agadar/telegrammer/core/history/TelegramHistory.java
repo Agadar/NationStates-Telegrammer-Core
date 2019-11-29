@@ -1,8 +1,8 @@
-package com.github.agadar.telegrammer.core.telegram.history;
-
-import com.github.agadar.telegrammer.core.telegram.SkippedRecipientReason;
+package com.github.agadar.telegrammer.core.history;
 
 import java.util.Collection;
+
+import com.github.agadar.telegrammer.core.misc.SkippedRecipientReason;
 
 /**
  * Assists in saving and loading the history file for this application.

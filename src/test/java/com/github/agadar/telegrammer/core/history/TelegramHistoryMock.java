@@ -1,8 +1,9 @@
-package com.github.agadar.telegrammer.core.telegram.history;
-
-import com.github.agadar.telegrammer.core.telegram.SkippedRecipientReason;
+package com.github.agadar.telegrammer.core.history;
 
 import java.util.Collection;
+
+import com.github.agadar.telegrammer.core.history.TelegramHistory;
+import com.github.agadar.telegrammer.core.misc.SkippedRecipientReason;
 
 public class TelegramHistoryMock implements TelegramHistory {
 

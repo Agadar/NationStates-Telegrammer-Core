@@ -1,14 +1,14 @@
-package com.github.agadar.telegrammer.core.telegram.sender;
+package com.github.agadar.telegrammer.core.sender;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 
 import com.github.agadar.nationstates.NationStates;
+import com.github.agadar.telegrammer.core.event.TelegramManagerListener;
+import com.github.agadar.telegrammer.core.history.TelegramHistory;
+import com.github.agadar.telegrammer.core.progress.ProgressSummary;
 import com.github.agadar.telegrammer.core.settings.TelegrammerSettings;
-import com.github.agadar.telegrammer.core.telegram.event.TelegramManagerListener;
-import com.github.agadar.telegrammer.core.telegram.history.TelegramHistory;
-import com.github.agadar.telegrammer.core.telegram.progress.ProgressSummary;
 
 import lombok.NonNull;
 

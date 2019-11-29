@@ -1,4 +1,4 @@
-package com.github.agadar.telegrammer.core.telegram.progress;
+package com.github.agadar.telegrammer.core.progress;
 
 import lombok.Builder;
 import lombok.Getter;

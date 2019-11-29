@@ -2,9 +2,9 @@ package com.github.agadar.telegrammer.core.settings;
 
 import static com.github.agadar.telegrammer.core.settings.TelegrammerSettingsKeys.*;
 
+import com.github.agadar.telegrammer.core.misc.TelegramType;
 import com.github.agadar.telegrammer.core.recipients.listbuilder.RecipientsListBuilder;
 import com.github.agadar.telegrammer.core.recipients.translator.RecipientsListBuilderTranslator;
-import com.github.agadar.telegrammer.core.telegram.TelegramType;
 
 import lombok.NonNull;
 

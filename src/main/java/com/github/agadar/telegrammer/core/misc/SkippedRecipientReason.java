@@ -1,4 +1,4 @@
-package com.github.agadar.telegrammer.core.telegram;
+package com.github.agadar.telegrammer.core.misc;
 
 /**
  * Enum for reasons why the recipient was skipped.

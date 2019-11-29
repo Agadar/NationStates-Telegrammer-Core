@@ -8,7 +8,8 @@ import org.junit.Test;
 
 import com.github.agadar.nationstates.domain.common.happening.Happening;
 import com.github.agadar.nationstates.enumerator.RegionTag;
-import com.github.agadar.telegrammer.core.util.StringFunctions.KeyWord;
+import com.github.agadar.telegrammer.core.misc.StringFunctions;
+import com.github.agadar.telegrammer.core.misc.StringFunctions.KeyWord;
 
 /**
  * 

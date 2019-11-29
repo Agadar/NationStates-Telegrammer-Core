@@ -1,4 +1,4 @@
-package com.github.agadar.telegrammer.core.telegram.sender;
+package com.github.agadar.telegrammer.core.sender;
 
 import java.util.Collection;
 import java.util.function.Predicate;
@@ -7,17 +7,17 @@ import com.github.agadar.nationstates.NationStates;
 import com.github.agadar.nationstates.event.TelegramSentEvent;
 import com.github.agadar.nationstates.event.TelegramSentListener;
 import com.github.agadar.nationstates.shard.NationShard;
+import com.github.agadar.telegrammer.core.event.NoRecipientsFoundEvent;
+import com.github.agadar.telegrammer.core.event.RecipientRemovedEvent;
+import com.github.agadar.telegrammer.core.event.RecipientsRefreshedEvent;
+import com.github.agadar.telegrammer.core.event.StoppedSendingEvent;
+import com.github.agadar.telegrammer.core.event.TelegramManagerListener;
+import com.github.agadar.telegrammer.core.history.TelegramHistory;
+import com.github.agadar.telegrammer.core.misc.SkippedRecipientReason;
+import com.github.agadar.telegrammer.core.misc.TelegramType;
+import com.github.agadar.telegrammer.core.progress.ProgressSummarizer;
+import com.github.agadar.telegrammer.core.progress.ProgressSummary;
 import com.github.agadar.telegrammer.core.settings.TelegrammerSettings;
-import com.github.agadar.telegrammer.core.telegram.SkippedRecipientReason;
-import com.github.agadar.telegrammer.core.telegram.TelegramType;
-import com.github.agadar.telegrammer.core.telegram.event.NoRecipientsFoundEvent;
-import com.github.agadar.telegrammer.core.telegram.event.RecipientRemovedEvent;
-import com.github.agadar.telegrammer.core.telegram.event.RecipientsRefreshedEvent;
-import com.github.agadar.telegrammer.core.telegram.event.StoppedSendingEvent;
-import com.github.agadar.telegrammer.core.telegram.event.TelegramManagerListener;
-import com.github.agadar.telegrammer.core.telegram.history.TelegramHistory;
-import com.github.agadar.telegrammer.core.telegram.progress.ProgressSummarizer;
-import com.github.agadar.telegrammer.core.telegram.progress.ProgressSummary;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

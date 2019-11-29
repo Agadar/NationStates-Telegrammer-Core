@@ -6,8 +6,8 @@ import com.github.agadar.nationstates.NationStates;
 import com.github.agadar.nationstates.enumerator.HappeningsFilter;
 import com.github.agadar.nationstates.exception.NationStatesAPIException;
 import com.github.agadar.nationstates.shard.WorldShard;
+import com.github.agadar.telegrammer.core.misc.StringFunctions;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterType;
-import com.github.agadar.telegrammer.core.util.StringFunctions;
 
 import lombok.NonNull;
 

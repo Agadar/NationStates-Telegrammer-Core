@@ -3,6 +3,7 @@ package com.github.agadar.telegrammer.core.recipients.translator;
 import java.util.Collection;
 import java.util.HashSet;
 
+import com.github.agadar.telegrammer.core.misc.StringFunctions;
 import com.github.agadar.telegrammer.core.recipients.filter.NullRecipientsFilter;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsContainingKeywordsFilter;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilter;
@@ -10,7 +11,6 @@ import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterActi
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterType;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterWithProvider;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsWithNumbersFilter;
-import com.github.agadar.telegrammer.core.util.StringFunctions;
 
 import lombok.extern.slf4j.Slf4j;
 
