@@ -1,4 +1,4 @@
-package com.github.agadar.telegrammer.core.sender;
+package com.github.agadar.telegrammer.core.runnable;
 
 import java.util.Collection;
 import java.util.function.Predicate;
@@ -11,7 +11,7 @@ import com.github.agadar.telegrammer.core.event.NoRecipientsFoundEvent;
 import com.github.agadar.telegrammer.core.event.RecipientRemovedEvent;
 import com.github.agadar.telegrammer.core.event.RecipientsRefreshedEvent;
 import com.github.agadar.telegrammer.core.event.StoppedSendingEvent;
-import com.github.agadar.telegrammer.core.event.TelegramManagerListener;
+import com.github.agadar.telegrammer.core.event.TelegrammerListener;
 import com.github.agadar.telegrammer.core.history.TelegramHistory;
 import com.github.agadar.telegrammer.core.misc.SkippedRecipientReason;
 import com.github.agadar.telegrammer.core.misc.TelegramType;
@@ -32,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 
     private final ProgressSummarizer progressSummarizer = new ProgressSummarizer();
-    private final Collection<TelegramManagerListener> listeners;
+    private final Collection<TelegrammerListener> listeners;
     private final int noRecipientsFoundTimeOut;
     private final NationStates nationStates;
     private final TelegramHistory historyManager;

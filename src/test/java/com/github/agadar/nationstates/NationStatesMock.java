@@ -17,16 +17,7 @@ import com.github.agadar.nationstates.query.WorldAssemblyQuery;
 import com.github.agadar.nationstates.query.WorldQuery;
 import com.github.agadar.nationstates.shard.WorldShard;
 
-/**
- *
- * @author Agadar (https://github.com/Agadar/)
- */
 public class NationStatesMock implements NationStates {
-
-    @Override
-    public void setUserAgent(String userAgent) {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
 
     @Override
     public void doVersionCheck() {

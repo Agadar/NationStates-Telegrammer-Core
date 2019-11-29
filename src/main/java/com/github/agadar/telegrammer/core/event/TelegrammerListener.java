@@ -1,13 +1,14 @@
 package com.github.agadar.telegrammer.core.event;
 
 import com.github.agadar.nationstates.event.TelegramSentEvent;
+import com.github.agadar.telegrammer.core.Telegrammer;
 
 /**
- * Listener for TelegramManager events.
+ * Listener for {@link Telegrammer} events.
  *
  * @author Agadar (https://github.com/Agadar/)
  */
-public interface TelegramManagerListener {
+public interface TelegrammerListener {
 
     void handleTelegramSent(TelegramSentEvent event);
 
