@@ -111,7 +111,7 @@ public class Settings {
     /**
      * Gets the value of the setting with the specified key.
      * 
-     * @param <T>  The type of the setting value.
+     * @param      <T> The type of the setting value.
      * @param key  The unique name of the setting.
      * @param type The expected type of the setting value.
      * @return The setting value, else null if the setting does not exist or the
@@ -140,9 +140,10 @@ public class Settings {
         try (InputStream input = new FileInputStream(propertiesFileName)) {
             properties.load(input);
             loadProperties(properties);
+            log.info("Loaded settings from file '{}'", propertiesFileName);
 
         } catch (FileNotFoundException ex) {
-            log.info("Couldn't read properties file '{}' as it does not (yet) exist", propertiesFileName);
+            log.info("Couldn't load properties file '{}': it does not (yet) exist", propertiesFileName);
 
         } catch (IOException ex) {
             String errorMessage = String.format("An error occured while loading properties from file '%s'",
@@ -159,6 +160,7 @@ public class Settings {
 
         try (OutputStream output = new FileOutputStream(this.propertiesFileName)) {
             properties.store(output, null);
+            log.info("Saved settings to file '{}'", propertiesFileName);
 
         } catch (IOException ex) {
             String errorMessage = String.format("An error occured while saving properties to file '%s'",
