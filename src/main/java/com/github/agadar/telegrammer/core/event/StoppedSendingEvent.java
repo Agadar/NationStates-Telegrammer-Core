@@ -2,12 +2,13 @@ package com.github.agadar.telegrammer.core.event;
 
 import java.util.EventObject;
 
+import com.github.agadar.telegrammer.core.Telegrammer;
 import com.github.agadar.telegrammer.core.progress.ProgressSummary;
 
 import lombok.Getter;
 
 /**
- * Fired by TelegramManager when it's stopped sending telegrams.
+ * Fired by {@link Telegrammer} when it's stopped sending telegrams.
  *
  * @author Agadar (https://github.com/Agadar/)
  */

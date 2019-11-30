@@ -9,6 +9,7 @@ import com.github.agadar.nationstates.NationStates;
 import com.github.agadar.nationstates.exception.NationStatesAPIException;
 import com.github.agadar.telegrammer.core.history.TelegramHistory;
 import com.github.agadar.telegrammer.core.history.TelegramHistoryImpl;
+import com.github.agadar.telegrammer.core.misc.TelegrammerState;
 import com.github.agadar.telegrammer.core.progress.ProgressSummary;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilter;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterAction;
@@ -22,7 +23,9 @@ import com.github.agadar.telegrammer.core.runnable.SendTelegramsRunnable;
 import com.github.agadar.telegrammer.core.settings.Settings;
 import com.github.agadar.telegrammer.core.settings.CoreSettings;
 
+import lombok.Getter;
 import lombok.NonNull;
+import lombok.Setter;
 
 /**
  * The default starting point for consumers of this telegrammer library for the
@@ -35,11 +38,16 @@ public class DefaultTelegrammerImpl implements Telegrammer {
     private final int noAddresseesFoundTimeout = 60000;
     private final Collection<TelegrammerListener> listeners = new HashSet<>();
 
+    @Getter
     private final NationStates nationStates;
     private final TelegramHistory telegramHistory;
+    @Getter
     private final CoreSettings coreSettings;
     private final RecipientsFilterTranslator filterTranslator;
 
+    @Getter
+    @Setter
+    private TelegrammerState state = TelegrammerState.IDLE;
     private Thread telegramThread;
     private SendTelegramsRunnable sendTelegramsRunnable;
 
@@ -131,15 +139,4 @@ public class DefaultTelegrammerImpl implements Telegrammer {
             sendTelegramsRunnable = null;
         }
     }
-
-    @Override
-    public CoreSettings getTelegrammerCoreSettings() {
-        return coreSettings;
-    }
-
-    @Override
-    public NationStates getNationStates() {
-        return nationStates;
-    }
-
 }

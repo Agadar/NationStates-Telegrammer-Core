@@ -3,6 +3,7 @@ package com.github.agadar.telegrammer.core;
 import java.util.Collection;
 
 import com.github.agadar.nationstates.NationStates;
+import com.github.agadar.telegrammer.core.misc.TelegrammerState;
 import com.github.agadar.telegrammer.core.progress.ProgressSummary;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilter;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterAction;
@@ -60,7 +61,7 @@ public interface Telegrammer {
      * 
      * @return The telegrammer core specific settings.
      */
-    public CoreSettings getTelegrammerCoreSettings();
+    public CoreSettings getCoreSettings();
 
     /**
      * Gets the underlying NationStates component.
@@ -68,4 +69,18 @@ public interface Telegrammer {
      * @return The underlying NationStates component.
      */
     public NationStates getNationStates();
+
+    /**
+     * Gets the current state of the telegrammer library.
+     * 
+     * @return The current state of the telegrammer library.
+     */
+    public TelegrammerState getState();
+
+    /**
+     * Sets the current state of the telegrammer library.
+     * 
+     * @param state The new state.
+     */
+    public void setState(TelegrammerState state);
 }

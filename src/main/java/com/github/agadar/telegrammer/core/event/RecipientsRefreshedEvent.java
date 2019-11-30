@@ -4,13 +4,14 @@ import java.util.EventObject;
 import java.util.Map;
 
 import com.github.agadar.nationstates.exception.NationStatesAPIException;
+import com.github.agadar.telegrammer.core.Telegrammer;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilter;
 
 import lombok.Getter;
 
 /**
- * Published by TelegramManager when the recipients set is refreshed for the
- * next loop.
+ * Published by {@link Telegrammer} when the recipients set is refreshed for the
+ * next loop while queuing telegrams.
  *
  * @author Agadar (https://github.com/Agadar/)
  */

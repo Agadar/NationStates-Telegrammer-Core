@@ -2,11 +2,13 @@ package com.github.agadar.telegrammer.core.event;
 
 import java.util.EventObject;
 
+import com.github.agadar.telegrammer.core.Telegrammer;
+
 import lombok.Getter;
 
 /**
- * Fired by the TelegramManager when it is looping but did not find any valid
- * addressees to send the telegram to.
+ * Fired by the {@link Telegrammer} when it is looping to send telegrams but did
+ * not find any valid recipients to send the telegram to.
  *
  * @author Agadar (https://github.com/Agadar/)
  */

@@ -4,11 +4,12 @@ import lombok.Getter;
 
 import java.util.EventObject;
 
+import com.github.agadar.telegrammer.core.Telegrammer;
 import com.github.agadar.telegrammer.core.misc.SkippedRecipientReason;
 
 /**
- * Published by TelegramManager when a recipient was removed from the recipients
- * set.
+ * Published by {@link Telegrammer} when a recipient was removed from the
+ * recipients collection while queuing telegrams.
  *
  * @author Agadar (https://github.com/Agadar/)
  */
