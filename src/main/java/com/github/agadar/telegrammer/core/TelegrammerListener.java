@@ -3,10 +3,10 @@ package com.github.agadar.telegrammer.core;
 import com.github.agadar.nationstates.event.TelegramSentEvent;
 import com.github.agadar.telegrammer.core.event.NoRecipientsFoundEvent;
 import com.github.agadar.telegrammer.core.event.RecipientRemovedEvent;
-import com.github.agadar.telegrammer.core.event.RecipientsRefreshedEvent;
-import com.github.agadar.telegrammer.core.event.StartedCompilingRecipientsEvent;
+import com.github.agadar.telegrammer.core.event.FilterRemovedEvent;
+import com.github.agadar.telegrammer.core.event.FinishedRefreshingRecipientsEvent;
+import com.github.agadar.telegrammer.core.event.StartedRefreshingRecipientsEvent;
 import com.github.agadar.telegrammer.core.event.StartedSendingEvent;
-import com.github.agadar.telegrammer.core.event.StoppedCompilingRecipientsEvent;
 import com.github.agadar.telegrammer.core.event.StoppedSendingEvent;
 
 /**
@@ -16,9 +16,11 @@ import com.github.agadar.telegrammer.core.event.StoppedSendingEvent;
  */
 public interface TelegrammerListener {
 
-    void handleStartedCompilingRecipients(StartedCompilingRecipientsEvent event);
+    void handleStartedRefreshingRecipients(StartedRefreshingRecipientsEvent event);
 
-    void handleFinishedCompilingRecipients(StoppedCompilingRecipientsEvent event);
+    void handleFinishedRefreshingRecipients(FinishedRefreshingRecipientsEvent event);
+
+    void handleFilterRemoved(FilterRemovedEvent event);
 
     void handleStartedSending(StartedSendingEvent event);
 
@@ -28,7 +30,6 @@ public interface TelegrammerListener {
 
     void handleRecipientRemoved(RecipientRemovedEvent event);
 
-    void handleRecipientsRefreshed(RecipientsRefreshedEvent event);
-
     void handleStoppedSending(StoppedSendingEvent event);
+
 }

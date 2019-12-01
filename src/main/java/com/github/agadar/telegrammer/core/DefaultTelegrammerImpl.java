@@ -2,11 +2,19 @@ package com.github.agadar.telegrammer.core;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import com.github.agadar.nationstates.DefaultNationStatesImpl;
 import com.github.agadar.nationstates.NationStates;
 import com.github.agadar.nationstates.exception.NationStatesAPIException;
+import com.github.agadar.telegrammer.core.event.FilterRemovedEvent;
+import com.github.agadar.telegrammer.core.event.FinishedRefreshingRecipientsEvent;
+import com.github.agadar.telegrammer.core.event.StartedRefreshingRecipientsEvent;
+import com.github.agadar.telegrammer.core.event.StartedSendingEvent;
 import com.github.agadar.telegrammer.core.history.TelegramHistory;
 import com.github.agadar.telegrammer.core.history.TelegramHistoryImpl;
 import com.github.agadar.telegrammer.core.misc.TelegrammerState;
@@ -25,7 +33,7 @@ import com.github.agadar.telegrammer.core.settings.CoreSettings;
 
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * The default starting point for consumers of this telegrammer library for the
@@ -33,10 +41,13 @@ import lombok.Setter;
  *
  * @author Agadar (https://github.com/Agadar/)
  */
+@Slf4j
 public class DefaultTelegrammerImpl implements Telegrammer {
 
     private final int noAddresseesFoundTimeout = 60000;
     private final Collection<TelegrammerListener> listeners = new HashSet<>();
+    private final ExecutorService recipientsRefreshingExecutor = Executors.newSingleThreadExecutor();
+    private final ExecutorService senderExecutor = Executors.newSingleThreadExecutor();
 
     @Getter
     private final NationStates nationStates;
@@ -46,10 +57,9 @@ public class DefaultTelegrammerImpl implements Telegrammer {
     private final RecipientsFilterTranslator filterTranslator;
 
     @Getter
-    @Setter
-    private TelegrammerState state = TelegrammerState.IDLE;
-    private Thread telegramThread;
-    private SendTelegramsRunnable sendTelegramsRunnable;
+    private volatile TelegrammerState state = TelegrammerState.IDLE;
+    private volatile Future<Void> senderFuture;
+    private volatile SendTelegramsRunnable sendTelegramsRunnable;
 
     /**
      * Constructor.
@@ -85,14 +95,97 @@ public class DefaultTelegrammerImpl implements Telegrammer {
     }
 
     @Override
-    public RecipientsFilter createFilter(@NonNull RecipientsFilterType filterType,
+    public synchronized void addFilter(@NonNull RecipientsFilterType filterType,
             @NonNull RecipientsFilterAction filterAction,
             @NonNull Collection<String> input) {
-        return filterTranslator.toFilter(filterType, filterAction, input);
+
+        if (state != TelegrammerState.IDLE) {
+            log.warn("Can't add filters while telegrammer state is '{}'", state.name());
+            return;
+        }
+        state = TelegrammerState.REFRESHING_RECIPIENTS;
+        recipientsRefreshingExecutor.execute(() -> {
+            var startEvent = new StartedRefreshingRecipientsEvent(this, TelegrammerState.REFRESHING_RECIPIENTS);
+            synchronized (listeners) {
+                listeners.forEach(listener -> listener.handleStartedRefreshingRecipients(startEvent));
+            }
+
+            var filter = filterTranslator.toFilter(filterType, filterAction, input);
+            var failedFilters = new HashMap<RecipientsFilter, NationStatesAPIException>();
+            coreSettings.getFilters().addFilter(filter);
+            try {
+                filter.refreshFilter();
+            } catch (NationStatesAPIException ex) {
+                log.error("An error occured while refreshing a filter", ex);
+                failedFilters.put(filter, ex);
+            }
+            synchronized (this) {
+                state = TelegrammerState.IDLE;
+            }
+            var finishedEvent = new FinishedRefreshingRecipientsEvent(this, TelegrammerState.REFRESHING_RECIPIENTS,
+                    failedFilters);
+            synchronized (listeners) {
+                listeners.forEach(listener -> listener.handleFinishedRefreshingRecipients(finishedEvent));
+            }
+        });
     }
 
     @Override
-    public void startSending() {
+    public synchronized void removeFilterAtIndex(int index) {
+        if (state != TelegrammerState.IDLE) {
+            log.warn("Can't remove filters while telegrammer state is '{}'", state.name());
+            return;
+        }
+        int numberOfFilters = coreSettings.getFilters().getFilters().size();
+
+        if (index >= 0 && index < numberOfFilters) {
+            coreSettings.getFilters().removeFilterAt(index);
+
+        } else {
+            log.error("Can't remove filter at index {}: index is < 0 or >= {}", index, numberOfFilters);
+        }
+        var event = new FilterRemovedEvent(this, index);
+        synchronized (listeners) {
+            listeners.forEach(listener -> listener.handleFilterRemoved(event));
+        }
+    }
+
+    @Override
+    public synchronized void refreshFilters() {
+        if (state != TelegrammerState.IDLE) {
+            log.warn("Can't refresh filters while telegrammer state is '{}'", state.name());
+            return;
+        }
+        state = TelegrammerState.REFRESHING_RECIPIENTS;
+        recipientsRefreshingExecutor.execute(() -> {
+            var startEvent = new StartedRefreshingRecipientsEvent(this, TelegrammerState.REFRESHING_RECIPIENTS);
+            synchronized (listeners) {
+                listeners.forEach(listener -> listener.handleStartedRefreshingRecipients(startEvent));
+            }
+            var failedFilters = coreSettings.getFilters().refreshFilters();
+            synchronized (this) {
+                state = TelegrammerState.IDLE;
+            }
+            var finishedEvent = new FinishedRefreshingRecipientsEvent(this, TelegrammerState.REFRESHING_RECIPIENTS,
+                    failedFilters);
+            synchronized (listeners) {
+                listeners.forEach(listener -> listener.handleFinishedRefreshingRecipients(finishedEvent));
+            }
+        });
+
+    }
+
+    @Override
+    public synchronized void startSending() {
+        if (state != TelegrammerState.IDLE) {
+            log.warn("Can't start sending while telegrammer state is '{}'", state.name());
+            return;
+        }
+        coreSettings.setFromRegion(coreSettings.getFromRegion().trim());
+        coreSettings.setClientKey(removeWhiteSpaces(coreSettings.getClientKey()));
+        coreSettings.setTelegramId(removeWhiteSpaces(coreSettings.getTelegramId()));
+        coreSettings.setSecretKey(removeWhiteSpaces(coreSettings.getSecretKey()));
+        // TODO: Settings updated event.
 
         // Make sure all inputs are valid.
         if (coreSettings.getClientKey().isEmpty()) {
@@ -105,38 +198,53 @@ public class DefaultTelegrammerImpl implements Telegrammer {
             throw new IllegalArgumentException("Please supply a Secret Key!");
         }
 
-        // Check to make sure the thread is not already running to prevent
-        // synchronization issues.
-        if (telegramThread != null && telegramThread.isAlive()) {
-            throw new IllegalThreadStateException("Telegram thread already running!");
-        }
-
         // Make sure there is at least one recipient to send the telegram to.
         if (coreSettings.getFilters().getRecipients(coreSettings.getTelegramId()).isEmpty()) {
             throw new IllegalArgumentException("Please supply at least one recipient!");
         }
+        state = TelegrammerState.QUEUING_TELEGRAMS;
 
         // Update settings.
         coreSettings.savePropertiesFile();
 
+        var event = new StartedSendingEvent(this);
+        synchronized (listeners) {
+            listeners.forEach(listener -> listener.handleStartedSending(event));
+        }
+
         // Prepare the runnable.
         sendTelegramsRunnable = new SendTelegramsRunnable(listeners, noAddresseesFoundTimeout, nationStates,
                 telegramHistory, coreSettings);
-        telegramThread = new Thread(sendTelegramsRunnable);
-        telegramThread.start();
+        senderFuture = senderExecutor.submit(sendTelegramsRunnable, null);
     }
 
     @Override
     public ProgressSummary getProgressSummary() {
-        return sendTelegramsRunnable.getProgressSummary();
+        if (sendTelegramsRunnable != null) {
+            return sendTelegramsRunnable.getProgressSummary();
+        }
+        return ProgressSummary.builder()
+                .disconnectOrOtherReason(0)
+                .queuedSucces(0)
+                .recipientDidntExist(0)
+                .recipientIsBlocking(0).build();
     }
 
     @Override
-    public void stopSending() {
-        if (telegramThread != null) {
-            telegramThread.interrupt();
-            telegramThread = null;
+    public synchronized void stopSending() {
+        if (state != TelegrammerState.QUEUING_TELEGRAMS) {
+            log.warn("Can't stop sending while telegrammer state is '{}'", state.name());
+            return;
+        }
+        if (senderFuture != null) {
+            senderFuture.cancel(true);
+            senderFuture = null;
             sendTelegramsRunnable = null;
         }
+        state = TelegrammerState.IDLE;
+    }
+
+    private String removeWhiteSpaces(String target) {
+        return target.replace(" ", "");
     }
 }

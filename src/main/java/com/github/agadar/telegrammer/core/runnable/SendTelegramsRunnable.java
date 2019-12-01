@@ -10,11 +10,13 @@ import com.github.agadar.nationstates.shard.NationShard;
 import com.github.agadar.telegrammer.core.TelegrammerListener;
 import com.github.agadar.telegrammer.core.event.NoRecipientsFoundEvent;
 import com.github.agadar.telegrammer.core.event.RecipientRemovedEvent;
-import com.github.agadar.telegrammer.core.event.RecipientsRefreshedEvent;
+import com.github.agadar.telegrammer.core.event.StartedRefreshingRecipientsEvent;
+import com.github.agadar.telegrammer.core.event.FinishedRefreshingRecipientsEvent;
 import com.github.agadar.telegrammer.core.event.StoppedSendingEvent;
 import com.github.agadar.telegrammer.core.history.TelegramHistory;
 import com.github.agadar.telegrammer.core.misc.SkippedRecipientReason;
 import com.github.agadar.telegrammer.core.misc.TelegramType;
+import com.github.agadar.telegrammer.core.misc.TelegrammerState;
 import com.github.agadar.telegrammer.core.progress.ProgressSummarizer;
 import com.github.agadar.telegrammer.core.progress.ProgressSummary;
 import com.github.agadar.telegrammer.core.settings.CoreSettings;
@@ -195,18 +197,17 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
      * Updates the recipients from the API.
      */
     private void updateRecipientsFromApi() {
-        var failedFilters = settings.getFilters().refreshFilters();
-
-        if (failedFilters.isEmpty()) {
-            log.info("Refreshed filters without failures");
-        } else {
-            log.warn("Failures occured while refreshing filters. Check error logs");
-        }
-        var refrevent = new RecipientsRefreshedEvent(this, failedFilters);
-
+        var startEvent = new StartedRefreshingRecipientsEvent(this, TelegrammerState.QUEUING_TELEGRAMS);
         synchronized (listeners) {
             listeners.stream().forEach((tsl) -> {
-                tsl.handleRecipientsRefreshed(refrevent);
+                tsl.handleStartedRefreshingRecipients(startEvent);
+            });
+        }
+        var failedFilters = settings.getFilters().refreshFilters();
+        var refrevent = new FinishedRefreshingRecipientsEvent(this, TelegrammerState.QUEUING_TELEGRAMS, failedFilters);
+        synchronized (listeners) {
+            listeners.stream().forEach((tsl) -> {
+                tsl.handleFinishedRefreshingRecipients(refrevent);
             });
         }
     }

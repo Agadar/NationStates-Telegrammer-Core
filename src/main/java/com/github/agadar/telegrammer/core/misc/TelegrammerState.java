@@ -8,6 +8,6 @@ package com.github.agadar.telegrammer.core.misc;
  */
 public enum TelegrammerState {
     IDLE,
-    COMPILING_RECIPIENTS,
+    REFRESHING_RECIPIENTS,
     QUEUING_TELEGRAMS;
 }

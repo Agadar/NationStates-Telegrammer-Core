@@ -82,7 +82,7 @@ public class Settings {
      * @return True if the setting is added, else false if a setting with the given
      *         name already exists.
      */
-    public boolean addSetting(@NonNull Setting<?> setting) {
+    public synchronized boolean addSetting(@NonNull Setting<?> setting) {
         if (!settings.containsKey(setting.getKey())) {
             settings.put(setting.getKey(), setting);
             return true;
@@ -99,7 +99,7 @@ public class Settings {
      * @return True if success, else false if the setting does not exist or the
      *         value is not of the setting's type.
      */
-    public boolean setValue(@NonNull String key, @NonNull Object value) {
+    public synchronized boolean setValue(@NonNull String key, @NonNull Object value) {
         var setting = settings.get(key);
         if (setting != null) {
             return setting.setValue(value);
@@ -117,7 +117,7 @@ public class Settings {
      * @return The setting value, else null if the setting does not exist or the
      *         setting value is not of the expected type.
      */
-    public <T> T getValue(@NonNull String key, @NonNull Class<T> type) {
+    public synchronized <T> T getValue(@NonNull String key, @NonNull Class<T> type) {
         var setting = settings.get(key);
         if (setting == null) {
             log.error("Couldn't get value of setting '{}': setting does not exist", key);
@@ -169,7 +169,7 @@ public class Settings {
         }
     }
 
-    private void loadProperties(Properties properties) {
+    private synchronized void loadProperties(Properties properties) {
         settings.values().forEach(setting -> {
             var value = properties.getProperty(setting.getKey());
             if (value != null) {
@@ -178,7 +178,7 @@ public class Settings {
         });
     }
 
-    private Properties createProperties() {
+    private synchronized Properties createProperties() {
         var properties = new Properties();
         settings.values().forEach(setting -> {
             properties.setProperty(setting.getKey(), setting.getValueAsString());

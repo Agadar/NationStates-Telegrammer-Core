@@ -5,7 +5,6 @@ import java.util.Collection;
 import com.github.agadar.nationstates.NationStates;
 import com.github.agadar.telegrammer.core.misc.TelegrammerState;
 import com.github.agadar.telegrammer.core.progress.ProgressSummary;
-import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilter;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterAction;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterType;
 import com.github.agadar.telegrammer.core.settings.CoreSettings;
@@ -28,16 +27,27 @@ public interface Telegrammer {
     public void addListeners(@NonNull TelegrammerListener... listeners);
 
     /**
-     * Creates a new {@link RecipientsFilter}.
+     * Adds a filter according to the specified parameters.
      * 
      * @param filterType   Type of the filter.
      * @param filterAction Action of the filter.
      * @param input        Arguments for the filter.
-     * @return The created recipients filter.
      */
-    public RecipientsFilter createFilter(@NonNull RecipientsFilterType filterType,
+    public void addFilter(@NonNull RecipientsFilterType filterType,
             @NonNull RecipientsFilterAction filterAction,
             @NonNull Collection<String> input);
+
+    /**
+     * Removes the filter at the specified index.
+     * 
+     * @param index The index of the filter to remove.
+     */
+    public void removeFilterAtIndex(int index);
+
+    /**
+     * Refreshes the filters.
+     */
+    public void refreshFilters();
 
     /**
      * Starts sending the telegram to the recipients.
@@ -76,11 +86,4 @@ public interface Telegrammer {
      * @return The current state of the telegrammer library.
      */
     public TelegrammerState getState();
-
-    /**
-     * Sets the current state of the telegrammer library.
-     * 
-     * @param state The new state.
-     */
-    public void setState(TelegrammerState state);
 }
