@@ -95,6 +95,13 @@ public class DefaultTelegrammerImpl implements Telegrammer {
     }
 
     @Override
+    public void removeListener(@NonNull TelegrammerListener... listeners) {
+        synchronized (this.listeners) {
+            this.listeners.removeAll(Arrays.asList(listeners));
+        }
+    }
+
+    @Override
     public synchronized void addFilter(@NonNull RecipientsFilterType filterType,
             @NonNull RecipientsFilterAction filterAction,
             @NonNull Collection<String> input) {
