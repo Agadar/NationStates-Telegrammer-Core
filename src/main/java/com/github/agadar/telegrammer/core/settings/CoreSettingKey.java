@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public enum CoreSettingsKeys {
+public enum CoreSettingKey {
 
     CLIENT_KEY("clientKey"),
     FROM_REGION("fromRegion"),

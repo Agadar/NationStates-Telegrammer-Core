@@ -26,13 +26,14 @@ public class Settings {
     private final String propertiesFileName;
 
     /**
-     * Constructor.
+     * Constructor. Also registers a shutdown hook to save the properties file.
      * 
      * @param propertiesFileName The name of the file to retrieve the properties
      *                           from.
      */
     public Settings(String propertiesFileName) {
         this.propertiesFileName = propertiesFileName;
+        Runtime.getRuntime().addShutdownHook(new Thread(this::savePropertiesFile));
     }
 
     /**

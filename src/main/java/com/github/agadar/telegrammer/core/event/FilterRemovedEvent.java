@@ -1,6 +1,8 @@
 package com.github.agadar.telegrammer.core.event;
 
 import java.util.EventObject;
+import java.util.List;
+
 import com.github.agadar.telegrammer.core.Telegrammer;
 import lombok.Getter;
 
@@ -15,14 +17,21 @@ public class FilterRemovedEvent extends EventObject {
     private static final long serialVersionUID = 1L;
 
     /**
-     * The index of the filter that has been removed.
+     * The resulting filters after removing one or more.
      */
     @Getter
-    private final int index;
+    private final List<String> filters;
 
-    public FilterRemovedEvent(Object source, int index) {
+    /**
+     * The number of recipients.
+     */
+    @Getter
+    private final int numberOfRecipients;
+
+    public FilterRemovedEvent(Object source, List<String> filters, int numberOfRecipients) {
         super(source);
-        this.index = index;
+        this.filters = filters;
+        this.numberOfRecipients = numberOfRecipients;
     }
 
 }

@@ -2,10 +2,9 @@ package com.github.agadar.telegrammer.core;
 
 import java.util.Collection;
 
-import com.github.agadar.telegrammer.core.progress.ProgressSummary;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterAction;
 import com.github.agadar.telegrammer.core.recipients.filter.RecipientsFilterType;
-import com.github.agadar.telegrammer.core.settings.CoreSettings;
+import com.github.agadar.telegrammer.core.settings.CoreSettingKey;
 
 import lombok.NonNull;
 
@@ -30,6 +29,14 @@ public interface Telegrammer {
      * @param listeners The listener to unregister.
      */
     public void removeListener(@NonNull TelegrammerListener... listeners);
+
+    /**
+     * Updates a core setting.
+     * 
+     * @param key   The key of the setting to update.
+     * @param value The value to update.
+     */
+    public void updateSetting(@NonNull CoreSettingKey key, @NonNull Object value);
 
     /**
      * Adds a filter according to the specified parameters.
@@ -60,21 +67,7 @@ public interface Telegrammer {
     public void startSending();
 
     /**
-     * Gets a summary of the current telegram queuing progress.
-     * 
-     * @return A summary of the current telegram queuing progress.
-     */
-    public ProgressSummary getProgressSummary();
-
-    /**
      * Stops sending the telegram to the recipients.
      */
     public void stopSending();
-
-    /**
-     * Gets the telegrammer core specific settings.
-     * 
-     * @return The telegrammer core specific settings.
-     */
-    public CoreSettings getCoreSettings();
 }
