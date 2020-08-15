@@ -3,8 +3,6 @@ package com.github.agadar.telegrammer.core.regiondumpaccess;
 import java.util.Collection;
 import java.util.Set;
 
-import com.github.agadar.telegrammer.core.regiondumpaccess.RegionDumpAccess;
-
 /**
  *
  * @author Agadar (https://github.com/Agadar/)
