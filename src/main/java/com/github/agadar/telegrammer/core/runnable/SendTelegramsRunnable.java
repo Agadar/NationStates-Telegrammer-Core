@@ -2,12 +2,15 @@ package com.github.agadar.telegrammer.core.runnable;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.github.agadar.nationstates.NationStates;
+import com.github.agadar.nationstates.domain.nation.Nation;
 import com.github.agadar.nationstates.event.TelegramSentEvent;
 import com.github.agadar.nationstates.event.TelegramSentListener;
+import com.github.agadar.nationstates.exception.NationStatesResourceNotFoundException;
 import com.github.agadar.nationstates.shard.NationShard;
 import com.github.agadar.telegrammer.core.TelegrammerListener;
 import static com.github.agadar.telegrammer.core.settings.CoreSettingKey.*;
@@ -25,7 +28,6 @@ import com.github.agadar.telegrammer.core.progress.ProgressSummary;
 import com.github.agadar.telegrammer.core.recipients.listbuilder.RecipientsListBuilder;
 import com.github.agadar.telegrammer.core.settings.Settings;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -34,17 +36,29 @@ import lombok.extern.slf4j.Slf4j;
  * @author Agadar (https://github.com/Agadar/)
  */
 @Slf4j
-@RequiredArgsConstructor
 public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 
-    private final ProgressSummarizer progressSummarizer = new ProgressSummarizer();
+    private final ProgressSummarizer progressSummarizer;
     private final Collection<TelegrammerListener> listeners;
     private final int noRecipientsFoundTimeOut;
     private final NationStates nationStates;
     private final TelegramHistory historyManager;
     private final Settings settings;
+    private final Predicate<String> canReceiveTelegramPredicate;
 
     private String[] recipients;
+
+    public SendTelegramsRunnable(Collection<TelegrammerListener> listeners, int noAddresseesFoundTimeout,
+            NationStates nationStates, TelegramHistory historyManager, Settings settings) {
+
+        this.listeners = listeners;
+        this.noRecipientsFoundTimeOut = noAddresseesFoundTimeout;
+        this.nationStates = nationStates;
+        this.historyManager = historyManager;
+        this.settings = settings;
+        progressSummarizer = new ProgressSummarizer();
+        canReceiveTelegramPredicate = getCanReceiveTelegramPredicate();
+    }
 
     @Override
     public void run() {
@@ -81,13 +95,18 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
         // called before this and the Telegram Id didn't change in the meantime,
         // so there is no need to make sure the entry for the current Telegram Id
         // changed.
-        event.getException().ifPresentOrElse(exception -> {
-            progressSummarizer.registerFailure(event.getRecipient(), null);
-        }, () -> {
-            String telegramId = settings.getValue(TELEGRAM_ID.getKey(), String.class);
-            historyManager.saveHistory(telegramId, event.getRecipient(), SkippedRecipientReason.PREVIOUS_RECIPIENT);
+
+        SkippedRecipientReason skippedReason;
+
+        if (event.getException().isPresent()) {
+            skippedReason = progressSummarizer.registerFailure(event.getRecipient(), event.getException().get());
+        } else {
+            skippedReason = SkippedRecipientReason.PREVIOUS_RECIPIENT;
             progressSummarizer.registerSucces(event.getRecipient());
-        });
+        }
+
+        String telegramId = settings.getValue(TELEGRAM_ID.getKey(), String.class);
+        historyManager.saveHistory(telegramId, event.getRecipient(), skippedReason);
 
         listeners.stream().forEach((tsl) -> {
             tsl.handleTelegramSent(event);
@@ -105,52 +124,21 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
     }
 
     private void performTelegramSendingBehavior() {
-        var telegramType = settings.getValue(TELEGRAM_TYPE.getKey(), TelegramType.class);
-        if (telegramType == TelegramType.NORMAL) {
-            sendNormalTelegram();
-        } else {
-            sendSpecialTelegram();
-        }
-    }
-
-    private void sendNormalTelegram() {
         if (settings.getValue(UPDATE_AFTER_EVERY_TELEGRAM.getKey(), Boolean.class)) {
-            sendNormalTelegramsAndUpdateRecipientsAfterEveryTelegram();
+            sendTelegramsAndUpdateRecipientsAfterEveryTelegram();
         } else {
-            sendTelegram(recipients);
+            sendTelegrams();
         }
     }
 
-    private void sendNormalTelegramsAndUpdateRecipientsAfterEveryTelegram() {
+    private void sendTelegramsAndUpdateRecipientsAfterEveryTelegram() {
         while (recipients.length > 0 && !Thread.currentThread().isInterrupted()) {
-            sendTelegram(recipients[0]);
-
-            if (Thread.currentThread().isInterrupted()) {
-                break;
-            }
-            updateRecipientsFromApi();
-            recipients = getRecipients();
-        }
-    }
-
-    private void sendSpecialTelegram() {
-        var canReceivePredicate = getCanReceiveTelegramPredicate();
-
-        if (settings.getValue(UPDATE_AFTER_EVERY_TELEGRAM.getKey(), Boolean.class)) {
-            sendSpecialTelegramsAndUpdateRecipientsAfterEveryTelegram(canReceivePredicate);
-        } else {
-            sendSpecialTelegram(canReceivePredicate);
-        }
-    }
-
-    private void sendSpecialTelegramsAndUpdateRecipientsAfterEveryTelegram(Predicate<String> canReceivePredicate) {
-        while (recipients.length > 0 && !Thread.currentThread().isInterrupted()) {
-            int index = getIndexOfNextRecipientThatCanReceive(canReceivePredicate, 0);
+            int index = getIndexOfNextRecipientThatCanReceive(0);
 
             if (Thread.currentThread().isInterrupted() || index == -1) {
                 break;
             }
-            sendTelegram(recipients[index]);
+            executeTelegramQuery(recipients[index]);
 
             if (Thread.currentThread().isInterrupted()) {
                 break;
@@ -160,26 +148,26 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
         }
     }
 
-    private void sendSpecialTelegram(Predicate<String> canReceivePredicate) {
+    private void sendTelegrams() {
         int index = 0;
-        while ((index = getIndexOfNextRecipientThatCanReceive(canReceivePredicate, index)) != -1) {
+        while ((index = getIndexOfNextRecipientThatCanReceive(index)) != -1) {
             if (Thread.currentThread().isInterrupted()) {
                 break;
             }
-            sendTelegram(recipients[index++]);
+            executeTelegramQuery(recipients[index++]);
         }
     }
 
     private void performNoRecipientsFoundBehavior() throws InterruptedException {
         var event = new NoRecipientsFoundEvent(this, noRecipientsFoundTimeOut);
-        log.info("No recipients were found. Sleeping for {} seconds before refreshing recipients again",
-                event.getTimeOut() / 1000);
+        log.info("No recipients were found.");
 
         listeners.stream().forEach((tsl) -> {
             tsl.handleNoRecipientsFound(event);
         });
 
         if (settings.getValue(RUN_INDEFINITELY.getKey(), Boolean.class)) {
+            log.info("Sleeping for {} seconds before refreshing recipients", noRecipientsFoundTimeOut / 1000);
             Thread.sleep(noRecipientsFoundTimeOut);
             updateRecipientsFromApi();
         }
@@ -207,7 +195,7 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
         });
     }
 
-    private void sendTelegram(String... recipients) {
+    private void executeTelegramQuery(String... recipients) {
         String clientKey = settings.getValue(CLIENT_KEY.getKey(), String.class);
         String telegramId = settings.getValue(TELEGRAM_ID.getKey(), String.class);
         String secretKey = settings.getValue(SECRET_KEY.getKey(), String.class);
@@ -219,74 +207,10 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
         query.execute(null);
     }
 
-    private boolean canReceiveRecruitmentTelegrams(String recipient) {
-        try {
-            var n = nationStates.getNation(recipient).shards(NationShard.CAN_RECEIVE_RECRUITMENT_TELEGRAMS)
-                    .canReceiveTelegramFromRegion(settings.getValue(FROM_REGION.getKey(), String.class)).execute();
-            var reason = (n == null) ? SkippedRecipientReason.NOT_FOUND
-                    : !n.isCanReceiveRecruitmentTelegrams() ? SkippedRecipientReason.BLOCKING_RECRUITMENT : null;
-            return canReceiveXTelegrams(reason, recipient);
-        } catch (Exception ex) {
-            log.error("An error occured while checking whether a recipient can receive the telegram", ex);
-            return true;
-        }
-    }
-
-    private boolean canReceiveCampaignTelegrams(String recipient) {
-        try {
-            var n = nationStates.getNation(recipient).shards(NationShard.CAN_RECEIVE_CAMPAIGN_TELEGRAMS)
-                    .canReceiveTelegramFromRegion(settings.getValue(FROM_REGION.getKey(), String.class)).execute();
-            var reason = (n == null) ? SkippedRecipientReason.NOT_FOUND
-                    : !n.isCanReceiveCampaignTelegrams() ? SkippedRecipientReason.BLOCKING_CAMPAIGN : null;
-            return canReceiveXTelegrams(reason, recipient);
-        } catch (Exception ex) {
-            log.error("An error occured while checking whether a recipient can receive the telegram", ex);
-            return true;
-        }
-    }
-
-    private boolean canReceiveXTelegrams(SkippedRecipientReason reason, String recipient) {
-        if (reason != null) {
-            progressSummarizer.registerFailure(recipient, reason);
-            historyManager.saveHistory(settings.getValue(TELEGRAM_ID.getKey(), String.class), recipient, reason);
-            var event = new RecipientRemovedEvent(this, recipient, reason);
-            log.info("Skipping recipient '{}' for the following reason: {}", recipient, reason);
-
-            listeners.stream().forEach((tsl) -> {
-                tsl.handleRecipientRemoved(event);
-            });
-            return false;
-        }
-        return true;
-    }
-
-    private Predicate<String> getCanReceiveTelegramPredicate() {
-        switch (settings.getValue(TELEGRAM_TYPE.getKey(), TelegramType.class)) {
-            case RECRUITMENT:
-                return this::canReceiveRecruitmentTelegrams;
-            case CAMPAIGN:
-                return this::canReceiveCampaignTelegrams;
-            default:
-                return recipient -> true;
-        }
-    }
-
-    /**
-     * Gets the index of the next recipient in recipientsArray that can receive a
-     * telegram.
-     * 
-     * @param canReceiveTelegramPredicate
-     * @param startingIndex
-     * @return -1 If none was found or the thread was interrupted, otherwise an
-     *         index < recipientsArray length.
-     */
-    private int getIndexOfNextRecipientThatCanReceive(Predicate<String> canReceiveTelegramPredicate,
-            int startingIndex) {
-
+    private int getIndexOfNextRecipientThatCanReceive(int startingIndex) {
         if (startingIndex >= recipients.length || Thread.currentThread().isInterrupted()) {
             return -1;
         }
-
         while (!canReceiveTelegramPredicate.test(recipients[startingIndex])) {
             startingIndex++;
 
@@ -310,7 +234,51 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
 
     private List<String> stringifyFilters() {
         return settings.getValue(FILTERS.getKey(), RecipientsListBuilder.class).getFilters().stream()
-                .map(filter -> filter.toString())
-                .collect(Collectors.toList());
+                .map(filter -> filter.toString()).collect(Collectors.toList());
+    }
+
+    private Predicate<String> getCanReceiveTelegramPredicate() {
+        switch (settings.getValue(TELEGRAM_TYPE.getKey(), TelegramType.class)) {
+        case RECRUITMENT:
+            return recipient -> canReceiveSpecialTelegram(NationShard.CAN_RECEIVE_RECRUITMENT_TELEGRAMS, recipient,
+                    nation -> !nation.isCanReceiveRecruitmentTelegrams() ? SkippedRecipientReason.BLOCKING_RECRUITMENT
+                            : null);
+        case CAMPAIGN:
+            return recipient -> canReceiveSpecialTelegram(NationShard.CAN_RECEIVE_CAMPAIGN_TELEGRAMS, recipient,
+                    nation -> !nation.isCanReceiveCampaignTelegrams() ? SkippedRecipientReason.BLOCKING_CAMPAIGN
+                            : null);
+        default:
+            return recipient -> true; // TODO: Normal telegrams should also be checked with a simple nation name
+                                      // query.
+        }
+    }
+
+    private boolean canReceiveSpecialTelegram(NationShard canReceiveTelegramShard, String recipient,
+            Function<Nation, SkippedRecipientReason> canReceive) {
+        SkippedRecipientReason skippedReason = null;
+        try {
+            var nation = nationStates.getNation(recipient).shards(canReceiveTelegramShard)
+                    .canReceiveTelegramFromRegion(settings.getValue(FROM_REGION.getKey(), String.class)).execute();
+            skippedReason = canReceive.apply(nation);
+        } catch (NationStatesResourceNotFoundException ex) {
+            skippedReason = SkippedRecipientReason.NOT_FOUND;
+
+        } catch (Exception ex) {
+            log.error("An error occured while checking whether a recipient can receive the telegram", ex);
+            skippedReason = SkippedRecipientReason.ERROR;
+        }
+
+        if (skippedReason != null) {
+            progressSummarizer.registerFailure(recipient, skippedReason);
+            historyManager.saveHistory(settings.getValue(TELEGRAM_ID.getKey(), String.class), recipient, skippedReason);
+            var event = new RecipientRemovedEvent(this, recipient, skippedReason);
+            log.info("Skipping recipient '{}' for the following reason: {}", recipient, skippedReason);
+
+            listeners.stream().forEach((tsl) -> {
+                tsl.handleRecipientRemoved(event);
+            });
+            return false;
+        }
+        return true;
     }
 }

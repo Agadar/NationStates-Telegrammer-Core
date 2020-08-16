@@ -45,8 +45,12 @@ public class TelegramHistoryImpl implements TelegramHistory {
     }
 
     @Override
-    public boolean saveHistory(@NonNull String telegramId, @NonNull String recipient,
-            @NonNull SkippedRecipientReason reason) {
+    public boolean saveHistory(@NonNull String telegramId, @NonNull String recipient, @NonNull SkippedRecipientReason reason) {
+        
+        if (reason == SkippedRecipientReason.ERROR) {
+            return false;   // We're not interested in saving errors, because we want to be able to retry sending the telegram.
+        }
+        
         // If the history is null, instantiate it.
         if (history == null) {
             history = new HashMap<>();

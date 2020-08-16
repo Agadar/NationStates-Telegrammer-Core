@@ -3,6 +3,7 @@ package com.github.agadar.telegrammer.core.progress;
 import java.util.Collection;
 import java.util.HashSet;
 
+import com.github.agadar.nationstates.exception.NationStatesResourceNotFoundException;
 import com.github.agadar.telegrammer.core.misc.SkippedRecipientReason;
 
 import lombok.NonNull;
@@ -26,29 +27,19 @@ public class ProgressSummarizer {
      * @param recipient The recipient to whom a telegram was successfully queued.
      */
     public void registerSucces(@NonNull String recipient) {
+        clearRecipientFromCollections(recipient);
         queuedSucces.add(recipient);
-        recipientDidntExist.remove(recipient);
-        recipientIsBlocking.remove(recipient);
-        disconnectOrOtherReason.remove(recipient);
     }
-
+    
     /**
      * Registers the failed queuing of a telegram to the recipient.
      * 
      * @param recipient The recipient to whom a telegram failed to be queued.
      * @param reason    The reason why queuing failed.
      */
-    public void registerFailure(@NonNull String recipient, SkippedRecipientReason reason) {
-
-        if (queuedSucces.contains(recipient)) {
-            return;
-        }
-
-        if (reason == null) {
-            disconnectOrOtherReason.add(recipient);
-            return;
-        }
-
+    public void registerFailure(@NonNull String recipient, @NonNull SkippedRecipientReason reason) {
+        clearRecipientFromCollections(recipient);
+        
         switch (reason) {
             case BLOCKING_RECRUITMENT:
             case BLOCKING_CAMPAIGN:
@@ -58,8 +49,27 @@ public class ProgressSummarizer {
                 recipientDidntExist.add(recipient);
                 break;
             default:
+                disconnectOrOtherReason.add(recipient);
                 break;
         }
+    }
+    
+    /**
+     * Registers the failed queuing of a telegram to the recipient.
+     * 
+     * @param recipient The recipient to whom a telegram failed to be queued.
+     * @param reason    The exception that caused the failure.
+     * @return          The reason why the telegram failed.
+     */
+    public SkippedRecipientReason registerFailure(@NonNull String recipient, @NonNull Exception exception) {
+        clearRecipientFromCollections(recipient);
+        
+        if (exception instanceof NationStatesResourceNotFoundException) {
+            recipientDidntExist.add(recipient);
+            return SkippedRecipientReason.NOT_FOUND;
+        }
+        disconnectOrOtherReason.add(recipient);
+        return SkippedRecipientReason.ERROR;
     }
 
     /**
@@ -74,5 +84,12 @@ public class ProgressSummarizer {
                 .recipientDidntExist(recipientDidntExist.size())
                 .recipientIsBlocking(recipientIsBlocking.size())
                 .build();
+    }
+    
+    private void clearRecipientFromCollections(String recipient) {
+        queuedSucces.remove(recipient);
+        recipientDidntExist.remove(recipient);
+        recipientIsBlocking.remove(recipient);
+        disconnectOrOtherReason.remove(recipient);
     }
 }

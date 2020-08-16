@@ -246,8 +246,7 @@ public class DefaultTelegrammerImpl implements Telegrammer {
         }
 
         // Prepare the runnable.
-        sendTelegramsRunnable = new SendTelegramsRunnable(listeners, noAddresseesFoundTimeout, nationStates,
-                telegramHistory, settings);
+        sendTelegramsRunnable = new SendTelegramsRunnable(listeners, noAddresseesFoundTimeout, nationStates, telegramHistory, settings);
         senderFuture = senderExecutor.submit(sendTelegramsRunnable, null);
     }
 

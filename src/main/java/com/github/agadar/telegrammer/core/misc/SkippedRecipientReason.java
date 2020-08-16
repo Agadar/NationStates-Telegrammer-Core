@@ -21,7 +21,11 @@ public enum SkippedRecipientReason {
     /**
      * The recipient was not found or doesn't exist.
      */
-    NOT_FOUND("recipient was not found or doesn't exist");
+    NOT_FOUND("recipient was not found or doesn't exist"),
+    /**
+     * An error occurred.
+     */
+    ERROR("an error occurred");
 
     // Explanation.
     private final String Text;
