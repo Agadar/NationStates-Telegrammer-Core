@@ -1,23 +1,23 @@
 package com.github.agadar.telegrammer.core.runnable;
 
+import static com.github.agadar.telegrammer.core.settings.CoreSettingKey.*;
+
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.github.agadar.nationstates.NationStates;
-import com.github.agadar.nationstates.domain.nation.Nation;
 import com.github.agadar.nationstates.event.TelegramSentEvent;
 import com.github.agadar.nationstates.event.TelegramSentListener;
 import com.github.agadar.nationstates.exception.NationStatesResourceNotFoundException;
+import com.github.agadar.nationstates.function.CheckedSupplier;
 import com.github.agadar.nationstates.shard.NationShard;
 import com.github.agadar.telegrammer.core.TelegrammerListener;
-import static com.github.agadar.telegrammer.core.settings.CoreSettingKey.*;
+import com.github.agadar.telegrammer.core.event.FinishedRefreshingRecipientsEvent;
 import com.github.agadar.telegrammer.core.event.NoRecipientsFoundEvent;
 import com.github.agadar.telegrammer.core.event.RecipientRemovedEvent;
 import com.github.agadar.telegrammer.core.event.StartedRefreshingRecipientsEvent;
-import com.github.agadar.telegrammer.core.event.FinishedRefreshingRecipientsEvent;
 import com.github.agadar.telegrammer.core.event.StoppedSendingEvent;
 import com.github.agadar.telegrammer.core.history.TelegramHistory;
 import com.github.agadar.telegrammer.core.misc.SkippedRecipientReason;
@@ -57,7 +57,12 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
         this.historyManager = historyManager;
         this.settings = settings;
         progressSummarizer = new ProgressSummarizer();
-        canReceiveTelegramPredicate = getCanReceiveTelegramPredicate();
+
+        canReceiveTelegramPredicate = switch (settings.getValue(TELEGRAM_TYPE.getKey(), TelegramType.class)) {
+            case RECRUITMENT -> this::canReceiveRecruitmentTelegram;
+            case CAMPAIGN -> this::canReceiveCampaignTelegram;
+            default -> this::canReceiveNormalTelegram;
+        };
     }
 
     @Override
@@ -154,7 +159,8 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
             if (Thread.currentThread().isInterrupted()) {
                 break;
             }
-            executeTelegramQuery(recipients[index++]);
+            executeTelegramQuery(recipients[index]);
+            index++;
         }
     }
 
@@ -237,29 +243,34 @@ public class SendTelegramsRunnable implements Runnable, TelegramSentListener {
                 .map(filter -> filter.toString()).collect(Collectors.toList());
     }
 
-    private Predicate<String> getCanReceiveTelegramPredicate() {
-        switch (settings.getValue(TELEGRAM_TYPE.getKey(), TelegramType.class)) {
-        case RECRUITMENT:
-            return recipient -> canReceiveSpecialTelegram(NationShard.CAN_RECEIVE_RECRUITMENT_TELEGRAMS, recipient,
-                    nation -> !nation.isCanReceiveRecruitmentTelegrams() ? SkippedRecipientReason.BLOCKING_RECRUITMENT
-                            : null);
-        case CAMPAIGN:
-            return recipient -> canReceiveSpecialTelegram(NationShard.CAN_RECEIVE_CAMPAIGN_TELEGRAMS, recipient,
-                    nation -> !nation.isCanReceiveCampaignTelegrams() ? SkippedRecipientReason.BLOCKING_CAMPAIGN
-                            : null);
-        default:
-            return recipient -> true; // TODO: Normal telegrams should also be checked with a simple nation name
-                                      // query.
-        }
+    private boolean canReceiveRecruitmentTelegram(String recipient) {
+        return canReceiveTelegram(recipient, () -> {
+            var nation = nationStates.getNation(recipient).shards(NationShard.CAN_RECEIVE_RECRUITMENT_TELEGRAMS)
+                    .canReceiveTelegramFromRegion(settings.getValue(FROM_REGION.getKey(), String.class)).execute();
+            return !nation.isCanReceiveRecruitmentTelegrams() ? SkippedRecipientReason.BLOCKING_RECRUITMENT : null;
+        });
     }
 
-    private boolean canReceiveSpecialTelegram(NationShard canReceiveTelegramShard, String recipient,
-            Function<Nation, SkippedRecipientReason> canReceive) {
+    private boolean canReceiveCampaignTelegram(String recipient) {
+        return canReceiveTelegram(recipient, () -> {
+            var nation = nationStates.getNation(recipient).shards(NationShard.CAN_RECEIVE_CAMPAIGN_TELEGRAMS)
+                    .canReceiveTelegramFromRegion(settings.getValue(FROM_REGION.getKey(), String.class)).execute();
+            return !nation.isCanReceiveCampaignTelegrams() ? SkippedRecipientReason.BLOCKING_CAMPAIGN : null;
+        });
+    }
+
+    private boolean canReceiveNormalTelegram(String recipient) {
+        return canReceiveTelegram(recipient, () -> {
+            nationStates.getNation(recipient).shards(NationShard.NAME).execute();
+            return null;
+        });
+    }
+
+    private boolean canReceiveTelegram(String recipient, CheckedSupplier<SkippedRecipientReason> canReceive) {
         SkippedRecipientReason skippedReason = null;
         try {
-            var nation = nationStates.getNation(recipient).shards(canReceiveTelegramShard)
-                    .canReceiveTelegramFromRegion(settings.getValue(FROM_REGION.getKey(), String.class)).execute();
-            skippedReason = canReceive.apply(nation);
+            skippedReason = canReceive.get();
+
         } catch (NationStatesResourceNotFoundException ex) {
             skippedReason = SkippedRecipientReason.NOT_FOUND;
 
